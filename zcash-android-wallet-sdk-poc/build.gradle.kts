@@ -27,7 +27,7 @@ android {
 }
 
 dependencies {
-    compile("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.2.71")
+    compile(kotlin("stdlib-jdk7", KotlinCompilerVersion.VERSION))
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
     implementation("com.android.support:appcompat-v7:28.0.0")
     testImplementation("junit:junit:4.12")

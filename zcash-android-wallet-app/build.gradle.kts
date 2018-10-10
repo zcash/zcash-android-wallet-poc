@@ -1,6 +1,5 @@
 buildscript {
 //    ext.kotlin_version = '1.2.71'
-//    val kotlinVersion by extra { "1.2.71" }
     repositories {
         google()
         jcenter()
@@ -12,11 +11,11 @@ buildscript {
     }
 }
 
+
 allprojects {
     repositories {
         google()
         jcenter()
-        
     }
 }
 
