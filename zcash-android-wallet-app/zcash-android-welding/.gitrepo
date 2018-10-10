@@ -1,0 +1,11 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/git-commands/git-subrepo#readme
+;
+[subrepo]
+	remote = git@github.com:gmale/zcash-android-wallet-sdk-poc.git
+	branch = master
+	commit = 9d5cec753d59e8abb92575aa4bcbe874b8f09ad7
+	parent = 4fca6aa112952b572703e3f99e5f877385c6286e
+	cmdver = 0.3.1
