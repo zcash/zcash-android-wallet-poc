@@ -28,7 +28,7 @@ android {
 // variables) so that we can leverage the built-in lint check that alerts us about new versions
 dependencies {
     compile(kotlin("stdlib-jdk7", KotlinCompilerVersion.VERSION))
-    implementation(project(":sdk"))
+    implementation(project(":zcash-android-welding"))
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
     implementation("androidx.appcompat:appcompat:1.0.0")
     implementation("android.arch.navigation:navigation-fragment:1.0.0-alpha06")
