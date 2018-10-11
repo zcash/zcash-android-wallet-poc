@@ -7,7 +7,6 @@ pub extern "C" fn test_response(input: *const c_char) -> c_int {
     magic_number
 }
 
-
 /// JNI interface
 #[cfg(target_os="android")]
 #[allow(non_snake_case)]
