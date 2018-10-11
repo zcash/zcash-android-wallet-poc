@@ -10,7 +10,7 @@ fun fileTreeWith(dir: String, vararg include: String): ConfigurableFileTree {
 
 buildscript {
     dependencies {
-        classpath("com.squareup.wire:wire-compiler:2.3.0-RC1")
+        classpath("com.squareup.wire:wire-compiler:2.2.0")
     }
 
     repositories {

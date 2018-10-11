@@ -30,8 +30,9 @@ android {
 }
 
 dependencies {
+    api("com.squareup.wire:wire-runtime:2.2.0")
+
     implementation(kotlin("stdlib-jdk7", KotlinCompilerVersion.VERSION))
-    implementation("com.squareup.wire:wire-runtime:2.3.0-RC1")
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
     implementation("com.android.support:appcompat-v7:28.0.0")
     testImplementation("junit:junit:4.12")

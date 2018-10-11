@@ -16,12 +16,18 @@ pub mod android {
     use super::*;
     use self::jni::JNIEnv;
     use self::jni::objects::{JClass, JString};
-    use self::jni::sys::{jint, jlong};
+    use self::jni::sys::*;
 
     #[no_mangle]
     pub unsafe extern "C" fn Java_cash_z_wallet_sdk_jni_JniConverter_getMagicInt(env: JNIEnv, _: JClass, test_input: JString) -> jint {
         let jvm_text = env.get_string(test_input).expect("unable to find text for test input");
         test_response(jvm_text.as_ptr())
+    }
+
+    #[no_mangle]
+    pub unsafe extern "C" fn Java_cash_z_wallet_sdk_jni_JniConverter_sendComplexData(env: JNIEnv, _: JClass, wallet_data: jbyteArray) -> jint {
+        let bytes = env.convert_byte_array(wallet_data);
+        bytes.unwrap().len() as i32
     }
 }
 

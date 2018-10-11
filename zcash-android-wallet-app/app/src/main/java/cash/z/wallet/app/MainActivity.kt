@@ -3,6 +3,7 @@ package cash.z.wallet.app
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import cash.z.wallet.sdk.jni.JniConverter
+import cash.z.wallet.sdk.proto.WalletData
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -31,9 +32,11 @@ class MainActivity : AppCompatActivity() {
 
     private fun checkJni(): String {
         try {
-            return when(converter.getMagicInt("forty-two")) {
+            val walletDataArray = WalletData("Kevin", 42, "email@hotmail.com").encode()
+            val result = converter.sendComplexData(walletDataArray)
+            return when(result) {
                 42 -> "Rust lib is connected!"
-                else -> "JNI call returned unexpected value"
+                else -> "sent(${walletDataArray.size}) JNI call returned unexpected value: $result"
             }
         } catch (t: Throwable) {}
         return "Failure reading from JNI"
