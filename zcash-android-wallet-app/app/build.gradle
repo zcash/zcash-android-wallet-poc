@@ -10,7 +10,7 @@ android {
         applicationId "cash.z.android.wallet"
         minSdkVersion 16
         targetSdkVersion 28
-        versionCode 00_00_01
+        versionCode 1
         versionName "0.0.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
