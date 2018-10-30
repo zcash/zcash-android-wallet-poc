@@ -19,7 +19,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setSupportActionBar(toolbar)
 
         fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+            Snackbar.make(view, "Your imaginary ZEC is in flight", Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show()
         }
 
