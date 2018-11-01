@@ -27,16 +27,19 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation deps.kotlin.stdlib
+
     implementation deps.androidx.appcompat
+    implementation deps.androidx.constraintLayout
+    implementation deps.androidx.coreKtx
     implementation deps.androidx.navigation.fragment
     implementation deps.androidx.navigation.fragmentKtx
     implementation deps.androidx.navigation.ui
     implementation deps.androidx.navigation.uiKtx
-    implementation deps.androidx.coreKtx
+    implementation deps.kotlin.stdlib
     implementation deps.material
-    implementation deps.androidx.constraintLayout
+
     testImplementation deps.junit
+
     androidTestImplementation deps.androidx.test.runner
     androidTestImplementation deps.androidx.test.espresso
 }
