@@ -39,7 +39,6 @@ dependencies {
     implementation deps.material
 
     testImplementation deps.junit
-
     androidTestImplementation deps.androidx.test.runner
     androidTestImplementation deps.androidx.test.espresso
 }
