@@ -1,0 +1,44 @@
+plugins  {
+    id 'com.android.application'
+    id 'kotlin-android'
+    id 'kotlin-android-extensions'
+    id 'deploygate'
+    id 'com.github.ben-manes.versions' version '0.20.0'
+}
+
+android {
+    compileSdkVersion buildConfig.compileSdkVersion
+    defaultConfig {
+        applicationId "cash.z.android.wallet"
+        minSdkVersion buildConfig.minSdkVersion
+        targetSdkVersion buildConfig.targetSdkVersion
+        versionCode 2
+        versionName "0.0.2"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables.useSupportLibrary = true
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation deps.androidx.appcompat
+    implementation deps.androidx.constraintLayout
+    implementation deps.androidx.coreKtx
+    implementation deps.androidx.navigation.fragment
+    implementation deps.androidx.navigation.fragmentKtx
+    implementation deps.androidx.navigation.ui
+    implementation deps.androidx.navigation.uiKtx
+    implementation deps.kotlin.stdlib
+    implementation deps.material
+
+    testImplementation deps.junit
+    androidTestImplementation deps.androidx.test.runner
+    androidTestImplementation deps.androidx.test.espresso
+}

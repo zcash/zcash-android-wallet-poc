@@ -1,0 +1,54 @@
+buildscript {
+    ext.buildConfig = [
+        'compileSdkVersion': 28,
+        'minSdkVersion': 16,
+        'targetSdkVersion': 28
+    ]
+    ext.versions = [
+        'kotlin': '1.3.0',
+        'navigation': '1.0.0-alpha07'
+    ]
+    ext.deps = [
+        'androidx': [
+            'appcompat': 'androidx.appcompat:appcompat:1.0.0',
+            'constraintLayout': 'androidx.constraintlayout:constraintlayout:2.0.0-alpha2',
+            'coreKtx': 'androidx.core:core-ktx:1.0.0',
+            'navigation': [
+                'fragment': "android.arch.navigation:navigation-fragment:${versions.navigation}",
+                'fragmentKtx': "android.arch.navigation:navigation-fragment-ktx:${versions.navigation}",
+                'ui': "android.arch.navigation:navigation-ui:${versions.navigation}",
+                'uiKtx': "android.arch.navigation:navigation-ui-ktx:${versions.navigation}"
+            ],
+            'test': [
+                'runner': 'androidx.test:runner:1.1.0',
+                'espresso': 'androidx.test.espresso:espresso-core:3.1.0'
+            ]
+        ],
+        'junit': 'junit:junit:4.12',
+        'kotlin': [
+            'stdlib': "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin}"
+        ],
+        'material': 'com.google.android.material:material:1.0.0'
+    ]
+    repositories {
+        google()
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.4.0-alpha03'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}"
+        classpath 'com.deploygate:gradle:1.1.5'
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        jcenter()
+        
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
