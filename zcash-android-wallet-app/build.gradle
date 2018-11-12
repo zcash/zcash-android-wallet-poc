@@ -45,6 +45,7 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:3.4.0-alpha03'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}"
+        classpath "com.github.ben-manes:gradle-versions-plugin:0.20.0"
         classpath 'com.deploygate:gradle:1.1.5'
     }
 }
