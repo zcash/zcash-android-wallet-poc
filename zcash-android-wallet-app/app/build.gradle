@@ -1,11 +1,11 @@
-plugins  {
-    id 'com.android.application'
-    id 'kotlin-android'
-    id 'kotlin-android-extensions'
-    id 'kotlin-kapt'
-    id 'deploygate'
-    id 'com.github.ben-manes.versions' version '0.20.0'
-}
+// note: had to abandon the 'plugins' syntax because the navigation graph editor appears to have a bug where it adds kotlin-android and kotlin-android extensions "automatically" when it doesn't detect them. This would constantly break the build. TODO: file a bug on this at b.android.com
+//       the main side effect is that plugins have to include their classpath in the parent script, rather than just specifying the 'version' in the plugins dsl
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'deploygate'
+apply plugin: 'com.github.ben-manes.versions'
 
 android {
     compileSdkVersion buildConfig.compileSdkVersion

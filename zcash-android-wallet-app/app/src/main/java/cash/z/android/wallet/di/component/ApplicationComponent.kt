@@ -1,6 +1,6 @@
 package cash.z.android.wallet.di.component
 
-import cash.z.android.wallet.MainActivityModule
+import cash.z.android.wallet.ui.activity.MainActivityModule
 import cash.z.android.wallet.ZcashWalletApplication
 import cash.z.android.wallet.di.module.ApplicationModule
 import dagger.Component
