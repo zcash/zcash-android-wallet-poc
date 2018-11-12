@@ -2,6 +2,7 @@ plugins  {
     id 'com.android.application'
     id 'kotlin-android'
     id 'kotlin-android-extensions'
+    id 'kotlin-kapt'
     id 'deploygate'
     id 'com.github.ben-manes.versions' version '0.20.0'
 }
@@ -12,8 +13,8 @@ android {
         applicationId "cash.z.android.wallet"
         minSdkVersion buildConfig.minSdkVersion
         targetSdkVersion buildConfig.targetSdkVersion
-        versionCode 2
-        versionName "0.0.2"
+        versionCode 3
+        versionName "0.0.3"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
@@ -28,6 +29,7 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
+    // Android
     implementation deps.androidx.appcompat
     implementation deps.androidx.constraintLayout
     implementation deps.androidx.coreKtx
@@ -37,6 +39,11 @@ dependencies {
     implementation deps.androidx.navigation.uiKtx
     implementation deps.kotlin.stdlib
     implementation deps.material
+
+    // Dagger
+    implementation deps.dagger.android.support
+    kapt deps.dagger.android.processor
+    kapt deps.dagger.compiler
 
     testImplementation deps.junit
     androidTestImplementation deps.androidx.test.runner
