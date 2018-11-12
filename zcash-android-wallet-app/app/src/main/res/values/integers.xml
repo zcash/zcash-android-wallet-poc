@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <integer name="nav_default_transition_duration">@android:integer/config_longAnimTime</integer>
+    <integer name="nav_default_slow_transition_duration">400</integer>
+    <integer name="nav_default_quick_transition_duration">100</integer>
 </resources>
