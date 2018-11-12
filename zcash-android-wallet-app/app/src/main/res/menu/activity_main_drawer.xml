@@ -7,19 +7,19 @@
         <item
                 android:id="@+id/nav_home_fragment"
                 android:icon="@drawable/ic_home_black_24dp"
-                android:title="@string/destination_title_home"/>
+                android:title="@string/destination_menu_label_home"/>
         <item
                 android:id="@+id/nav_send_fragment"
                 android:icon="@drawable/ic_menu_send"
-                android:title="@string/destination_title_send"/>
+                android:title="@string/destination_menu_label_send"/>
         <item
                 android:id="@+id/nav_receive_fragment"
                 android:icon="@drawable/ic_qrcode_black_24dp"
-                android:title="@string/destination_title_receive"/>
+                android:title="@string/destination_menu_label_receive"/>
         <item
                 android:id="@+id/nav_request_fragment"
                 android:icon="@drawable/ic_receipt_black_24dp"
-                android:title="@string/destination_title_request"/>
+                android:title="@string/destination_menu_label_request"/>
     </group>
 
     <!--<item android:title="Communicate" >-->

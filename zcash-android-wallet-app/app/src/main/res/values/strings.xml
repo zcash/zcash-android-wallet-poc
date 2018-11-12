@@ -2,15 +2,21 @@
     <string name="app_name">Zcash Wallet</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Android Studio</string>
-    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_title">Zcash Reference Wallet</string>
+    <string name="nav_header_subtitle">proof-of-concept</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
 
-    <!--  Destination titles -->
+    <!--  Destinations -->
     <string name="destination_title_home">Home</string>
     <string name="destination_title_send">Send Zcash</string>
     <string name="destination_title_receive">Receive Zcash</string>
     <string name="destination_title_request">Request Zcash</string>
+
+    <string name="destination_menu_label_home">Home</string>
+    <string name="destination_menu_label_send">Send</string>
+    <string name="destination_menu_label_receive">Receive</string>
+    <string name="destination_menu_label_request">Request</string>
+
 
 </resources>
