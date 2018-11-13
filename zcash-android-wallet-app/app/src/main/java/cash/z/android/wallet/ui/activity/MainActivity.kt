@@ -66,6 +66,13 @@ class MainActivity : DaggerAppCompatActivity() {
 
         // counting the fab as navigation-related. So set it up here
         fab.setOnClickListener(::onFabClicked)
+        navController.addOnNavigatedListener { _, destination ->
+            if (destination.id == R.id.nav_home_fragment) fab.show() else fab.hide()
+        }
+    }
+
+    private fun fabVisibilityListener() {
+
     }
 
     private fun onFabClicked(view: View) {
