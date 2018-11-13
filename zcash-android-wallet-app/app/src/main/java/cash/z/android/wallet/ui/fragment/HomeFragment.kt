@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import cash.z.android.wallet.R
+import cash.z.android.wallet.ui.activity.MainActivity
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -53,12 +54,8 @@ class HomeFragment : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        if (context is OnFragmentInteractionListener) {
-            listener = context
-        } else {
-//            throw RuntimeException(context.toString() + " must implement OnFragmentInteractionListener")
-        }
     }
+
 
     override fun onDetach() {
         super.onDetach()

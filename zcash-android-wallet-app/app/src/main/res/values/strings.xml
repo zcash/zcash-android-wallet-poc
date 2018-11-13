@@ -12,11 +12,13 @@
     <string name="destination_title_send">Send Zcash</string>
     <string name="destination_title_receive">Receive Zcash</string>
     <string name="destination_title_request">Request Zcash</string>
-
     <string name="destination_menu_label_home">Home</string>
     <string name="destination_menu_label_send">Send</string>
     <string name="destination_menu_label_receive">Receive</string>
     <string name="destination_menu_label_request">Request</string>
-
+    <string name="destination_menu_label_about">About</string>
+    <string name="destination_menu_label_history">History</string>
+    <string name="destination_menu_label_import">Import</string>
+    <string name="destination_menu_label_settings">Settings</string>
 
 </resources>

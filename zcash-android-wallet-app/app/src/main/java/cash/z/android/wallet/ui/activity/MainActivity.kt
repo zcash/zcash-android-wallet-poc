@@ -71,10 +71,6 @@ class MainActivity : DaggerAppCompatActivity() {
         }
     }
 
-    private fun fabVisibilityListener() {
-
-    }
-
     private fun onFabClicked(view: View) {
         Snackbar.make(view, if (sanity.stillSane) "Your imaginary ZEC is in flight." else "You've lost your marbles.", Snackbar.LENGTH_LONG)
             .setAction("Action", null).show()

@@ -23,16 +23,15 @@
 
     <ImageView
         android:id="@+id/image_nav_header_logo"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="92dp"
+        android:layout_height="92dp"
         android:contentDescription="@string/nav_header_desc"
-        android:elevation="4dp"
-        android:layout_marginBottom="8dp"
-        app:srcCompat="@drawable/ic_zcash_logo_white"
+        android:layout_marginBottom="16dp"
+        app:srcCompat="@drawable/zcash_logo_with_shadow"
         app:layout_constraintTop_toBottomOf="@id/guideline_status_bar"
-        app:layout_constraintLeft_toLeftOf="@id/text_nav_header_subtitle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@id/text_nav_header_title"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintDimensionRatio="1:1"/>
 
     <TextView

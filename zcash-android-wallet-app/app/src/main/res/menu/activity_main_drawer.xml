@@ -1,38 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:tools="http://schemas.android.com/tools"
-      tools:showIn="navigation_view">
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
 
-    <group android:checkableBehavior="single">
+    <group
+        android:id="@+id/fab_actions"
+        android:checkableBehavior="single">
+        <!--<item-->
+        <!--android:id="@+id/nav_home_fragment"-->
+        <!--android:icon="@drawable/ic_home_black_24dp"-->
+        <!--android:title="@string/destination_menu_label_home"/>-->
         <item
-                android:id="@+id/nav_home_fragment"
-                android:icon="@drawable/ic_home_black_24dp"
-                android:title="@string/destination_menu_label_home"/>
+            android:id="@+id/nav_send_fragment"
+            android:icon="@drawable/ic_menu_send"
+            android:title="@string/destination_menu_label_send" />
         <item
-                android:id="@+id/nav_send_fragment"
-                android:icon="@drawable/ic_menu_send"
-                android:title="@string/destination_menu_label_send"/>
+            android:id="@+id/nav_receive_fragment"
+            android:icon="@drawable/ic_qrcode_24dp"
+            android:title="@string/destination_menu_label_receive" />
         <item
-                android:id="@+id/nav_receive_fragment"
-                android:icon="@drawable/ic_qrcode_black_24dp"
-                android:title="@string/destination_menu_label_receive"/>
-        <item
-                android:id="@+id/nav_request_fragment"
-                android:icon="@drawable/ic_receipt_black_24dp"
-                android:title="@string/destination_menu_label_request"/>
+            android:id="@+id/nav_request_fragment"
+            android:icon="@drawable/ic_receipt_24dp"
+            android:title="@string/destination_menu_label_request" />
     </group>
 
+    <group
+        android:id="@+id/misc_actions"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_history_fragment"
+            android:icon="@drawable/ic_history_24dp"
+            android:title="@string/destination_menu_label_history" />
+        <item
+            android:id="@+id/nav_about_fragment"
+            android:icon="@drawable/ic_chat_24dp"
+            android:title="@string/destination_menu_label_about" />
+        <item
+            android:id="@+id/nav_import_fragment"
+            android:icon="@drawable/ic_import"
+            android:title="@string/destination_menu_label_import" />
+        <item
+            android:id="@+id/nav_settings_fragment"
+            android:icon="@drawable/ic_settings_24dp"
+            android:title="@string/destination_menu_label_settings" />
+    </group>
     <!--<item android:title="Communicate" >-->
-        <!--<menu>-->
-            <!--<item-->
-                    <!--android:id="@+id/nav_share"-->
-                    <!--android:icon="@drawable/ic_menu_share"-->
-                    <!--android:title="Share"/>-->
-            <!--<item-->
-                    <!--android:id="@+id/nav_send"-->
-                    <!--android:icon="@drawable/ic_menu_send"-->
-                    <!--android:title="Send"/>-->
-        <!--</menu>-->
+    <!--<menu>-->
+    <!--<item-->
+    <!--android:id="@+id/nav_share"-->
+    <!--android:icon="@drawable/ic_menu_share"-->
+    <!--android:title="Share"/>-->
+    <!--<item-->
+    <!--android:id="@+id/nav_send"-->
+    <!--android:icon="@drawable/ic_menu_send"-->
+    <!--android:title="Send"/>-->
+    <!--</menu>-->
     <!--</item>-->
 
 </menu>
