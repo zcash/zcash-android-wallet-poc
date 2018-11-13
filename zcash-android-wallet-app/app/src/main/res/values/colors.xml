@@ -20,6 +20,7 @@
     <!-- This palette should be kept as small as possible and should map directly to the design style guide -->
 
     <color name="zcashBlue">#2196F3</color>
+    <color name="zcashWhite">#FFFFFF</color>
 
 
     <!--                  -->
@@ -32,5 +33,6 @@
     <color name="icon_send">@color/colorPrimary</color>
     <color name="icon_receive">@color/colorAccent</color>
     <color name="icon_request">@color/zcashBlue</color>
+    <color name="fab_icon_color">@color/zcashWhite</color>
 
 </resources>

@@ -29,7 +29,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
             android:layout_margin="@dimen/fab_margin"
-            app:srcCompat="@drawable/ic_menu_send"
-            android:tint="@android:color/black"/>
+            app:srcCompat="@drawable/ic_add_black_24dp"
+            android:backgroundTint="@color/colorPrimary"
+            android:tint="@color/fab_icon_color" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
