@@ -32,13 +32,7 @@ class MainActivity : DaggerAppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
-        fab.setOnClickListener(::onFabClicked)
-        navController = Navigation.findNavController(this, R.id.nav_host_fragment).also { n ->
-            appBarConfiguration = AppBarConfiguration(n.graph, drawer_layout).also { a ->
-                nav_view.setupWithNavController(n)
-                setupActionBarWithNavController(n, a)
-            }
-        }
+        setupNavigation()
     }
 
     override fun onBackPressed() {
@@ -49,12 +43,33 @@ class MainActivity : DaggerAppCompatActivity() {
         }
     }
 
+    /**
+     * Let the navController override the default behavior when the drawer icon or back arrow are clicked. This
+     * automatically takes care of the drawer toggle behavior. Note that without overriding this method, the up/drawer
+     * buttons will not function.
+     */
     override fun onSupportNavigateUp(): Boolean {
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 
+    private fun setupNavigation() {
+        // create and setup the navController and appbarConfiguration
+        navController = Navigation.findNavController(this, R.id.nav_host_fragment).also { n ->
+            appBarConfiguration = AppBarConfiguration(n.graph, drawer_layout).also { a ->
+                nav_view.setupWithNavController(n)
+                setupActionBarWithNavController(n, a)
+            }
+        }
+
+        // remove icon tint so that our colored nav icons show through
+        nav_view.itemIconTintList = null
+
+        // counting the fab as navigation-related. So set it up here
+        fab.setOnClickListener(::onFabClicked)
+    }
+
     private fun onFabClicked(view: View) {
-        Snackbar.make(view, "Your imaginary ZEC is in flight. Sane? ${sanity.stillSane}", Snackbar.LENGTH_LONG)
+        Snackbar.make(view, if (sanity.stillSane) "Your imaginary ZEC is in flight." else "You've lost your marbles.", Snackbar.LENGTH_LONG)
             .setAction("Action", null).show()
     }
 }
