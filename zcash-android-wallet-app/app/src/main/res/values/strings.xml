@@ -8,7 +8,7 @@
     <string name="action_settings">Settings</string>
 
     <!--  Destinations -->
-    <string name="destination_title_home">Home</string>
+    <string name="destination_title_home" />
     <string name="destination_title_send">Send Zcash</string>
     <string name="destination_title_receive">Receive Zcash</string>
     <string name="destination_title_request">Request Zcash</string>

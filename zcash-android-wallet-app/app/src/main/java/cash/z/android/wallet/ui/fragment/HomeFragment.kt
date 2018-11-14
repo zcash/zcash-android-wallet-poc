@@ -50,17 +50,13 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         (activity as MainActivity).setSupportActionBar(toolbar)
         (activity as MainActivity).setupNavigation()
+        (activity as MainActivity).supportActionBar?.setTitle(R.string.destination_title_home)
     }
 
     // TODO: Rename method, update argument and hook method into UI event
     fun onButtonPressed(uri: Uri) {
         listener?.onFragmentInteraction(uri)
     }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-    }
-
 
     override fun onDetach() {
         super.onDetach()

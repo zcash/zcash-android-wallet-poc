@@ -21,6 +21,7 @@
 
     <color name="zcashBlue">#2196F3</color>
     <color name="zcashWhite">#FFFFFF</color>
+    <color name="zcashBlack_light">#2B2B2B</color>
 
 
     <!--                  -->
@@ -34,5 +35,9 @@
     <color name="icon_receive">@color/colorAccent</color>
     <color name="icon_request">@color/zcashBlue</color>
     <color name="fab_icon_color">@color/zcashWhite</color>
+
+    <!-- backgrounds -->
+    <color name="fragment_receive_background">@color/zcashBlack_light</color>
+    <color name="fragment_request_background">@color/colorPrimary</color>
 
 </resources>

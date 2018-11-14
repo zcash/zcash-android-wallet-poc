@@ -35,4 +35,5 @@
         android:name="cash.z.android.wallet.ui.fragment.RequestFragment"
         android:label="@string/destination_title_request"
         tools:layout="@layout/fragment_request" />
+
 </navigation>
