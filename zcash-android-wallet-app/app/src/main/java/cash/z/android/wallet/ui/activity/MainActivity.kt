@@ -16,7 +16,6 @@ import dagger.Module
 import dagger.android.ContributesAndroidInjector
 import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.app_bar_main.*
 import javax.inject.Inject
 
 class MainActivity : DaggerAppCompatActivity() {
@@ -31,8 +30,6 @@ class MainActivity : DaggerAppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        setSupportActionBar(toolbar)
-        setupNavigation()
     }
 
     override fun onBackPressed() {
@@ -52,7 +49,7 @@ class MainActivity : DaggerAppCompatActivity() {
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 
-    private fun setupNavigation() {
+    public fun setupNavigation() {
         // create and setup the navController and appbarConfiguration
         navController = Navigation.findNavController(this, R.id.nav_host_fragment).also { n ->
             appBarConfiguration = AppBarConfiguration(n.graph, drawer_layout).also { a ->
@@ -64,11 +61,11 @@ class MainActivity : DaggerAppCompatActivity() {
         // remove icon tint so that our colored nav icons show through
         nav_view.itemIconTintList = null
 
-        // counting the fab as navigation-related. So set it up here
-        fab.setOnClickListener(::onFabClicked)
-        navController.addOnNavigatedListener { _, destination ->
-            if (destination.id == R.id.nav_home_fragment) fab.show() else fab.hide()
-        }
+//        // counting the fab as navigation-related. So set it up here
+//        fab.setOnClickListener(::onFabClicked)
+//        navController.addOnNavigatedListener { _, destination ->
+//            if (destination.id == R.id.nav_home_fragment) fab.show() else fab.hide()
+//        }
     }
 
     private fun onFabClicked(view: View) {

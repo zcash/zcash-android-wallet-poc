@@ -8,12 +8,16 @@
     android:background="@color/colorPrimary"
     tools:context=".ui.fragment.RequestFragment">
 
+    <include layout="@layout/include_app_bar"
+        tools:ignore="MissingConstraints" />
+
     <!-- TODO: Update blank fragment layout -->
     <TextView
         android:id="@+id/textView4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/destination_title_request"
+        android:textColor="@color/zcashWhite"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

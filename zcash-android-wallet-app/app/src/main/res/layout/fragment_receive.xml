@@ -8,6 +8,9 @@
     android:background="@android:color/black"
     tools:context=".ui.fragment.ReceiveFragment">
 
+    <include layout="@layout/include_app_bar"
+        tools:ignore="MissingConstraints" />
+
     <!-- TODO: Update blank fragment layout -->
     <TextView
         android:id="@+id/textView3"

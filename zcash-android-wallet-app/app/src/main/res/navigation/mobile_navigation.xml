@@ -8,7 +8,7 @@
     <fragment
         android:id="@+id/nav_home_fragment"
         android:name="cash.z.android.wallet.ui.fragment.HomeFragment"
-        android:label="@string/destination_title_home"
+
         tools:layout="@layout/fragment_home">
         <action
             android:id="@+id/action_home_fragment_to_send_fragment"
