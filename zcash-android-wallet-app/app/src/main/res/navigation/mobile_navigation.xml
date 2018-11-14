@@ -8,24 +8,14 @@
     <fragment
         android:id="@+id/nav_home_fragment"
         android:name="cash.z.android.wallet.ui.fragment.HomeFragment"
-        android:label="@string/destination_title_home"
+
         tools:layout="@layout/fragment_home">
         <action
             android:id="@+id/action_home_fragment_to_send_fragment"
-            app:destination="@id/nav_send_fragment"
-            app:enterAnim="@anim/nav_default_enter_anim"
-            app:exitAnim="@anim/nav_default_exit_anim"
-            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
-            app:popExitAnim="@anim/nav_default_pop_exit_anim"
-            app:popUpTo="@+id/nav_home_fragment" />
+            app:destination="@id/nav_send_fragment" />
         <action
             android:id="@+id/action_home_fragment_to_receive_fragment"
-            app:destination="@id/nav_receive_fragment"
-            app:enterAnim="@anim/nav_default_enter_anim"
-            app:exitAnim="@anim/nav_default_exit_anim"
-            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
-            app:popExitAnim="@anim/nav_default_pop_exit_anim"
-            app:popUpTo="@+id/nav_home_fragment" />
+            app:destination="@id/nav_receive_fragment" />
         <action
             android:id="@+id/action_home_fragment_to_request_fragment"
             app:destination="@id/nav_request_fragment" />
@@ -45,4 +35,5 @@
         android:name="cash.z.android.wallet.ui.fragment.RequestFragment"
         android:label="@string/destination_title_request"
         tools:layout="@layout/fragment_request" />
+
 </navigation>

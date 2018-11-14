@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<set xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- slide in from the right -->
-    <translate
-            android:fromXDelta="-100%"
-            android:toXDelta="0%"
-            android:fromYDelta="0%"
-            android:toYDelta="0%"
-            android:duration="@integer/nav_default_transition_duration"
-    />
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+    android:interpolator="@android:anim/decelerate_interpolator"
+    android:shareInterpolator="true">
+    <alpha
+        android:fromAlpha="0.0"
+        android:toAlpha="1.0" />
 </set>

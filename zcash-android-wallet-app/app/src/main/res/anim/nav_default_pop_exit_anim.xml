@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<set xmlns:android="http://schemas.android.com/apk/res/android">
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+    android:interpolator="@android:anim/accelerate_interpolator"
+    android:shareInterpolator="true">
+    <!-- slide out to the right -->
     <translate
-        android:duration="@integer/nav_default_transition_duration"
+        android:duration="@integer/nav_default_quick_transition_duration"
         android:fromXDelta="0%"
         android:fromYDelta="0%"
-        android:toXDelta="0%"
-        android:toYDelta="100%" />
+        android:toXDelta="100%"
+        android:toYDelta="0%" />
+    <alpha
+        android:fromAlpha="1.0"
+        android:toAlpha="0.8" />
 </set>

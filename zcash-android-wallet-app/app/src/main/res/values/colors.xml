@@ -1,6 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <!--                  -->
+    <!-- palette: Android -->
+    <!--                  -->
+
+    <!-- every color here should map to a material design value -->
+
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#F1B53B</color>
+
+
+    <!--                  -->
+    <!-- palette: Zcash   -->
+    <!--                  -->
+
+    <!-- every color here should have a hex value and should have a generic name, prefixed with zcash -->
+    <!-- This palette should be kept as small as possible and should map directly to the design style guide -->
+
+    <color name="zcashBlue">#2196F3</color>
+    <color name="zcashWhite">#FFFFFF</color>
+    <color name="zcashBlack_light">#2B2B2B</color>
+
+
+    <!--                  -->
+    <!-- named colors     -->
+    <!--                  -->
+
+    <!-- every color here should be a reference to a palette color but have a more useful name for use in code -->
+
+    <!-- icons -->
+    <color name="icon_send">@color/colorPrimary</color>
+    <color name="icon_receive">@color/colorAccent</color>
+    <color name="icon_request">@color/zcashBlue</color>
+    <color name="fab_icon_color">@color/zcashWhite</color>
+
+    <!-- backgrounds -->
+    <color name="fragment_receive_background">@color/zcashBlack_light</color>
+    <color name="fragment_request_background">@color/colorPrimary</color>
+
 </resources>
