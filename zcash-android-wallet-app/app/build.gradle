@@ -27,7 +27,6 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     // Android
     implementation deps.androidx.appcompat
@@ -39,6 +38,9 @@ dependencies {
     implementation deps.androidx.navigation.uiKtx
     implementation deps.kotlin.stdlib
     implementation deps.material
+
+    // Zcash
+    implementation deps.zcash.walletSdk
 
     // Dagger
     implementation deps.dagger.android.support

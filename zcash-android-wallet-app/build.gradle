@@ -36,14 +36,17 @@ buildscript {
         'kotlin': [
             'stdlib': "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin}"
         ],
-        'material': 'com.google.android.material:material:1.0.0'
+        'material': 'com.google.android.material:material:1.0.0',
+        'zcash': [
+            'walletSdk': "cash.z.android.wallet:zcash-android-wallet-sdk:1.0.1"
+        ]
     ]
     repositories {
         google()
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.4.0-alpha03'
+        classpath 'com.android.tools.build:gradle:3.4.0-alpha04'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}"
         classpath "com.github.ben-manes:gradle-versions-plugin:0.20.0"
         classpath 'com.deploygate:gradle:1.1.5'
@@ -52,6 +55,7 @@ buildscript {
 
 allprojects {
     repositories {
+        mavenLocal()
         google()
         jcenter()
         
