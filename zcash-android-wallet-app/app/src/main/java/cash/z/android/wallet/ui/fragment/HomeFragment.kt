@@ -1,12 +1,15 @@
 package cash.z.android.wallet.ui.fragment
 
-import android.content.Context
 import android.net.Uri
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import cash.z.android.wallet.R
 import cash.z.android.wallet.ui.activity.MainActivity
+import cash.z.wallet.sdk.jni.JniConverter
+import cash.z.wallet.sdk.proto.WalletData
 import kotlinx.android.synthetic.main.fragment_home.*
 
 
@@ -30,6 +33,8 @@ class HomeFragment : Fragment() {
     private var param2: String? = null
     private var listener: OnFragmentInteractionListener? = null
 
+    var converter: JniConverter = JniConverter()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -51,6 +56,11 @@ class HomeFragment : Fragment() {
         (activity as MainActivity).setSupportActionBar(toolbar)
         (activity as MainActivity).setupNavigation()
         (activity as MainActivity).supportActionBar?.setTitle(R.string.destination_title_home)
+
+        val walletDataArray = WalletData("Kevin", 42, "email@hotmail.com").encode()
+        val result = converter.sendComplexData(walletDataArray)
+
+        text_wallet_message.text = "Your wallet is not full: $result"
     }
 
     // TODO: Rename method, update argument and hook method into UI event
