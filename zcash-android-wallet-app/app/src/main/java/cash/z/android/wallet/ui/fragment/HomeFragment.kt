@@ -57,10 +57,9 @@ class HomeFragment : Fragment() {
         (activity as MainActivity).setupNavigation()
         (activity as MainActivity).supportActionBar?.setTitle(R.string.destination_title_home)
 
-        val walletDataArray = WalletData("Kevin", 42, "email@hotmail.com").encode()
-        val result = converter.sendComplexData(walletDataArray)
-
-        text_wallet_message.text = "Your wallet is not full: $result"
+        val seed = byteArrayOf(0x77, 0x78, 0x79)
+        val result = converter.getAddress(seed)
+        text_wallet_message.text = "Your address:\n$result"
     }
 
     // TODO: Rename method, update argument and hook method into UI event
