@@ -13,8 +13,8 @@ android {
         applicationId "cash.z.android.wallet"
         minSdkVersion buildConfig.minSdkVersion
         targetSdkVersion buildConfig.targetSdkVersion
-        versionCode 8 // todo: change this to 1_00_04 format, once we graduate beyond zero for the major version number because leading zeros indicate on octal number.
-        versionName "0.0.8-alpha"
+        versionCode 9 // todo: change this to 1_00_04 format, once we graduate beyond zero for the major version number because leading zeros indicate on octal number.
+        versionName "0.0.9-alpha"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
