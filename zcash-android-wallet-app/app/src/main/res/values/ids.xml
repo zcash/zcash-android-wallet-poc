@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="fab_send" type="id"/>
+    <item name="fab_receive" type="id" />
+    <item name="fab_request" type="id" />
+</resources>

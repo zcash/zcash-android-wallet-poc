@@ -48,14 +48,14 @@
             tools:text="Your wallet is empty." />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab"
+    <com.leinardi.android.speeddial.SpeedDialView
+        android:id="@+id/sd_fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        android:backgroundTint="@color/colorPrimary"
-        android:tint="@color/fab_icon_color"
-        app:srcCompat="@drawable/ic_add_black_24dp" />
+        app:sdMainFabClosedSrc="@drawable/ic_add_white_24dp"
+        app:sdMainFabClosedBackgroundColor="@color/fab_closed_color"
+        app:sdMainFabOpenedBackgroundColor="@color/fab_open_color"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

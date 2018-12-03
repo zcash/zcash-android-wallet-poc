@@ -1,16 +1,20 @@
 package cash.z.android.wallet.ui.fragment
 
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import cash.z.android.wallet.R
 import cash.z.android.wallet.ui.activity.MainActivity
 import cash.z.wallet.sdk.jni.JniConverter
-import cash.z.wallet.sdk.proto.WalletData
+import com.leinardi.android.speeddial.SpeedDialActionItem
 import kotlinx.android.synthetic.main.fragment_home.*
+import com.leinardi.android.speeddial.SpeedDialView
+import android.widget.Toast
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -60,6 +64,59 @@ class HomeFragment : Fragment() {
         val seed = byteArrayOf(0x77, 0x78, 0x79)
         val result = converter.getAddress(seed)
         text_wallet_message.text = "Your address:\n$result"
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        initFab()
+    }
+
+    private fun initFab() {
+        val theme = activity?.theme
+        val speedDial = sd_fab
+        speedDial.addActionItem(
+            SpeedDialActionItem.Builder(R.id.fab_request, R.drawable.ic_receipt_24dp)
+                .setFabBackgroundColor(ResourcesCompat.getColor(resources, R.color.icon_request, theme))
+                .setFabImageTintColor(ResourcesCompat.getColor(resources, R.color.zcashWhite, theme))
+                .setLabel(getString(R.string.destination_menu_label_request))
+                .setLabelClickable(true)
+                .create()
+        )
+        speedDial.addActionItem(
+            SpeedDialActionItem.Builder(R.id.fab_receive, R.drawable.ic_qrcode_24dp)
+                .setFabBackgroundColor(ResourcesCompat.getColor(resources, R.color.icon_receive, theme))
+                .setFabImageTintColor(ResourcesCompat.getColor(resources, R.color.zcashWhite, theme))
+                .setLabel(getString(R.string.destination_menu_label_receive))
+                .setLabelClickable(true)
+                .create()
+        )
+        speedDial.addActionItem(
+            SpeedDialActionItem.Builder(R.id.fab_send, R.drawable.ic_menu_send)
+                .setFabBackgroundColor(ResourcesCompat.getColor(resources, R.color.icon_send, theme))
+                .setFabImageTintColor(ResourcesCompat.getColor(resources, R.color.zcashWhite, theme))
+                .setLabel(getString(R.string.destination_menu_label_send))
+                .setLabelClickable(true)
+                .create()
+        )
+
+        val nav = (activity as MainActivity).navController
+        speedDial.setOnActionSelectedListener { item ->
+            when (item.id) {
+                R.id.fab_send -> {
+                    nav.navigate(R.id.nav_send_fragment)
+                }
+                R.id.fab_receive -> {
+                    nav.navigate(R.id.nav_receive_fragment)
+                }
+                R.id.fab_request -> {
+                    nav.navigate(R.id.nav_request_fragment)
+                }
+                else -> {
+                    // TODO: do we need an else
+                }
+            }
+            false
+        }
     }
 
     // TODO: Rename method, update argument and hook method into UI event
