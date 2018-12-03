@@ -1,47 +1,31 @@
 package cash.z.android.wallet.ui.fragment
 
-import android.net.Uri
+import android.app.Activity
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.ColorRes
+import androidx.annotation.DrawableRes
+import androidx.annotation.IdRes
+import androidx.annotation.StringRes
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import cash.z.android.wallet.R
 import cash.z.android.wallet.ui.activity.MainActivity
 import cash.z.wallet.sdk.jni.JniConverter
-import cash.z.wallet.sdk.proto.WalletData
+import com.leinardi.android.speeddial.SpeedDialActionItem
 import kotlinx.android.synthetic.main.fragment_home.*
 
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
 /**
- * A simple [Fragment] subclass.
- * Activities that contain this fragment must implement the
- * [HomeFragment.OnFragmentInteractionListener] interface
- * to handle interaction events.
- * Use the [HomeFragment.newInstance] factory method to
- * create an instance of this fragment.
- *
+ * Fragment representing the home screen of the app. This is the screen most often seen by the user when launching the
+ * application.
  */
 class HomeFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
-    private var listener: OnFragmentInteractionListener? = null
 
+    // TODO: remove this test object. it is currently just used to exercise the rust code
     var converter: JniConverter = JniConverter()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -53,58 +37,86 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        (activity as MainActivity).setSupportActionBar(toolbar)
-        (activity as MainActivity).setupNavigation()
-        (activity as MainActivity).supportActionBar?.setTitle(R.string.destination_title_home)
+        (activity as MainActivity).let { mainActivity ->
+            mainActivity.setSupportActionBar(toolbar)
+            mainActivity.setupNavigation()
+            mainActivity.supportActionBar?.setTitle(R.string.destination_title_home)
+        }
 
+        //  TODO remove this test code
         val seed = byteArrayOf(0x77, 0x78, 0x79)
         val result = converter.getAddress(seed)
         text_wallet_message.text = "Your address:\n$result"
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    fun onButtonPressed(uri: Uri) {
-        listener?.onFragmentInteraction(uri)
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-        listener = null
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        initFab(activity!!)
     }
 
     /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
+     * Initialize the Fab button and all its action items
      *
-     *
-     * See the Android Training lesson [Communicating with Other Fragments]
-     * (http://developer.android.com/training/basics/fragments/communicating.html)
-     * for more information.
+     * @param activity a helper parameter that forces this method to be called after the activity is created and not null
      */
-    interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        fun onFragmentInteraction(uri: Uri)
+    private fun initFab(activity: Activity) {
+        val speedDial = sd_fab
+        val nav = (activity as MainActivity).navController
+
+        HomeFab.values().forEach {
+            speedDial.addActionItem(it.createItem(activity))
+        }
+
+        speedDial.setOnActionSelectedListener { item ->
+            HomeFab.fromId(item.id)?.destination?.apply { nav.navigate(this) }
+            false
+        }
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment HomeFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            HomeFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+    /**
+     * Defines the basic properties of each FAB button for use while initializing the FAB
+     */
+    enum class HomeFab(
+        @IdRes val id:Int,
+        @DrawableRes val icon:Int,
+        @ColorRes val bgColor:Int,
+        @StringRes val label:Int,
+        @IdRes val destination:Int
+    ) {
+        /* ordered by when they need to be added to the speed dial (i.e. reverse display order) */
+        REQUEST(
+            R.id.fab_request,
+            R.drawable.ic_receipt_24dp,
+            R.color.icon_request,
+            R.string.destination_menu_label_request,
+            R.id.nav_request_fragment
+        ),
+        RECEIVE(
+            R.id.fab_receive,
+            R.drawable.ic_qrcode_24dp,
+            R.color.icon_receive,
+            R.string.destination_menu_label_receive,
+            R.id.nav_receive_fragment
+        ),
+        SEND(
+            R.id.fab_send,
+            R.drawable.ic_menu_send,
+            R.color.icon_send,
+            R.string.destination_menu_label_send,
+            R.id.nav_send_fragment
+        );
+
+        fun createItem(activity: Activity): SpeedDialActionItem =
+            SpeedDialActionItem.Builder(id, icon)
+                .setFabBackgroundColor(ResourcesCompat.getColor(activity.resources, bgColor, activity.theme))
+                .setFabImageTintColor(ResourcesCompat.getColor(activity.resources, R.color.zcashWhite, activity.theme))
+                .setLabel(activity.getString(label))
+                .setLabelClickable(true)
+                .create()
+
+        companion object {
+            fun fromId(id: Int): HomeFab? = values().firstOrNull { it.id == id }
+        }
     }
+
 }

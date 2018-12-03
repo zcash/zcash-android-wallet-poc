@@ -51,6 +51,9 @@ dependencies {
     kapt deps.dagger.android.processor
     kapt deps.dagger.compiler
 
+    // FAB speed dial
+    implementation deps.speeddial
+
     testImplementation deps.junit
     androidTestImplementation deps.androidx.test.runner
     androidTestImplementation deps.androidx.test.espresso

@@ -35,6 +35,8 @@
     <color name="icon_receive">@color/colorAccent</color>
     <color name="icon_request">@color/zcashBlue</color>
     <color name="fab_icon_color">@color/zcashWhite</color>
+    <color name="fab_closed_color">@color/colorPrimary</color>
+    <color name="fab_open_color">@color/colorPrimaryDark</color>
 
     <!-- backgrounds -->
     <color name="fragment_receive_background">@color/zcashBlack_light</color>
