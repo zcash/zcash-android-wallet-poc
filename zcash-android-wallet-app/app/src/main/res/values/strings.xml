@@ -21,4 +21,7 @@
     <string name="destination_menu_label_import">Import</string>
     <string name="destination_menu_label_settings">Settings</string>
 
+    <!-- Screen copy -->
+    <string name="receive_address_title">Your Zcash shielded address</string>
+
 </resources>

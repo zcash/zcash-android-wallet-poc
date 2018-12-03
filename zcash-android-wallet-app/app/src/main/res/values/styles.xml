@@ -16,4 +16,12 @@
     <style name="AppTheme.PopupOverlay"
            parent="ThemeOverlay.AppCompat.Light"/>
 
+    <!-- Text Appearances -->
+    <style name="TextAppearance.Zcash.Headline6" parent="TextAppearance.MaterialComponents.Headline6">
+        <item name="fontFamily">sans-serif</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+
+    <style name="TextAppearance.Zcash.Body1" parent="TextAppearance.MaterialComponents.Body1"/>
+
 </resources>
