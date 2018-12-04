@@ -1,27 +1,39 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="ZcashTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
-    <style name="AppTheme.NoActionBar">
+
+    <style name="ZcashTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
-    <style name="AppTheme.AppBarOverlay"
-           parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
-    <style name="AppTheme.PopupOverlay"
-           parent="ThemeOverlay.AppCompat.Light"/>
 
+    <style name="ZcashTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="ZcashTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+
+    <!--                  -->
     <!-- Text Appearances -->
-    <style name="TextAppearance.Zcash.Headline6" parent="TextAppearance.MaterialComponents.Headline6">
+    <!--                  -->
+
+    <style name="Zcash.TextAppearance.Body1" parent="TextAppearance.MaterialComponents.Body1" />
+
+    <style name="Zcash.TextAppearance.Headline6" parent="TextAppearance.MaterialComponents.Headline6">
         <item name="fontFamily">sans-serif</item>
         <item name="android:fontFamily">sans-serif</item>
     </style>
 
-    <style name="TextAppearance.Zcash.Body1" parent="TextAppearance.MaterialComponents.Body1"/>
+    <style name="Zcash.TextAppearance.AddressPart" parent="TextAppearance.AppCompat">
+        <item name="android:fontFamily">@font/inconsolata</item>
+        <item name="fontFamily">@font/inconsolata</item>
+        <item name="android:textSize">22sp</item>
+        <item name="android:textColor">@color/text_light</item>
+    </style>
 
 </resources>
