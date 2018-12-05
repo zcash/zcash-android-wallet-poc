@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fillViewport="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layout_receive_fragment"
@@ -38,16 +39,28 @@
             android:id="@+id/receive_qr_code"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:background="@color/zcashWhite"
-            android:scaleType="centerInside"
+            android:scaleType="fitCenter"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintDimensionRatio="H,1:1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/include_toolbar"
-            app:layout_constraintVertical_bias="0.172"
+            app:layout_constraintVertical_bias="0.198"
             app:layout_constraintWidth_default="percent"
             app:layout_constraintWidth_percent="0.58111" />
+
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:srcCompat="@drawable/ic_zcash_white"
+            app:layout_constraintDimensionRatio="H,1:1"
+            app:layout_constraintWidth_default="percent"
+            app:layout_constraintWidth_percent="0.12"
+            app:layout_constraintStart_toStartOf="@id/receive_qr_code"
+            app:layout_constraintEnd_toEndOf="@id/receive_qr_code"
+            app:layout_constraintTop_toTopOf="@id/receive_qr_code"
+            app:layout_constraintBottom_toBottomOf="@id/receive_qr_code"
+            />
 
         <View
             android:id="@+id/receive_address_background"

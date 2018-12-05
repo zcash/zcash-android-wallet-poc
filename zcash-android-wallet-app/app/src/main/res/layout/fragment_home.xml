@@ -28,7 +28,7 @@
             android:id="@+id/image_empty_wallet"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/empty_wallet"
+            app:srcCompat="@drawable/ic_emptywallet"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
