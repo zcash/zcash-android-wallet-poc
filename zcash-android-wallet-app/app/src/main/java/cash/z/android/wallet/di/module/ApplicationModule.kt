@@ -1,6 +1,7 @@
 package cash.z.android.wallet.di.module
 
 import cash.z.android.qrecycler.QRecycler
+import cash.z.wallet.sdk.jni.JniConverter
 import dagger.Module
 import dagger.Provides
 
@@ -16,4 +17,8 @@ internal object ApplicationModule {
     @JvmStatic
     @Provides
     fun provideQRecycler(): QRecycler = QRecycler()
+
+    @JvmStatic
+    @Provides
+    fun provideJniConverter(): JniConverter = JniConverter()
 }

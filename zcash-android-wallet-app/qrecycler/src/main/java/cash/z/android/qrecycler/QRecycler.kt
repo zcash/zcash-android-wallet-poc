@@ -16,6 +16,7 @@ class QRecycler {
         return Builder(content)
     }
 
+    // TODO: make this call async such that action can be taken once it is complete
     fun encode(builder: Builder) {
         builder.target.doOnLayout { measuredView ->
             val w = measuredView.width

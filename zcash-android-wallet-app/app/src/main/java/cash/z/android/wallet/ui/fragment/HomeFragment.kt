@@ -47,7 +47,7 @@ class HomeFragment : BaseFragment() {
 
         //  TODO remove this test code
         val seed = byteArrayOf(0x77, 0x78, 0x79)
-        val result = converter.getAddress(seed)
+        val result = converter.getAddress("dummyseed".toByteArray())
         text_wallet_message.text = "Your address:\n$result"
     }
 
