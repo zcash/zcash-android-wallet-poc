@@ -35,6 +35,7 @@ dependencies {
     // Android
     implementation deps.androidx.appcompat
     implementation deps.androidx.constraintLayout
+    implementation deps.androidx.core
     implementation deps.androidx.coreKtx
     implementation deps.androidx.navigation.fragment
     implementation deps.androidx.navigation.fragmentKtx
@@ -51,10 +52,11 @@ dependencies {
     kapt deps.dagger.android.processor
     kapt deps.dagger.compiler
 
-    // FAB speed dial
+    // Other
     implementation deps.speeddial
 
     testImplementation deps.junit
     androidTestImplementation deps.androidx.test.runner
     androidTestImplementation deps.androidx.test.espresso
+    compile project(path: ':qrecycler')
 }

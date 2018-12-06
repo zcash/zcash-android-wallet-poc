@@ -1,0 +1,7 @@
+<resources>
+
+    <!-- Base application theme -->
+    <style name="ZcashTheme" parent="ZcashBaseTheme">
+        <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
+    </style>
+</resources>

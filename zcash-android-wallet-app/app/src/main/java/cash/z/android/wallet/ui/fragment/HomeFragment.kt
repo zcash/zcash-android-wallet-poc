@@ -10,20 +10,22 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.IdRes
 import androidx.annotation.StringRes
 import androidx.core.content.res.ResourcesCompat
-import androidx.fragment.app.Fragment
+import androidx.core.view.doOnLayout
 import cash.z.android.wallet.R
+import cash.z.android.wallet.di.module.SanityCheck
 import cash.z.android.wallet.ui.activity.MainActivity
 import cash.z.wallet.sdk.jni.JniConverter
 import com.leinardi.android.speeddial.SpeedDialActionItem
+import dagger.Module
+import dagger.android.ContributesAndroidInjector
 import kotlinx.android.synthetic.main.fragment_home.*
-
+import javax.inject.Inject
 
 /**
  * Fragment representing the home screen of the app. This is the screen most often seen by the user when launching the
  * application.
  */
-class HomeFragment : Fragment() {
-
+class HomeFragment : BaseFragment() {
     // TODO: remove this test object. it is currently just used to exercise the rust code
     var converter: JniConverter = JniConverter()
 
@@ -45,7 +47,7 @@ class HomeFragment : Fragment() {
 
         //  TODO remove this test code
         val seed = byteArrayOf(0x77, 0x78, 0x79)
-        val result = converter.getAddress(seed)
+        val result = converter.getAddress("dummyseed".toByteArray())
         text_wallet_message.text = "Your address:\n$result"
     }
 
@@ -119,4 +121,10 @@ class HomeFragment : Fragment() {
         }
     }
 
+}
+
+@Module
+abstract class HomeFragmentModule {
+    @ContributesAndroidInjector
+    abstract fun contributeHomeFragment(): HomeFragment
 }

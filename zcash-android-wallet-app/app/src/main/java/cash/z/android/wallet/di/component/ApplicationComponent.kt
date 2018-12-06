@@ -3,6 +3,8 @@ package cash.z.android.wallet.di.component
 import cash.z.android.wallet.ui.activity.MainActivityModule
 import cash.z.android.wallet.ZcashWalletApplication
 import cash.z.android.wallet.di.module.ApplicationModule
+import cash.z.android.wallet.ui.fragment.HomeFragmentModule
+import cash.z.android.wallet.ui.fragment.ReceiveFragmentModule
 import dagger.Component
 import dagger.android.AndroidInjector
 import dagger.android.support.AndroidSupportInjectionModule
@@ -15,9 +17,11 @@ import javax.inject.Singleton
 @Singleton
 @Component(
     modules = [
-        MainActivityModule::class,
         AndroidSupportInjectionModule::class,
-        ApplicationModule::class
+        ApplicationModule::class,
+        MainActivityModule::class,
+        HomeFragmentModule::class,
+        ReceiveFragmentModule::class
     ]
 )
 interface ApplicationComponent : AndroidInjector<ZcashWalletApplication> {

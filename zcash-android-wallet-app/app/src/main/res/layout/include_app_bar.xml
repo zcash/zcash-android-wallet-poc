@@ -5,7 +5,7 @@
     android:id="@+id/appbar"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:theme="@style/AppTheme.AppBarOverlay"
+    android:theme="@style/ZcashTheme.AppBarOverlay"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toTopOf="parent"
     tools:showIn="@layout/fragment_send">
@@ -14,6 +14,6 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        app:popupTheme="@style/AppTheme.PopupOverlay" />
+        app:popupTheme="@style/ZcashTheme.PopupOverlay" />
 
 </com.google.android.material.appbar.AppBarLayout>
