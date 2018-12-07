@@ -28,13 +28,13 @@ class AddressPartNumberSpan(
     override fun describeContents() = 0
 
     override fun updateMeasureState(textPaint: TextPaint) {
-        textPaint.textSize = textPaint.textSize * proportion  // from RelativeSizeSpan
         textPaint.baselineShift += (textPaint.ascent() / 2).toInt()  // from SuperscriptSpan
+        textPaint.textSize = textPaint.textSize * proportion  // from RelativeSizeSpan
     }
 
     override fun updateDrawState(textPaint: TextPaint) {
+        textPaint.baselineShift += (textPaint.ascent() / 2).toInt()  // from SuperscriptSpan (baseline must shift before resizing or else it will not properly align to the top of the text)
         textPaint.textSize = textPaint.textSize * proportion  // from RelativeSizeSpan
-        textPaint.baselineShift += (textPaint.ascent() / 2).toInt()  // from SuperscriptSpan
         textPaint.color = color  // from ForegroundColorSpan
     }
 }
