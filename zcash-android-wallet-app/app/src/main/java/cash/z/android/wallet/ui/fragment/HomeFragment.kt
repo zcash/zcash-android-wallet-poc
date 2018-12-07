@@ -44,7 +44,7 @@ class HomeFragment : BaseFragment() {
             mainActivity.supportActionBar?.setTitle(R.string.destination_title_home)
         }
 
-        (view as MotionLayout).setShowPaths(true)
+//        (view as MotionLayout).setShowPaths(true)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

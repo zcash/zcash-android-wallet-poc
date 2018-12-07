@@ -11,7 +11,7 @@
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
-        android:layout_height="180dp"
+        android:layout_height="?attr/actionBarSize"
         android:theme="@style/ZcashTheme.AppBarOverlay"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -30,19 +30,17 @@
         android:id="@+id/text_balance"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="56dp"
+        android:layout_marginStart="56dp"
         android:elevation="4dp"
-        android:shadowColor="@color/text_shadow"
-        android:shadowDx="0"
-        android:shadowDy="8"
-        android:shadowRadius="24"
+        android:scaleY="0.4"
+        android:scaleX="0.4"
         android:text="0"
         android:textColor="@color/zcashWhite"
         android:textSize="60dp"
         app:layout_constraintBottom_toBottomOf="@id/appBarLayout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/appBarLayout"
-        app:layout_constraintVertical_bias="0.36"/>
+        app:layout_constraintStart_toStartOf="@id/appBarLayout"
+        app:layout_constraintTop_toTopOf="@id/appBarLayout"/>
 
     <ImageView
         android:id="@+id/image_zec_symbol_balance_shadow"
@@ -50,6 +48,9 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="2dp"
         android:elevation="4dp"
+        android:scaleX="0.4"
+        android:scaleY="0.4"
+        android:alpha="0"
         app:srcCompat="@drawable/ic_zec_symbol"
         android:tint="#B3000000"
         app:layout_constraintTop_toTopOf="@+id/image_zec_symbol_balance"
@@ -59,12 +60,15 @@
         android:id="@+id/image_zec_symbol_balance"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="4dp"
-        android:layout_marginRight="4dp"
+        android:layout_marginLeft="56dp"
+        android:layout_marginStart="56dp"
         android:elevation="4dp"
-        app:layout_constraintEnd_toStartOf="@id/text_balance"
-        app:layout_constraintTop_toTopOf="@id/text_balance"
+        android:scaleX="0.4"
+        android:scaleY="0.4"
+        app:layout_constraintBottom_toBottomOf="@id/appBarLayout"
+        app:layout_constraintStart_toStartOf="@id/appBarLayout"
+        app:layout_constraintTop_toTopOf="@id/appBarLayout"
+        app:layout_constraintVertical_bias="0.38"
         app:srcCompat="@drawable/ic_zec_symbol" />
 
     <TextView
@@ -78,9 +82,12 @@
         android:drawablePadding="6dp"
         android:textColor="@color/zcashWhite"
         android:textSize="16dp"
+        android:scaleY="0"
+        android:scaleX="0"
+        android:alpha="0"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/text_balance" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <!-- Zcash badge -->
     <Space
@@ -108,9 +115,10 @@
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.6"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintVertical_bias="0.2"
+        android:alpha="0"
         app:srcCompat="@drawable/ic_emptywallet" />
 
     <TextView
@@ -121,6 +129,7 @@
         android:padding="16dp"
         android:text="@string/home_empty_wallet"
         android:textColor="#AAAAAA"
+        android:alpha="0"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/image_empty_wallet" />
@@ -130,13 +139,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:alpha="0"
         android:padding="16dp"
         android:text="@string/home_empty_wallet_collapse"
         android:textColor="#AAAAAA"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
     <com.leinardi.android.speeddial.SpeedDialView
         android:id="@+id/sd_fab"
