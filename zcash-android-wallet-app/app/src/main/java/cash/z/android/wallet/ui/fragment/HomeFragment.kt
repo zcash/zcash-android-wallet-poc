@@ -9,17 +9,16 @@ import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.IdRes
 import androidx.annotation.StringRes
-import androidx.core.content.res.ResourcesCompat
-import androidx.core.view.doOnLayout
+import androidx.constraintlayout.motion.widget.MotionLayout
 import cash.z.android.wallet.R
-import cash.z.android.wallet.di.module.SanityCheck
+import cash.z.android.wallet.extention.toAppColor
+import cash.z.android.wallet.extention.toAppString
 import cash.z.android.wallet.ui.activity.MainActivity
 import cash.z.wallet.sdk.jni.JniConverter
 import com.leinardi.android.speeddial.SpeedDialActionItem
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 import kotlinx.android.synthetic.main.fragment_home.*
-import javax.inject.Inject
 
 /**
  * Fragment representing the home screen of the app. This is the screen most often seen by the user when launching the
@@ -45,10 +44,7 @@ class HomeFragment : BaseFragment() {
             mainActivity.supportActionBar?.setTitle(R.string.destination_title_home)
         }
 
-        //  TODO remove this test code
-        val seed = byteArrayOf(0x77, 0x78, 0x79)
-        val result = converter.getAddress("dummyseed".toByteArray())
-        text_wallet_message.text = "Your address:\n$result"
+        (view as MotionLayout).setShowPaths(true)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -66,13 +62,22 @@ class HomeFragment : BaseFragment() {
         val nav = (activity as MainActivity).navController
 
         HomeFab.values().forEach {
-            speedDial.addActionItem(it.createItem(activity))
+            speedDial.addActionItem(it.createItem())
         }
 
         speedDial.setOnActionSelectedListener { item ->
             HomeFab.fromId(item.id)?.destination?.apply { nav.navigate(this) }
             false
         }
+    }
+
+    private val createItem: HomeFab.() -> SpeedDialActionItem = {
+        SpeedDialActionItem.Builder(id, icon)
+            .setFabBackgroundColor(bgColor.toAppColor())
+            .setFabImageTintColor(R.color.zcashWhite.toAppColor())
+            .setLabel(label.toAppString())
+            .setLabelClickable(true)
+            .create()
     }
 
     /**
@@ -107,14 +112,6 @@ class HomeFragment : BaseFragment() {
             R.string.destination_menu_label_send,
             R.id.nav_send_fragment
         );
-
-        fun createItem(activity: Activity): SpeedDialActionItem =
-            SpeedDialActionItem.Builder(id, icon)
-                .setFabBackgroundColor(ResourcesCompat.getColor(activity.resources, bgColor, activity.theme))
-                .setFabImageTintColor(ResourcesCompat.getColor(activity.resources, R.color.zcashWhite, activity.theme))
-                .setLabel(activity.getString(label))
-                .setLabelClickable(true)
-                .create()
 
         companion object {
             fun fromId(id: Int): HomeFab? = values().firstOrNull { it.id == id }

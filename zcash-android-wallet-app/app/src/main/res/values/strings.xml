@@ -23,5 +23,6 @@
 
     <!-- Screen copy -->
     <string name="receive_address_title">Your Zcash shielded address</string>
+    <string name="home_empty_wallet">Your wallet is empty.</string>
 
 </resources>
