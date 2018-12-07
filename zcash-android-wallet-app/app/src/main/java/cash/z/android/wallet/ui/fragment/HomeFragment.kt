@@ -2,6 +2,8 @@ package cash.z.android.wallet.ui.fragment
 
 import android.app.Activity
 import android.os.Bundle
+import android.text.SpannableString
+import android.text.Spanned
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,32 +12,33 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.IdRes
 import androidx.annotation.StringRes
 import androidx.constraintlayout.motion.widget.MotionLayout
+import androidx.constraintlayout.widget.Group
 import cash.z.android.wallet.R
+import cash.z.android.wallet.extention.Toaster
 import cash.z.android.wallet.extention.toAppColor
 import cash.z.android.wallet.extention.toAppString
 import cash.z.android.wallet.ui.activity.MainActivity
-import cash.z.wallet.sdk.jni.JniConverter
+import cash.z.android.wallet.ui.util.TopAlignedSpan
 import com.leinardi.android.speeddial.SpeedDialActionItem
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
-import kotlinx.android.synthetic.main.fragment_home.*
+import kotlinx.android.synthetic.main.fragment_home_full.*
 
 /**
  * Fragment representing the home screen of the app. This is the screen most often seen by the user when launching the
  * application.
  */
 class HomeFragment : BaseFragment() {
-    // TODO: remove this test object. it is currently just used to exercise the rust code
-    var converter: JniConverter = JniConverter()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_home, container, false)
+        return inflater.inflate(R.layout.fragment_home_full, container, false)
     }
 
+    var hasZec = false
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         (activity as MainActivity).let { mainActivity ->
@@ -45,6 +48,31 @@ class HomeFragment : BaseFragment() {
         }
 
 //        (view as MotionLayout).setShowPaths(true)
+
+        (view as MotionLayout).setTransitionListener (object: MotionLayout.TransitionListener {
+            override fun onTransitionChange(p0: MotionLayout?, p1: Int, p2: Int, p3: Float) {
+
+            }
+            override fun onTransitionCompleted(p0: MotionLayout?, p1: Int) {
+                Toaster.short("transition complete")
+//                view.findViewById<Group>(R.id.group_empty_view_items).visibility = if(hasZec) View.GONE else View.VISIBLE
+            }
+        })
+
+        logo.setOnClickListener {
+            // toggle empty
+            with(group_empty_view_items) {
+                visibility = if (visibility == View.VISIBLE) View.GONE else View.VISIBLE
+                hasZec = !hasZec
+            }
+            // toggle empty
+            with(group_full_view_items) {
+                visibility = if (visibility == View.VISIBLE) View.GONE else View.VISIBLE
+            }
+        }
+
+        // TODO: pull from DB, for now just exercise UI
+        setUsdValue("$5,459.32")
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -78,6 +106,13 @@ class HomeFragment : BaseFragment() {
             .setLabel(label.toAppString())
             .setLabelClickable(true)
             .create()
+    }
+
+    fun setUsdValue(value: String) {
+        val textSpan = SpannableString(value)
+        textSpan.setSpan(TopAlignedSpan(), 0, 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        textSpan.setSpan(TopAlignedSpan(), value.length - 3, value.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        text_balance_usd.text = textSpan
     }
 
     /**

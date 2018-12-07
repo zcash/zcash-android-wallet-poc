@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.motion.widget.MotionLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layout_home_fragment"
+    app:layoutDescription="@xml/fragment_home_coordinator"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.fragment.HomeFragment">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="180dp"
+        android:theme="@style/ZcashTheme.AppBarOverlay"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:popupTheme="@style/ZcashTheme.PopupOverlay" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_actionbar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="?attr/actionBarSize" />
+
+    <!-- balance -->
+    <TextView
+        android:id="@+id/text_balance_zec"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:elevation="4dp"
+        android:shadowColor="@color/text_shadow"
+        android:shadowDx="0"
+        android:shadowDy="8"
+        android:shadowRadius="24"
+        android:text="0"
+        android:textColor="@color/zcashWhite"
+        android:textSize="60dp"
+        app:layout_constraintBottom_toBottomOf="@id/appBarLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/appBarLayout"
+        app:layout_constraintVertical_bias="0.36"/>
+
+    <ImageView
+        android:id="@+id/image_zec_symbol_balance_shadow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:elevation="4dp"
+        app:srcCompat="@drawable/ic_zec_symbol"
+        android:tint="#B3000000"
+        app:layout_constraintTop_toTopOf="@+id/image_zec_symbol_balance"
+        app:layout_constraintStart_toStartOf="@id/image_zec_symbol_balance"/>
+
+    <ImageView
+        android:id="@+id/image_zec_symbol_balance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginRight="4dp"
+        android:elevation="4dp"
+        app:layout_constraintEnd_toStartOf="@id/text_balance_zec"
+        app:layout_constraintTop_toTopOf="@id/text_balance_zec"
+        app:srcCompat="@drawable/ic_zec_symbol" />
+
+    <Space
+        android:id="@+id/guideline_zec_usd_spacer"
+        android:layout_width="1dp"
+        android:layout_height="2dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBaseline_toBaselineOf="@id/text_balance_zec"/>
+
+    <TextView
+        android:id="@+id/text_balance_usd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:elevation="4dp"
+        android:text="$5,459.32"
+        android:textColor="@color/text_light_dimmed"
+        android:textSize="24dp"
+        android:fontFamily="sans-serif-light"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/guideline_zec_usd_spacer"/>
+
+    <TextView
+        android:id="@+id/text_balance_includes_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:elevation="4dp"
+        android:text="Balance includes active transactions"
+        android:textColor="@color/text_light_dimmed"
+        android:textSize="12dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/guideline_actionbar"/>
+
+    <TextView
+        android:id="@+id/text_balance_zec_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:elevation="4dp"
+        android:text="is a currency symbol for ZEC"
+        android:drawableStart="@drawable/ic_zec_symbol"
+        android:drawableLeft="@drawable/ic_zec_symbol"
+        android:drawablePadding="6dp"
+        android:textColor="@color/zcashWhite"
+        android:textSize="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_balance_zec" />
+
+    <!-- Zcash badge -->
+    <Space
+        android:id="@+id/guideline_logo_offset"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="25dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/appBarLayout"/>
+
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:elevation="12dp"
+        app:srcCompat="@drawable/ic_zcashlogo_badge"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/guideline_logo_offset"/>
+    
+    <ImageView
+        android:id="@+id/image_empty_wallet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.6"
+        app:srcCompat="@drawable/ic_emptywallet" />
+
+    <TextView
+        android:id="@+id/text_wallet_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:padding="16dp"
+        android:text="@string/home_empty_wallet"
+        android:textColor="#AAAAAA"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/image_empty_wallet" />
+
+    <TextView
+        android:id="@+id/text_wallet_message_collapsed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:alpha="0"
+        android:padding="16dp"
+        android:text="@string/home_empty_wallet_collapse"
+        android:textColor="#AAAAAA"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="parent"/>
+
+    <com.leinardi.android.speeddial.SpeedDialView
+        android:id="@+id/sd_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/fab_margin"
+        app:sdMainFabClosedBackgroundColor="@color/fab_closed_color"
+        app:sdMainFabClosedSrc="@drawable/ic_add_white_24dp"
+        app:sdMainFabOpenedBackgroundColor="@color/fab_open_color"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+
+    <!--        -->
+    <!-- Groups -->
+    <!--        -->
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/group_full_view_items"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:constraint_referenced_ids="text_balance_usd,text_balance_includes_info"/>
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/group_empty_view_items"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="text_balance_zec_info,image_empty_wallet,text_wallet_message,text_wallet_message_collapsed"/>
+</androidx.constraintlayout.motion.widget.MotionLayout>

@@ -21,6 +21,7 @@
 
     <color name="zcashBlue">#2196F3</color>
     <color name="zcashWhite">#FFFFFF</color>
+    <color name="zcashWhite_87">#BFFFFFFF</color>
     <color name="zcashBlack_light">#2B2B2B</color>
     <color name="zcashBlack_12">#1F000000</color>
     <color name="zcashBlack_40">#66000000</color>
@@ -43,6 +44,7 @@
 
     <!-- text -->
     <color name="text_light">@color/zcashWhite</color>
+    <color name="text_light_dimmed">@color/zcashWhite_87</color>
     <color name="text_dark">@color/zcashBlack_87</color>
     <color name="text_shadow">@color/zcashBlack_40</color>
 

@@ -14,7 +14,6 @@ import cash.z.android.wallet.ui.util.AddressPartNumberSpan
 import cash.z.wallet.sdk.jni.JniConverter
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
-import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.fragment_receive.*
 import javax.inject.Inject
 
@@ -42,7 +41,7 @@ class ReceiveFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         (activity as MainActivity).let { mainActivity ->
-            mainActivity.setSupportActionBar(toolbar)
+            mainActivity.setSupportActionBar(view.findViewById(R.id.toolbar))
             mainActivity.supportActionBar?.setDisplayHomeAsUpEnabled(true)
             mainActivity.supportActionBar?.setTitle(R.string.destination_title_receive)
         }

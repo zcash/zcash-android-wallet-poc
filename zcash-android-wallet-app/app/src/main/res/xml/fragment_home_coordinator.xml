@@ -3,8 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <Transition
-        app:constraintSetEnd="@layout/fragment_home_collapsed"
-        app:constraintSetStart="@layout/fragment_home"
+        app:constraintSetEnd="@layout/fragment_home_full_collapsed"
+        app:constraintSetStart="@layout/fragment_home_full"
         app:duration="1000">
 
         <OnSwipe
