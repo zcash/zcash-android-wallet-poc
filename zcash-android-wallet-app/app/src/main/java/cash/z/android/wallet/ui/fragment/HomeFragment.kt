@@ -4,6 +4,7 @@ import android.app.Activity
 import android.os.Bundle
 import android.text.SpannableString
 import android.text.Spanned
+import android.text.format.DateUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,17 +13,22 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.IdRes
 import androidx.annotation.StringRes
 import androidx.constraintlayout.motion.widget.MotionLayout
-import androidx.constraintlayout.widget.Group
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import cash.z.android.wallet.R
-import cash.z.android.wallet.extention.Toaster
 import cash.z.android.wallet.extention.toAppColor
 import cash.z.android.wallet.extention.toAppString
 import cash.z.android.wallet.ui.activity.MainActivity
+import cash.z.android.wallet.ui.adapter.TransactionAdapter
 import cash.z.android.wallet.ui.util.TopAlignedSpan
+import cash.z.android.wallet.vo.WalletTransaction
+import cash.z.android.wallet.vo.WalletTransactionStatus
 import com.leinardi.android.speeddial.SpeedDialActionItem
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
-import kotlinx.android.synthetic.main.fragment_home_full.*
+import kotlinx.android.synthetic.main.fragment_home.*
+import java.math.BigDecimal
+import kotlin.random.Random
 
 /**
  * Fragment representing the home screen of the app. This is the screen most often seen by the user when launching the
@@ -35,10 +41,9 @@ class HomeFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_home_full, container, false)
+        return inflater.inflate(R.layout.fragment_home, container, false)
     }
 
-    var hasZec = false
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         (activity as MainActivity).let { mainActivity ->
@@ -46,38 +51,81 @@ class HomeFragment : BaseFragment() {
             mainActivity.setupNavigation()
             mainActivity.supportActionBar?.setTitle(R.string.destination_title_home)
         }
+        fullItems = arrayOf(text_balance_usd,text_balance_includes_info,text_transaction_header,recycler_transactions,text_balance_zec,image_zec_symbol_balance,image_zec_symbol_balance_shadow)
+        emptyItems = arrayOf(text_balance_zec_info,image_empty_wallet,text_wallet_message,text_wallet_message_collapsed,text_balance_zec_empty,image_zec_symbol_balance_empty,guideline_zec_usd_spacer_empty,image_zec_symbol_balance_shadow_empty)
+
+        image_logo.setOnClickListener {
+            toggleViews(!empty)
+        }
 
 //        (view as MotionLayout).setShowPaths(true)
-
         (view as MotionLayout).setTransitionListener (object: MotionLayout.TransitionListener {
             override fun onTransitionChange(p0: MotionLayout?, p1: Int, p2: Int, p3: Float) {
 
             }
             override fun onTransitionCompleted(p0: MotionLayout?, p1: Int) {
-                Toaster.short("transition complete")
-//                view.findViewById<Group>(R.id.group_empty_view_items).visibility = if(hasZec) View.GONE else View.VISIBLE
+                toggleViews(empty)
             }
         })
 
-        logo.setOnClickListener {
-            // toggle empty
-            with(group_empty_view_items) {
-                visibility = if (visibility == View.VISIBLE) View.GONE else View.VISIBLE
-                hasZec = !hasZec
-            }
-            // toggle empty
-            with(group_full_view_items) {
-                visibility = if (visibility == View.VISIBLE) View.GONE else View.VISIBLE
-            }
-        }
+//        image_logo.setOnClickListener {
+//            empty = !empty
+//
+//
+//            // empty items
+//           .forEach { view ->
+//                view.apply {
+//                    visibility = if (visibility == View.VISIBLE) View.GONE else View.VISIBLE
+//                }
+//            }
+//
+//            // Full items
+//            arrayOf(text_balance_usd,text_balance_includes_info,text_transaction_header,recycler_transactions).forEach { view ->
+//                view.apply {
+//                    visibility = if (visibility == View.VISIBLE) View.GONE else View.VISIBLE
+//                }
+//            }
+
+//            with(group_empty_view_items) {
+//                visibility = if (visibility == View.VISIBLE) View.GONE else View.VISIBLE
+//            }
+//            // toggle empty
+//            with(group_full_view_items) {
+//                visibility = if (visibility == View.VISIBLE) View.GONE else View.VISIBLE
+//            }
+//        }
 
         // TODO: pull from DB, for now just exercise UI
         setUsdValue("$5,459.32")
     }
 
+    override fun onResume() {
+        super.onResume()
+        view!!.postDelayed( {toggleViews(true)}, 50)
+    }
+    var empty = true
+    lateinit var emptyItems: Array<View>
+    lateinit var fullItems: Array<View>
+
+    internal fun toggleViews(isEmpty: Boolean) {
+        empty = isEmpty
+        if(empty) {
+//            text_balance_zec.text = "0"
+            emptyItems.forEach { it.visibility = View.VISIBLE }
+            fullItems.forEach { it.visibility= View.GONE }
+        } else {
+//            text_balance_zec.text = "35.021"
+            emptyItems.forEach { it.visibility = View.GONE }
+            fullItems.forEach { it.visibility= View.VISIBLE }
+        }
+    }
+
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         initFab(activity!!)
+
+        recycler_transactions.layoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
+        recycler_transactions.adapter = TransactionAdapter(createDummyTransactions(60))
     }
 
     /**
@@ -159,4 +207,25 @@ class HomeFragment : BaseFragment() {
 abstract class HomeFragmentModule {
     @ContributesAndroidInjector
     abstract fun contributeHomeFragment(): HomeFragment
+}
+
+
+//TODO: delete this test code
+
+internal fun createDummyTransactions(size: Int): MutableList<WalletTransaction> {
+    val transactions = mutableListOf<WalletTransaction>()
+    repeat(size) {
+        transactions.add(createDummyTransaction())
+    }
+    return transactions
+}
+
+internal fun createDummyTransaction(): WalletTransaction {
+    val now = System.currentTimeMillis()
+    val before = now - (4 * DateUtils.WEEK_IN_MILLIS)
+    return WalletTransaction(
+        WalletTransactionStatus.values().random(),
+        Random.nextLong(before, now),
+        BigDecimal(Random.nextDouble(0.1, 15.0) * arrayOf(-1, 1).random())
+    )
 }
