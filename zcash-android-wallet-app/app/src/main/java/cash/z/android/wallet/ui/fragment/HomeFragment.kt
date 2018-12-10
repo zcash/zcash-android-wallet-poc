@@ -53,8 +53,8 @@ class HomeFragment : BaseFragment() {
             mainActivity.setupNavigation()
             mainActivity.supportActionBar?.setTitle(R.string.destination_title_home)
         }
-        headerFullViews = arrayOf(text_balance_usd, text_balance_includes_info)
-        headerEmptyViews = arrayOf(text_balance_zec_info)
+        headerFullViews = arrayOf(text_balance_usd, text_balance_includes_info, text_balance_zec, image_zec_symbol_balance_shadow, image_zec_symbol_balance)
+        headerEmptyViews = arrayOf(text_balance_zec_info, text_balance_zec_empty, image_zec_symbol_balance_shadow_empty, image_zec_symbol_balance_empty)
 
         // TODO: remove this test behavior
         image_logo.setOnClickListener {

@@ -50,6 +50,20 @@
         android:textColor="@color/zcashWhite"
         android:textSize="60dp" />
 
+    <!-- balance: empty -->
+    <TextView
+        android:id="@+id/text_balance_zec_empty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:elevation="4dp"
+        android:shadowColor="@color/text_shadow"
+        android:shadowDx="0"
+        android:shadowDy="8"
+        android:shadowRadius="24"
+        android:text="0"
+        android:textColor="@color/zcashWhite"
+        android:textSize="60dp" />
+
     <!-- Zec symbol: shadow -->
     <ImageView
         android:id="@+id/image_zec_symbol_balance_shadow"
@@ -61,6 +75,21 @@
     <!-- Zec symbol -->
     <ImageView
         android:id="@+id/image_zec_symbol_balance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/ic_zec_symbol" />
+
+    <!-- Zec symbol empty: shadow -->
+    <ImageView
+        android:id="@+id/image_zec_symbol_balance_shadow_empty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:tint="#B3000000"
+        app:srcCompat="@drawable/ic_zec_symbol" />
+
+    <!-- Zec symbol empty -->
+    <ImageView
+        android:id="@+id/image_zec_symbol_balance_empty"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:srcCompat="@drawable/ic_zec_symbol" />

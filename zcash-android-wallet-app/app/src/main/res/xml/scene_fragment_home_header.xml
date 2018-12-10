@@ -32,6 +32,15 @@
                     motion:customFloatValue="60.0" />
             </Constraint>
             <Constraint
+                android:id="@id/text_balance_zec_empty"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                motion:layout_constraintBottom_toBottomOf="parent"
+                motion:layout_constraintEnd_toEndOf="parent"
+                motion:layout_constraintStart_toStartOf="parent"
+                motion:layout_constraintTop_toTopOf="parent"
+                motion:layout_constraintVertical_bias="0.36"/>
+            <Constraint
                 android:id="@id/image_zec_symbol_balance"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -45,6 +54,20 @@
                 android:layout_marginTop="2dp"
                 motion:layout_constraintStart_toStartOf="@id/image_zec_symbol_balance"
                 motion:layout_constraintTop_toTopOf="@+id/image_zec_symbol_balance" />
+            <Constraint
+                android:id="@id/image_zec_symbol_balance_empty"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                motion:layout_constraintEnd_toStartOf="@id/text_balance_zec_empty"
+                motion:layout_constraintTop_toTopOf="@id/text_balance_zec_empty" />
+            <Constraint
+                android:id="@id/image_zec_symbol_balance_shadow_empty"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                motion:layout_constraintStart_toStartOf="@id/image_zec_symbol_balance_empty"
+                motion:layout_constraintTop_toTopOf="@+id/image_zec_symbol_balance_empty" />
             <Constraint
                 android:id="@id/text_balance_includes_info"
                 android:layout_width="wrap_content"
@@ -95,13 +118,25 @@
                     motion:customFloatValue="24.0" />
             </Constraint>
             <Constraint
+                android:id="@id/text_balance_zec_empty"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:alpha='0.0'
+                motion:layout_constraintBottom_toBottomOf="parent"
+                motion:layout_constraintEnd_toEndOf="parent"
+                motion:layout_constraintStart_toStartOf="parent"
+                motion:layout_constraintTop_toTopOf="parent"
+                motion:layout_constraintVertical_bias="0.36"/>
+            <Constraint
                 android:id="@id/image_zec_symbol_balance"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:layout_marginEnd="4dp"
-                android:layout_marginRight="4dp"
-                android:alpha="0.0"
+                android:layout_marginTop="0dp"
+                android:layout_marginEnd="0dp"
+                android:layout_marginRight="0dp"
+                android:scaleX="0.4"
+                android:scaleY="0.4"
+                android:alpha="1.0"
                 motion:layout_constraintEnd_toStartOf="@id/text_balance_zec"
                 motion:layout_constraintTop_toTopOf="@id/text_balance_zec" />
             <Constraint
@@ -109,9 +144,29 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
-                android:alpha="0.0"
+                android:alpha="1.0"
+                android:scaleX="0.4"
+                android:scaleY="0.4"
                 motion:layout_constraintStart_toStartOf="@id/image_zec_symbol_balance"
                 motion:layout_constraintTop_toTopOf="@+id/image_zec_symbol_balance" />
+            <Constraint
+                android:id="@id/image_zec_symbol_balance_empty"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="4dp"
+                android:layout_marginRight="4dp"
+                android:alpha="0.0"
+                motion:layout_constraintEnd_toStartOf="@id/text_balance_zec_empty"
+                motion:layout_constraintTop_toTopOf="@id/text_balance_zec_empty" />
+            <Constraint
+                android:id="@id/image_zec_symbol_balance_shadow_empty"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:alpha="0.0"
+                motion:layout_constraintStart_toStartOf="@id/image_zec_symbol_balance_empty"
+                motion:layout_constraintTop_toTopOf="@+id/image_zec_symbol_balance_empty" />
             <Constraint
                 android:id="@id/text_balance_includes_info"
                 android:layout_width="wrap_content"
@@ -151,20 +206,41 @@
                 motion:percentX="0.36"
                 motion:target="@id/text_balance_zec" />
 
-            <KeyAttribute
-                android:alpha="0.0"
-                motion:framePosition="10"
+            <KeyPosition
+                motion:curveFit="spline"
+                motion:framePosition="88"
+                motion:keyPositionType="deltaRelative"
+                motion:pathMotionArc="startVertical"
+                motion:percentX="0.38"
                 motion:target="@id/image_zec_symbol_balance" />
 
-            <KeyAttribute
-                android:alpha="0.0"
-                motion:framePosition="10"
+            <KeyPosition
+                motion:curveFit="spline"
+                motion:framePosition="88"
+                motion:keyPositionType="deltaRelative"
+                motion:pathMotionArc="startVertical"
+                motion:percentX="0.38"
                 motion:target="@id/image_zec_symbol_balance_shadow" />
 
             <KeyAttribute
                 android:alpha="0.0"
                 motion:framePosition="10"
+                motion:target="@id/image_zec_symbol_balance_empty" />
+
+            <KeyAttribute
+                android:alpha="0.0"
+                motion:framePosition="10"
+                motion:target="@id/image_zec_symbol_balance_shadow_empty" />
+
+            <KeyAttribute
+                android:alpha="0.0"
+                motion:framePosition="10"
                 motion:target="@id/text_balance_includes_info" />
+
+            <KeyAttribute
+                android:alpha="0.0"
+                motion:framePosition="10"
+                motion:target="@id/text_balance_zec_empty" />
 
             <KeyAttribute
                 android:alpha="0.0"
