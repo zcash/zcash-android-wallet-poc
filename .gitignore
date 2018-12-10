@@ -3,7 +3,7 @@
 *.ap_
 
 # Built libraries
-*.aar
+#*.aar
 # *.so
 
 # Files for the ART/Dalvik VM
