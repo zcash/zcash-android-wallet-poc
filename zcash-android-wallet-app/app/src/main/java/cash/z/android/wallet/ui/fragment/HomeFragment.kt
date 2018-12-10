@@ -12,12 +12,12 @@ import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.IdRes
 import androidx.annotation.StringRes
-import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import cash.z.android.wallet.R
 import cash.z.android.wallet.extention.toAppColor
 import cash.z.android.wallet.extention.toAppString
+import cash.z.android.wallet.extention.tryIgnore
 import cash.z.android.wallet.ui.activity.MainActivity
 import cash.z.android.wallet.ui.adapter.TransactionAdapter
 import cash.z.android.wallet.ui.util.TopAlignedSpan
@@ -27,6 +27,8 @@ import com.leinardi.android.speeddial.SpeedDialActionItem
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 import kotlinx.android.synthetic.main.fragment_home.*
+import kotlinx.android.synthetic.main.include_home_content.*
+import kotlinx.android.synthetic.main.include_home_header.*
 import java.math.BigDecimal
 import kotlin.random.Random
 
@@ -47,77 +49,22 @@ class HomeFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         (activity as MainActivity).let { mainActivity ->
-            mainActivity.setSupportActionBar(toolbar)
+            mainActivity.setSupportActionBar(home_toolbar)
             mainActivity.setupNavigation()
             mainActivity.supportActionBar?.setTitle(R.string.destination_title_home)
         }
-        fullItems = arrayOf(text_balance_usd,text_balance_includes_info,text_transaction_header,recycler_transactions,text_balance_zec,image_zec_symbol_balance,image_zec_symbol_balance_shadow)
-        emptyItems = arrayOf(text_balance_zec_info,image_empty_wallet,text_wallet_message,text_wallet_message_collapsed,text_balance_zec_empty,image_zec_symbol_balance_empty,guideline_zec_usd_spacer_empty,image_zec_symbol_balance_shadow_empty)
+        headerFullViews = arrayOf(text_balance_usd, text_balance_includes_info)
+        headerEmptyViews = arrayOf(text_balance_zec_info)
 
+        // TODO: remove this test behavior
         image_logo.setOnClickListener {
-            toggleViews(!empty)
+            toggle(!empty)
         }
-
-//        (view as MotionLayout).setShowPaths(true)
-        (view as MotionLayout).setTransitionListener (object: MotionLayout.TransitionListener {
-            override fun onTransitionChange(p0: MotionLayout?, p1: Int, p2: Int, p3: Float) {
-
-            }
-            override fun onTransitionCompleted(p0: MotionLayout?, p1: Int) {
-                toggleViews(empty)
-            }
-        })
-
-//        image_logo.setOnClickListener {
-//            empty = !empty
-//
-//
-//            // empty items
-//           .forEach { view ->
-//                view.apply {
-//                    visibility = if (visibility == View.VISIBLE) View.GONE else View.VISIBLE
-//                }
-//            }
-//
-//            // Full items
-//            arrayOf(text_balance_usd,text_balance_includes_info,text_transaction_header,recycler_transactions).forEach { view ->
-//                view.apply {
-//                    visibility = if (visibility == View.VISIBLE) View.GONE else View.VISIBLE
-//                }
-//            }
-
-//            with(group_empty_view_items) {
-//                visibility = if (visibility == View.VISIBLE) View.GONE else View.VISIBLE
-//            }
-//            // toggle empty
-//            with(group_full_view_items) {
-//                visibility = if (visibility == View.VISIBLE) View.GONE else View.VISIBLE
-//            }
-//        }
-
-        // TODO: pull from DB, for now just exercise UI
-        setUsdValue("$5,459.32")
     }
 
     override fun onResume() {
         super.onResume()
-        view!!.postDelayed( {toggleViews(true)}, 50)
-    }
-    var empty = true
-    lateinit var emptyItems: Array<View>
-    lateinit var fullItems: Array<View>
-
-    internal fun toggleViews(isEmpty: Boolean) {
-        empty = isEmpty
-        if(empty) {
-//            text_balance_zec.text = "0"
-            emptyItems.forEach { it.visibility = View.VISIBLE }
-            fullItems.forEach { it.visibility= View.GONE }
-        } else {
-//            text_balance_zec.text = "35.021"
-            emptyItems.forEach { it.visibility = View.GONE }
-            fullItems.forEach { it.visibility= View.VISIBLE }
-        }
+        view!!.postDelayed( {toggle(false)}, delay *  2L)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -156,11 +103,22 @@ class HomeFragment : BaseFragment() {
             .create()
     }
 
-    fun setUsdValue(value: String) {
-        val textSpan = SpannableString(value)
-        textSpan.setSpan(TopAlignedSpan(), 0, 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-        textSpan.setSpan(TopAlignedSpan(), value.length - 3, value.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+    fun setUsdValue(value: Double) {
+        val valueString = String.format("$ %,.2f",value)
+        val hairSpace = "\u200A"
+//        val adjustedValue = "$$hairSpace$valueString"
+        val textSpan = SpannableString(valueString)
+        textSpan.setSpan(TopAlignedSpan(), 0, 2, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        textSpan.setSpan(TopAlignedSpan(), valueString.length - 3, valueString.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
         text_balance_usd.text = textSpan
+    }
+
+    fun setZecValue(value: Double) {
+        text_balance_zec.text = if(value == 0.0) "0" else String.format("%.3f",value)
+//        // bugfix: there is a bug in motionlayout that causes text to flicker as it is resized because the last character doesn't fit. Padding both sides with a thin space works around this bug.
+//        val hairSpace = "\u200A"
+//        val adjustedValue = "$hairSpace$valueString$hairSpace"
+//        text_balance_zec.text = adjustedValue
     }
 
     /**
@@ -201,6 +159,87 @@ class HomeFragment : BaseFragment() {
         }
     }
 
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// TODO: Delete these test functions
+// ---------------------------------------------------------------------------------------------------------------------
+
+    var empty = false
+    val delay = 20L
+    lateinit var headerEmptyViews: Array<View>
+    lateinit var headerFullViews: Array<View>
+
+    fun shrink(): Double {
+        return text_balance_zec.text.toString().trim().toDouble() - Random.nextDouble(5.0)
+    }
+    fun grow(): Double {
+        return text_balance_zec.text.toString().trim().toDouble() + Random.nextDouble(5.0)
+    }
+    fun reduceValue() {
+        shrink().let {
+            if(it < 0) { setZecValue(0.0); toggleViews(empty); forceRedraw() }
+            else view?.postDelayed({
+                setZecValue(it)
+                setUsdValue(it*75.0)
+                reduceValue()
+            }, delay)
+        }
+    }
+    fun increaseValue(target: Double) {
+        grow().let {
+            if(it > target) { setZecValue(target); setUsdValue(target*75.0); toggleViews(empty) }
+            else view?.postDelayed({
+                setZecValue(it)
+                setUsdValue(it*75.0)
+                increaseValue(target)
+                if (headerFullViews[0].parent == null || headerEmptyViews[0].parent != null) toggleViews(false)
+                forceRedraw()
+            }, delay)
+        }
+    }
+    fun forceRedraw() {
+        view?.postDelayed({
+            container_home_header.progress = container_home_header.progress - 0.1f
+        }, delay * 2)
+    }
+    internal fun toggle(isEmpty: Boolean) {
+        toggleValues(isEmpty)
+    }
+    internal fun toggleViews(isEmpty: Boolean) {
+        if(isEmpty) {
+            view?.postDelayed({
+                group_empty_view_items.visibility = View.VISIBLE
+                group_full_view_items.visibility = View.GONE
+                headerFullViews.forEach { container_home_header.removeView(it) }
+                headerEmptyViews.forEach {
+                    tryIgnore {
+                        container_home_header.addView(it)
+                    }
+                }
+            }, delay)
+        } else {
+            view?.postDelayed({
+                group_empty_view_items.visibility = View.GONE
+                group_full_view_items.visibility = View.VISIBLE
+                headerEmptyViews.forEach { container_home_header.removeView(it) }
+                headerFullViews.forEach {
+                    tryIgnore {
+                        container_home_header.addView(it)
+                    }
+                }
+            }, delay)
+        }
+    }
+
+    internal fun toggleValues(isEmpty: Boolean) {
+        empty = isEmpty
+        if(empty) {
+            reduceValue()
+        } else {
+            increaseValue(Random.nextDouble(20.0, 100.0))
+        }
+    }
 }
 
 @Module
@@ -229,3 +268,4 @@ internal fun createDummyTransaction(): WalletTransaction {
         BigDecimal(Random.nextDouble(0.1, 15.0) * arrayOf(-1, 1).random())
     )
 }
+
