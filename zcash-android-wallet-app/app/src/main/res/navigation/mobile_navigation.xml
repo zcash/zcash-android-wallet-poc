@@ -35,5 +35,27 @@
         android:name="cash.z.android.wallet.ui.fragment.RequestFragment"
         android:label="@string/destination_title_request"
         tools:layout="@layout/fragment_request" />
+    
+    <!-- unimplemented -->
+    <fragment
+        android:id="@+id/nav_history_fragment"
+        android:name="cash.z.android.wallet.ui.fragment.HistoryFragment"
+        android:label="@string/destination_title_history"
+        tools:layout="@layout/fragment_placeholder" />
+    <fragment
+        android:id="@+id/nav_about_fragment"
+        android:name="cash.z.android.wallet.ui.fragment.AboutFragment"
+        android:label="@string/destination_title_about"
+        tools:layout="@layout/fragment_placeholder" />
+    <fragment
+        android:id="@+id/nav_import_fragment"
+        android:name="cash.z.android.wallet.ui.fragment.ImportFragment"
+        android:label="@string/destination_title_import"
+        tools:layout="@layout/fragment_placeholder" />
+    <fragment
+        android:id="@+id/nav_settings_fragment"
+        android:name="cash.z.android.wallet.ui.fragment.SettingsFragment"
+        android:label="@string/destination_title_settings"
+        tools:layout="@layout/fragment_placeholder" />
 
 </navigation>

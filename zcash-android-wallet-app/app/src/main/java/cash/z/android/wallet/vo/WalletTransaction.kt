@@ -7,6 +7,6 @@ import java.math.BigDecimal
 data class WalletTransaction(val status: WalletTransactionStatus, val timestamp: Long, val amount: BigDecimal)
 
 enum class WalletTransactionStatus(@ColorRes val color: Int) {
-    COMPLETE(R.color.colorPrimary),
-    PENDING(R.color.colorAccent);
+    SENT(R.color.colorPrimary),
+    RECEIVED(R.color.colorAccent);
 }

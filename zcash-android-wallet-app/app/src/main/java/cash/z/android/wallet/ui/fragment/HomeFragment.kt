@@ -262,10 +262,12 @@ internal fun createDummyTransactions(size: Int): MutableList<WalletTransaction> 
 internal fun createDummyTransaction(): WalletTransaction {
     val now = System.currentTimeMillis()
     val before = now - (4 * DateUtils.WEEK_IN_MILLIS)
+    val amount = BigDecimal(Random.nextDouble(0.1, 15.0) * arrayOf(-1, 1).random())
+    val status = if(amount > BigDecimal.ZERO) WalletTransactionStatus.SENT else WalletTransactionStatus.RECEIVED
     return WalletTransaction(
-        WalletTransactionStatus.values().random(),
+        status,
         Random.nextLong(before, now),
-        BigDecimal(Random.nextDouble(0.1, 15.0) * arrayOf(-1, 1).random())
+        amount
     )
 }
 
