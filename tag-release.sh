@@ -2,7 +2,7 @@
 
 echo git tag -a \"v$(grep -oE 'versionName.*' zcash-android-wallet-app/app/build.gradle | sed 's/[^0-9]*\([0-9].*\w\).*/\1/')\" -m \""Released on $(date)"\"
 echo
-read -p "TAG the release as above? Press y to tag ENTER to skip: [N] "
+read -p "TAG the release as above? Press y to tag ENTER to skip: [N] " -n 1 -r
 
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
