@@ -10,7 +10,7 @@
         <ConstraintSet android:id="@id/start">
             <Constraint
                 android:id="@id/space_left_icon"
-                android:layout_width="50dp"
+                android:layout_width="72dp"
                 android:layout_height="?attr/actionBarSize"
                 motion:layout_constraintTop_toTopOf="parent" />
             <Constraint
@@ -97,7 +97,7 @@
         <ConstraintSet android:id="@id/end">
             <Constraint
                 android:id="@id/space_left_icon"
-                android:layout_width="50dp"
+                android:layout_width="64dp"
                 android:layout_height="?attr/actionBarSize"
                 motion:layout_constraintBottom_toBottomOf="parent" />
             <Constraint
