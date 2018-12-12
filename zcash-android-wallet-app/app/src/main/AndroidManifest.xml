@@ -8,15 +8,16 @@
     <application
         android:name=".ZcashWalletApplication"
         android:allowBackup="false"
-        android:icon="@mipmap/ic_launcher_round"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:icon="@mipmap/ic_launcher_shield"
+        android:roundIcon="@mipmap/ic_launcher_shield_round"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/ZcashTheme">
         <activity
             android:name=".ui.activity.MainActivity"
             android:label="@string/app_name"
-            android:theme="@style/ZcashTheme.NoActionBar">
+            android:theme="@style/ZcashTheme.NoActionBar"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

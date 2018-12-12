@@ -1,61 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/layout_home_fragment"
+    android:id="@+id/content"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.fragment.HomeFragment">
+    android:fitsSystemWindows="false">
 
     <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/home_app_bar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/home_app_bar_expanded_height"
         android:theme="@style/ZcashTheme.AppBarOverlay">
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="180dp"
-            app:popupTheme="@style/ZcashTheme.PopupOverlay" />
+        <include layout="@layout/include_home_header" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+    <include layout="@layout/include_home_content" />
 
-        <ImageView
-            android:id="@+id/image_empty_wallet"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:srcCompat="@drawable/ic_emptywallet"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.6" />
-
-        <TextView
-            android:id="@+id/text_wallet_message"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:textColor="#AAAAAA"
-            android:padding="16dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/image_empty_wallet"
-            tools:text="Your wallet is empty." />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
+    <!-- FAB -->
     <com.leinardi.android.speeddial.SpeedDialView
         android:id="@+id/sd_fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        app:sdMainFabClosedSrc="@drawable/ic_add_white_24dp"
         app:sdMainFabClosedBackgroundColor="@color/fab_closed_color"
-        app:sdMainFabOpenedBackgroundColor="@color/fab_open_color"/>
+        app:sdMainFabClosedSrc="@drawable/ic_add_white_24dp"
+        app:sdMainFabOpenedBackgroundColor="@color/fab_open_color" />
 
+    <!-- Zcash badge -->
+    <ImageView
+        android:id="@+id/image_logo"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:elevation="6dp"
+        app:layout_anchor="@id/home_app_bar"
+        app:layout_anchorGravity="bottom|center"
+        app:srcCompat="@drawable/ic_zcashlogo_badge" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

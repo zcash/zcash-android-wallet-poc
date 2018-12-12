@@ -13,14 +13,14 @@ import cash.z.android.wallet.ui.activity.MainActivity
  * Fragment for sending Zcash.
  *
  */
-class SendFragment : Fragment() {
+open class PlaceholderFragment : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_send, container, false)
+        return inflater.inflate(R.layout.fragment_placeholder, container, false)
     }
 
 
@@ -29,7 +29,7 @@ class SendFragment : Fragment() {
         (activity as MainActivity).let { mainActivity ->
             mainActivity.setSupportActionBar(view.findViewById(R.id.toolbar))
             mainActivity.supportActionBar?.setDisplayHomeAsUpEnabled(true)
-            mainActivity.supportActionBar?.setTitle(R.string.destination_title_send)
+            mainActivity.supportActionBar?.setTitle(R.string.destination_title_placeholder)
         }
     }
 
