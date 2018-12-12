@@ -8,6 +8,7 @@
     android:background="@color/home_transaction_item_background"
     android:paddingEnd="8dp"
     android:paddingRight="8dp"
+    android:elevation="1dp"
     tools:ignore="RtlSymmetry">
 
     <View

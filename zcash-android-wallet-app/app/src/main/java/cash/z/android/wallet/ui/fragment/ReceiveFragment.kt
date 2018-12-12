@@ -55,8 +55,7 @@ class ReceiveFragment : BaseFragment() {
             text_address_part_8
         )
     }
-
-
+    
     override fun onResume() {
         super.onResume()
 
@@ -65,7 +64,11 @@ class ReceiveFragment : BaseFragment() {
     }
 
     private fun onAddressLoaded(address: String) {
-        qrecycler.load(address).into(receive_qr_code)
+        qrecycler.load(address)
+            .withQuietZoneSize(3)
+            .withCorrectionLevel(QRecycler.CorrectionLevel.MEDIUM)
+            .into(receive_qr_code)
+
         address.chunked(address.length/8).forEachIndexed { i, part ->
             setAddressPart(i, part)
         }
