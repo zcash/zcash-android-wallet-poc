@@ -117,6 +117,7 @@ class HomeFragment : BaseFragment() {
 
     fun addTransaction(transaction: WalletTransaction) {
         transactionAdapter.add(transaction)
+        recycler_transactions.smoothScrollToPosition(0)
     }
 
     //

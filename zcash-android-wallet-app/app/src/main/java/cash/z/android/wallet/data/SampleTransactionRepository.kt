@@ -9,6 +9,7 @@ import kotlinx.coroutines.channels.produce
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import java.math.BigDecimal
+import kotlin.math.roundToLong
 import kotlin.random.Random
 
 class SampleTransactionRepository(val scope: CoroutineScope) : TransactionRepository {
@@ -28,20 +29,26 @@ class SampleTransactionRepository(val scope: CoroutineScope) : TransactionReposi
      * Just send a sample stream of transactions, every so often
      */
     override fun transactions(): ReceiveChannel<WalletTransaction> = scope.produce {
+        var oldestTimestamp = System.currentTimeMillis() - (4 * DateUtils.WEEK_IN_MILLIS)
         while (isActive) {
-            send(createSampleTransaction())
             delay(1500L)
+            send(createSampleTransaction(oldestTimestamp).also { oldestTimestamp = it.timestamp })
         }
     }
 
     private fun createSampleTransaction(): WalletTransaction {
+        return createSampleTransaction(System.currentTimeMillis() - (4 * DateUtils.WEEK_IN_MILLIS))
+    }
+
+    private fun createSampleTransaction(after: Long): WalletTransaction {
         val now = System.currentTimeMillis()
-        val before = now - (4 * DateUtils.WEEK_IN_MILLIS)
+        val delta = now - after
+        val window = after + (0.05 * delta).roundToLong()
         val amount = BigDecimal(Random.nextDouble(0.1, 15.0) * arrayOf(-1, 1).random())
         val status = if (amount > BigDecimal.ZERO) WalletTransactionStatus.SENT else WalletTransactionStatus.RECEIVED
         return WalletTransaction(
             status,
-            Random.nextLong(before, now),
+            Random.nextLong(after, window),
             amount
         )
     }
