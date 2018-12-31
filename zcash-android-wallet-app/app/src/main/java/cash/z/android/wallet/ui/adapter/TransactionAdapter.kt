@@ -15,7 +15,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-class TransactionAdapter(private val transactions: MutableList<WalletTransaction>) :
+class TransactionAdapter(private val transactions: MutableList<WalletTransaction> = mutableListOf()) :
     RecyclerView.Adapter<TransactionViewHolder>() {
 
     init {
@@ -36,6 +36,12 @@ class TransactionAdapter(private val transactions: MutableList<WalletTransaction
         transactions.addAll(txs)
         notifyDataSetChanged()
     }
+
+    fun add(tx: WalletTransaction) {
+        // TODO: work with a set of transactions rather than a list
+        transactions.add(0, tx)
+        notifyItemInserted(0)
+    }
 }
 
 class TransactionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -47,9 +53,7 @@ class TransactionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
 
     fun bind(tx: WalletTransaction) {
         val sign = if(tx.amount > BigDecimal.ZERO) "+" else "-"
-        val rowColor = if(adapterPosition.rem(2) == 0) R.color.zcashBlueGray else R.color.zcashWhite
         val amountColor = if(tx.amount > BigDecimal.ZERO) R.color.colorPrimary else R.color.text_dark_dimmed
-        background.setBackgroundColor(rowColor.toAppColor())
         status.setBackgroundColor(tx.status.color.toAppColor())
         timestamp.text = formatter.format(tx.timestamp)
         amount.text = String.format("$sign %,.3f", tx.amount.round(MathContext(3, RoundingMode.HALF_EVEN )).abs())

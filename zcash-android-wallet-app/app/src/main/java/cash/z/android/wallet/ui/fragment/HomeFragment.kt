@@ -22,6 +22,7 @@ import cash.z.android.wallet.extention.tryIgnore
 import cash.z.android.wallet.ui.activity.MainActivity
 import cash.z.android.wallet.ui.adapter.TransactionAdapter
 import cash.z.android.wallet.ui.presenter.HomePresenter
+import cash.z.android.wallet.ui.util.AlternatingRowColorDecoration
 import cash.z.android.wallet.ui.util.TopAlignedSpan
 import cash.z.android.wallet.vo.WalletTransaction
 import cash.z.android.wallet.vo.WalletTransactionStatus
@@ -42,6 +43,7 @@ import kotlin.random.Random
 class HomeFragment : BaseFragment() {
 
     lateinit var homePresenter: HomePresenter
+    lateinit var transactionAdapter: TransactionAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -92,9 +94,34 @@ class HomeFragment : BaseFragment() {
         super.onActivityCreated(savedInstanceState)
         initFab(activity!!)
 
-        recycler_transactions.layoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
-        recycler_transactions.adapter = TransactionAdapter(createDummyTransactions(60))
+        recycler_transactions.apply {
+            layoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
+            adapter = TransactionAdapter().also { transactionAdapter = it }
+            addItemDecoration(AlternatingRowColorDecoration())
+        }
     }
+
+
+    //
+    // View API
+    //
+
+    // TODO: pull some of this logic into the presenter, particularly the part that deals with ZEC <-> USD price conversion
+    fun updateBalance(zecValue: Double, oldZecValue: Double) {
+        updateEmptyViews(zecValue)
+
+        // TODO: animate the change in value
+        setZecValue(zecValue)
+        setUsdValue(75*zecValue)
+    }
+
+    fun addTransaction(transaction: WalletTransaction) {
+        transactionAdapter.add(transaction)
+    }
+
+    //
+    // Private API
+    //
 
     /**
      * Initialize the Fab button and all its action items
@@ -140,15 +167,6 @@ class HomeFragment : BaseFragment() {
 //        val hairSpace = "\u200A"
 //        val adjustedValue = "$hairSpace$valueString$hairSpace"
 //        text_balance_zec.text = adjustedValue
-    }
-
-    // TODO: pull some of this logic into the presenter, particularly the part that deals with ZEC <-> USD price conversion
-    fun updateBalance(zecValue: Double, oldZecValue: Double) {
-        updateEmptyViews(zecValue)
-
-        // TODO: animate the change in value
-        setZecValue(zecValue)
-        setUsdValue(75*zecValue)
     }
 
     private fun updateEmptyViews(value: Double) {
@@ -288,26 +306,4 @@ abstract class HomeFragmentModule {
     abstract fun contributeHomeFragment(): HomeFragment
 }
 
-
-//TODO: delete this test code
-
-internal fun createDummyTransactions(size: Int): MutableList<WalletTransaction> {
-    val transactions = mutableListOf<WalletTransaction>()
-    repeat(size) {
-        transactions.add(createDummyTransaction())
-    }
-    return transactions
-}
-
-internal fun createDummyTransaction(): WalletTransaction {
-    val now = System.currentTimeMillis()
-    val before = now - (4 * DateUtils.WEEK_IN_MILLIS)
-    val amount = BigDecimal(Random.nextDouble(0.1, 15.0) * arrayOf(-1, 1).random())
-    val status = if(amount > BigDecimal.ZERO) WalletTransactionStatus.SENT else WalletTransactionStatus.RECEIVED
-    return WalletTransaction(
-        status,
-        Random.nextLong(before, now),
-        amount
-    )
-}
 
