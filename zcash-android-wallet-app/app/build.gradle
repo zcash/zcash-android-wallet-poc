@@ -41,8 +41,12 @@ dependencies {
     implementation deps.androidx.navigation.fragmentKtx
     implementation deps.androidx.navigation.ui
     implementation deps.androidx.navigation.uiKtx
-    implementation deps.kotlin.stdlib
     implementation deps.material
+
+    // Kotlin
+    implementation deps.kotlin.stdlib
+    implementation deps.kotlin.coroutines.core
+    implementation deps.kotlin.coroutines.android
 
     // Zcash
     implementation deps.zcash.walletSdk

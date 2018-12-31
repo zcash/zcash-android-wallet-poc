@@ -3,6 +3,7 @@ package cash.z.android.wallet.ui.fragment
 import android.os.Bundle
 import android.text.SpannableString
 import android.text.Spanned
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -61,6 +62,7 @@ class ReceiveFragment : BaseFragment() {
 
         // TODO: replace these with channels. For now just wire the logic together
         onAddressLoaded(loadAddress())
+//        converter.scanBlocks()
     }
 
     private fun onAddressLoaded(address: String) {

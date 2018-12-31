@@ -15,11 +15,13 @@ import androidx.annotation.StringRes
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import cash.z.android.wallet.R
+import cash.z.android.wallet.data.SampleTransactionRepository
 import cash.z.android.wallet.extention.toAppColor
 import cash.z.android.wallet.extention.toAppString
 import cash.z.android.wallet.extention.tryIgnore
 import cash.z.android.wallet.ui.activity.MainActivity
 import cash.z.android.wallet.ui.adapter.TransactionAdapter
+import cash.z.android.wallet.ui.presenter.HomePresenter
 import cash.z.android.wallet.ui.util.TopAlignedSpan
 import cash.z.android.wallet.vo.WalletTransaction
 import cash.z.android.wallet.vo.WalletTransactionStatus
@@ -29,7 +31,9 @@ import dagger.android.ContributesAndroidInjector
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.include_home_content.*
 import kotlinx.android.synthetic.main.include_home_header.*
+import kotlinx.coroutines.launch
 import java.math.BigDecimal
+import javax.inject.Inject
 import kotlin.random.Random
 
 /**
@@ -38,11 +42,16 @@ import kotlin.random.Random
  */
 class HomeFragment : BaseFragment() {
 
+    lateinit var homePresenter: HomePresenter
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        homePresenter = HomePresenter(this, SampleTransactionRepository(scope))
+    }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_home, container, false)
     }
 
@@ -64,7 +73,19 @@ class HomeFragment : BaseFragment() {
 
     override fun onResume() {
         super.onResume()
-        view!!.postDelayed( {toggle(false)}, delay *  2L)
+        //view!!.postDelayed( {toggle(false)}, delay *  2L)
+
+        // specifying the context/scope is redundant here because launch will automatically use the parent scope but let's do it anyway here to explicitly show that our basefragment is a coroutine scope
+        scope.launch {
+            homePresenter.start()
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        scope.launch {
+            homePresenter.stop()
+        }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
