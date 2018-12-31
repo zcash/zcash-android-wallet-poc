@@ -33,7 +33,6 @@ import kotlinx.android.synthetic.main.include_home_content.*
 import kotlinx.android.synthetic.main.include_home_header.*
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
-import javax.inject.Inject
 import kotlin.random.Random
 
 /**
@@ -73,7 +72,8 @@ class HomeFragment : BaseFragment() {
 
     override fun onResume() {
         super.onResume()
-        //view!!.postDelayed( {toggle(false)}, delay *  2L)
+        toggleViews(true)
+//        view!!.postDelayed( {toggle(false)}, delay *  2L)
 
         // specifying the context/scope is redundant here because launch will automatically use the parent scope but let's do it anyway here to explicitly show that our basefragment is a coroutine scope
         scope.launch {
@@ -124,7 +124,7 @@ class HomeFragment : BaseFragment() {
             .create()
     }
 
-    fun setUsdValue(value: Double) {
+    private fun setUsdValue(value: Double) {
         val valueString = String.format("$ %,.2f",value)
         val hairSpace = "\u200A"
 //        val adjustedValue = "$$hairSpace$valueString"
@@ -134,12 +134,31 @@ class HomeFragment : BaseFragment() {
         text_balance_usd.text = textSpan
     }
 
-    fun setZecValue(value: Double) {
+    private fun setZecValue(value: Double) {
         text_balance_zec.text = if(value == 0.0) "0" else String.format("%.3f",value)
 //        // bugfix: there is a bug in motionlayout that causes text to flicker as it is resized because the last character doesn't fit. Padding both sides with a thin space works around this bug.
 //        val hairSpace = "\u200A"
 //        val adjustedValue = "$hairSpace$valueString$hairSpace"
 //        text_balance_zec.text = adjustedValue
+    }
+
+    // TODO: pull some of this logic into the presenter, particularly the part that deals with ZEC <-> USD price conversion
+    fun updateBalance(zecValue: Double, oldZecValue: Double) {
+        updateEmptyViews(zecValue)
+
+        // TODO: animate the change in value
+        setZecValue(zecValue)
+        setUsdValue(75*zecValue)
+    }
+
+    private fun updateEmptyViews(value: Double) {
+        val wasEmpty = group_empty_view_items.visibility == View.VISIBLE
+        // only toggle the views when the situation has changed
+        if (wasEmpty && value > 0.0) {
+            toggleViews(false)
+        } else if (!wasEmpty && value <= 0.0) {
+            toggleViews (true)
+        }
     }
 
     /**

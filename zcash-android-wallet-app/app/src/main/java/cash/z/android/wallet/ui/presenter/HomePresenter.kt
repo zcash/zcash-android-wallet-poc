@@ -31,6 +31,6 @@ class HomePresenter(
     }
 
     fun bind(newModel: BigDecimal, oldModel: BigDecimal?) {
-        view.setZecValue(newModel.toDouble())
+        view.updateBalance(newModel.toDouble(), oldModel?.toDouble() ?: 0.0)
     }
 }
