@@ -12,21 +12,33 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import cash.z.android.wallet.BuildConfig
 import cash.z.android.wallet.R
+import cash.z.android.wallet.ZcashWalletApplication
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.nav_header_main.*
+import cash.z.wallet.sdk.data.Synchronizer
+import kotlinx.coroutines.GlobalScope
 
 class MainActivity : DaggerAppCompatActivity() {
 
     // used to  manage the drawer and drawerToggle interactions
     private lateinit var appBarConfiguration: AppBarConfiguration
     lateinit var navController: NavController
+    lateinit var synchronizer: Synchronizer
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        synchronizer = Synchronizer(ZcashWalletApplication.instance, GlobalScope).also {
+            it.start()
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        synchronizer.stop()
     }
 
     override fun onBackPressed() {

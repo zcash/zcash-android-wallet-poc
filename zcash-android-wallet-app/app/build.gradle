@@ -51,6 +51,15 @@ dependencies {
     // Zcash
     implementation deps.zcash.walletSdk
 
+    // TODO: get the AAR to provide these
+    implementation "io.grpc:grpc-okhttp:1.17.1"
+    implementation "io.grpc:grpc-protobuf-lite:1.17.1"
+    implementation "io.grpc:grpc-stub:1.17.1"
+    implementation 'javax.annotation:javax.annotation-api:1.2'
+    implementation "androidx.room:room-runtime:2.0.0"
+    implementation "androidx.room:room-common:2.0.0"
+    kapt "androidx.room:room-compiler:2.0.0"
+
     // Dagger
     implementation deps.dagger.android.support
     kapt deps.dagger.android.processor
@@ -58,6 +67,7 @@ dependencies {
 
     // Other
     implementation deps.speeddial
+    compile 'com.facebook.stetho:stetho:1.5.0'
 
     testImplementation deps.junit
     androidTestImplementation deps.androidx.test.runner

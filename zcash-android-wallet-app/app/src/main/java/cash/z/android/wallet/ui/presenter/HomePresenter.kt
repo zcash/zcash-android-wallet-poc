@@ -3,6 +3,7 @@ package cash.z.android.wallet.ui.presenter
 import cash.z.android.wallet.data.TransactionRepository
 import cash.z.android.wallet.ui.fragment.HomeFragment
 import cash.z.android.wallet.vo.WalletTransaction
+import cash.z.wallet.sdk.data.Synchronizer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.ReceiveChannel
@@ -11,7 +12,8 @@ import java.math.BigDecimal
 
 class HomePresenter(
     private val view: HomeFragment,
-    private val repository: TransactionRepository
+    private val repository: TransactionRepository,
+    private val synchronizer: Synchronizer
 ) : Presenter<TransactionRepository, HomeFragment> {
 
     private lateinit var balanceJob: Job

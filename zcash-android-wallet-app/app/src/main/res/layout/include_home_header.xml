@@ -99,7 +99,7 @@
         android:id="@+id/text_balance_includes_info"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Balance includes active transactions"
+        android:text=""
         android:textColor="@color/text_light_dimmed"
         android:textSize="@dimen/text_size_caption" />
 

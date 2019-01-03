@@ -4,7 +4,6 @@ import android.app.Activity
 import android.os.Bundle
 import android.text.SpannableString
 import android.text.Spanned
-import android.text.format.DateUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,7 +14,7 @@ import androidx.annotation.StringRes
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import cash.z.android.wallet.R
-import cash.z.android.wallet.data.SampleTransactionRepository
+import cash.z.android.wallet.data.ReceivedTransactionRepository
 import cash.z.android.wallet.extention.toAppColor
 import cash.z.android.wallet.extention.toAppString
 import cash.z.android.wallet.extention.tryIgnore
@@ -25,15 +24,16 @@ import cash.z.android.wallet.ui.presenter.HomePresenter
 import cash.z.android.wallet.ui.util.AlternatingRowColorDecoration
 import cash.z.android.wallet.ui.util.TopAlignedSpan
 import cash.z.android.wallet.vo.WalletTransaction
-import cash.z.android.wallet.vo.WalletTransactionStatus
 import com.leinardi.android.speeddial.SpeedDialActionItem
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.include_home_content.*
 import kotlinx.android.synthetic.main.include_home_header.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import java.math.BigDecimal
 import kotlin.random.Random
 
 /**
@@ -47,7 +47,8 @@ class HomeFragment : BaseFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        homePresenter = HomePresenter(this, SampleTransactionRepository(scope))
+        val ioFragmentScope = CoroutineScope(Dispatchers.IO + scope.coroutineContext[Job]!!)
+        homePresenter = HomePresenter(this, ReceivedTransactionRepository(ioFragmentScope), (activity as MainActivity).synchronizer)
     }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -107,7 +108,7 @@ class HomeFragment : BaseFragment() {
 
         // TODO: animate the change in value
         setZecValue(zecValue)
-        setUsdValue(75*zecValue)
+        setUsdValue(USD_PER_ZEC * zecValue)
     }
 
     fun addTransaction(transaction: WalletTransaction) {
@@ -173,6 +174,10 @@ class HomeFragment : BaseFragment() {
         } else if (!wasEmpty && value <= 0.0) {
             toggleViews (true)
         }
+    }
+
+    companion object {
+        const val USD_PER_ZEC = 56.38
     }
 
     /**
