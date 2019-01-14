@@ -31,4 +31,12 @@
     <string name="home_empty_wallet">Your wallet is empty.</string>
     <string name="home_empty_wallet_collapse">Future transactions will show up here.</string>
 
+    <!-- Send -->
+    <string name="send_hint_input_zcash_address">Enter a Zcash address</string>
+    <string name="send_label_available">Available</string>
+    <string name="send_label_amount">Amount</string>
+    <string name="send_label_to">To</string>
+    <string name="send_label_memo">Memo (optional)</string>
+    <string name="send_submit_button_text">Send Zec</string>
+
 </resources>

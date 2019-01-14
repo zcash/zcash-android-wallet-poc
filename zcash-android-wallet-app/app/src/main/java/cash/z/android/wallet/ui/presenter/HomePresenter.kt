@@ -20,8 +20,8 @@ class HomePresenter(
     private lateinit var transactionJob: Job
 
     override suspend fun start() {
-        balanceJob = view.scope.launchBalanceBinder(repository.balance())
-        transactionJob = view.scope.launchTransactionBinder(repository.transactions())
+//        balanceJob = view.scope.launchBalanceBinder(repository.balance())
+//        transactionJob = view.scope.launchTransactionBinder(repository.transactions())
     }
 
     fun stop() {

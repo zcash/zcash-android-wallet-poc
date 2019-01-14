@@ -48,7 +48,7 @@ class HomeFragment : BaseFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val ioFragmentScope = CoroutineScope(Dispatchers.IO + scope.coroutineContext[Job]!!)
-        homePresenter = HomePresenter(this, ReceivedTransactionRepository(ioFragmentScope), (activity as MainActivity).synchronizer)
+//        homePresenter = HomePresenter(this, ReceivedTransactionRepository(ioFragmentScope), (activity as MainActivity).synchronizer)
     }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -74,16 +74,16 @@ class HomeFragment : BaseFragment() {
 //        view!!.postDelayed( {toggle(false)}, delay *  2L)
 
         // specifying the context/scope is redundant here because launch will automatically use the parent scope but let's do it anyway here to explicitly show that our basefragment is a coroutine scope
-        scope.launch {
-            homePresenter.start()
-        }
+//        scope.launch {
+////            homePresenter.start()
+//        }
     }
 
     override fun onPause() {
         super.onPause()
-        scope.launch {
-            homePresenter.stop()
-        }
+//        scope.launch {
+//            homePresenter.stop()
+//        }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -108,7 +108,7 @@ class HomeFragment : BaseFragment() {
 
         // TODO: animate the change in value
         setZecValue(zecValue)
-        setUsdValue(USD_PER_ZEC * zecValue)
+        setUsdValue(MainActivity.USD_PER_ZEC * zecValue)
     }
 
     fun addTransaction(transaction: WalletTransaction) {
@@ -174,10 +174,6 @@ class HomeFragment : BaseFragment() {
         } else if (!wasEmpty && value <= 0.0) {
             toggleViews (true)
         }
-    }
-
-    companion object {
-        const val USD_PER_ZEC = 56.38
     }
 
     /**

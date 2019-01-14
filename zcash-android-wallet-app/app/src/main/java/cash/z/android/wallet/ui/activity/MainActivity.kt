@@ -31,9 +31,9 @@ class MainActivity : DaggerAppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        synchronizer = Synchronizer(ZcashWalletApplication.instance, GlobalScope).also {
-            it.start()
-        }
+//        synchronizer = Synchronizer(ZcashWalletApplication.instance, GlobalScope).also {
+//            it.start()
+//        }
     }
 
     override fun onDestroy() {
@@ -76,6 +76,8 @@ class MainActivity : DaggerAppCompatActivity() {
     }
 
     companion object {
+        // TODO: placeholder until we have a network service for this
+        const val USD_PER_ZEC = 56.38
         init {
             // Enable vector drawable magic
             AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)

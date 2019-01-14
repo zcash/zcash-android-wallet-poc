@@ -5,20 +5,245 @@
     android:id="@+id/layout_send_fragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/fragment_send_background"
     tools:context=".ui.fragment.SendFragment">
 
-    <include layout="@layout/include_app_bar"
-        tools:ignore="MissingConstraints" />
+    <!--            -->
+    <!-- Guidelines -->
+    <!--            -->
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:id="@+id/textView5"
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_content_start"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/destination_title_send"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.1" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_content_end"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.9" />
+
+    <include
+        layout="@layout/include_app_bar"
+        tools:ignore="MissingConstraints" />
+
+    <View
+        android:id="@+id/background_header"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@color/zcashWhite"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/appbar"
+        app:layout_constraintVertical_chainStyle="spread" />
+
+    <TextView
+        android:id="@+id/text_zec_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="12.82129334 ZEC Available"
+        app:layout_constraintBottom_toBottomOf="@id/background_header"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="@id/background_header" />
+
+    <TextView
+        android:id="@+id/text_amount_background"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/background_rounded_corners"
+        android:backgroundTint="@color/zcashWhite_87"
+        android:paddingLeft="16dp"
+        android:paddingTop="16dp"
+        android:text="@string/send_label_amount"
+        android:textColor="@color/text_dark"
+        app:layout_constraintBottom_toBottomOf="@id/input_zcash_address"
+        app:layout_constraintEnd_toEndOf="@id/guideline_content_end"
+        app:layout_constraintHeight_default="percent"
+        app:layout_constraintHeight_percent="0.2"
+        app:layout_constraintStart_toStartOf="@id/guideline_content_start"
+        app:layout_constraintTop_toBottomOf="@id/background_header" />
+
+    <!-- Currency swap symbol -->
+    <ImageView
+        android:id="@+id/image_swap_currency"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="28dp"
+        android:tint="@color/zcashGray_light"
+        android:foregroundTint="@color/colorAccent"
+        android:backgroundTint="@color/zcashPrimaryMedium"
+        app:layout_constraintBottom_toBottomOf="@id/text_amount_background"
+        app:layout_constraintEnd_toEndOf="@id/text_amount_background"
+        app:layout_constraintTop_toTopOf="@id/text_amount_background"
+        app:srcCompat="@drawable/ic_import_export_black" />
+
+    <EditText
+        android:id="@+id/text_value_header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="12dp"
+        android:text="0"
+        android:inputType="numberDecimal"
+        android:background="@null"
+        android:textColor="@color/text_dark"
+        android:textSize="@dimen/text_size_h3"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@id/text_amount_background"
+        app:layout_constraintEnd_toEndOf="@id/text_amount_background"
+        app:layout_constraintStart_toStartOf="@id/text_amount_background"
+        app:layout_constraintTop_toTopOf="@id/text_amount_background" />
+
+    <TextView
+        android:id="@+id/text_value_subheader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0"
+        android:textColor="@color/text_dark"
+        app:layout_constraintEnd_toEndOf="@id/text_value_header"
+        app:layout_constraintStart_toStartOf="@id/text_value_header"
+        app:layout_constraintTop_toBottomOf="@id/text_value_header" />
+
+    <!-- Zec symbol : header -->
+    <ImageView
+        android:id="@+id/image_zec_symbol_header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:tint="@color/text_dark"
+        app:layout_constraintEnd_toStartOf="@id/text_value_header"
+        app:layout_constraintTop_toTopOf="@id/text_value_header"
+        app:srcCompat="@drawable/ic_zec_symbol" />
+
+    <!-- Zec symbol : subheader -->
+    <ImageView
+        android:id="@+id/image_zec_symbol_subheader"
+        android:layout_width="8dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="4dp"
+        android:tint="@color/text_dark"
+        app:layout_constraintDimensionRatio="H,1:1"
+        app:layout_constraintEnd_toStartOf="@id/text_value_subheader"
+        app:layout_constraintTop_toTopOf="@id/text_value_subheader"
+        app:srcCompat="@drawable/ic_zec_symbol" />
+
+    <TextView
+        android:id="@+id/text_dollar_symbol_header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:textStyle="bold"
+        android:text="$"
+        android:textColor="@color/text_dark"
+        android:textSize="18dp"
+        app:layout_constraintEnd_toStartOf="@id/image_zec_symbol_header"
+        app:layout_constraintTop_toTopOf="@id/image_zec_symbol_header" />
+
+    <TextView
+        android:id="@+id/text_dollar_symbol_subheader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:layout_marginRight="2dp"
+        android:text="$"
+        android:textColor="@color/text_dark"
+        android:textSize="8dp"
+        app:layout_constraintEnd_toStartOf="@id/image_zec_symbol_subheader"
+        app:layout_constraintTop_toTopOf="@id/image_zec_symbol_subheader" />
+
+    <EditText
+        android:id="@+id/input_zcash_address"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="@id/guideline_content_start"
+        app:layout_constraintEnd_toEndOf="@id/guideline_content_end"
+        android:hint="@string/send_hint_input_zcash_address"
+        app:layout_constraintBottom_toTopOf="@id/text_area_memo"
+        app:layout_constraintTop_toBottomOf="@id/text_amount_background" />
+
+    <!-- Scan QR code -->
+    <ImageView
+        android:id="@+id/image_scan_qr"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="8dp"
+        android:tint="@color/zcashBlack_87"
+        app:layout_constraintTop_toTopOf="@id/input_zcash_address"
+        app:layout_constraintBottom_toBottomOf="@id/input_zcash_address"
+        app:layout_constraintEnd_toEndOf="@id/input_zcash_address"
+        app:srcCompat="@drawable/ic_qrcode_24dp" />
+
+    <TextView
+        android:id="@+id/text_to_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/send_label_to"
+        app:layout_constraintStart_toStartOf="@id/input_zcash_address"
+        app:layout_constraintBottom_toTopOf="@id/input_zcash_address"/>
+
+    <EditText
+        android:id="@+id/text_area_memo"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:maxLength="@integer/max_memo_length"
+        android:inputType="textLongMessage"
+        android:background="@drawable/background_rounded_corners"
+        android:backgroundTint="@color/zcashWhite_87"
+        app:layout_constraintStart_toStartOf="@id/guideline_content_start"
+        app:layout_constraintEnd_toEndOf="@id/guideline_content_end"
+        app:layout_constraintBottom_toTopOf="@id/button_send_zec"
+        app:layout_constraintHeight_default="percent"
+        app:layout_constraintHeight_percent="0.25"
+        app:layout_constraintTop_toBottomOf="@id/input_zcash_address" />
+
+    <Button
+        android:id="@+id/button_send_zec"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/send_submit_button_text"
+        app:layout_constraintEnd_toEndOf="@id/text_area_memo"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_area_memo" />
+
+    <View
+        android:id="@+id/divider_memo"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginBottom="40dp"
+        android:background="@color/zcashGray_light"
+        app:layout_constraintBottom_toBottomOf="@id/text_area_memo"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintWidth_default="percent"
+        app:layout_constraintWidth_percent="0.7" />
+
+    <TextView
+        android:id="@+id/text_memo_char_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0 / 512"
+        android:textColor="@color/zcashGray_light"
+        app:layout_constraintTop_toBottomOf="@id/divider_memo"
+        app:layout_constraintBottom_toBottomOf="@id/text_area_memo"
+        app:layout_constraintEnd_toEndOf="@id/divider_memo" />
+
+
+    <!--        -->
+    <!-- Groups -->
+    <!--        -->
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/group_zec_selected"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="image_zec_symbol_header,text_dollar_symbol_subheader"/>
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/group_usd_selected"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="image_zec_symbol_subheader,text_dollar_symbol_header"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
