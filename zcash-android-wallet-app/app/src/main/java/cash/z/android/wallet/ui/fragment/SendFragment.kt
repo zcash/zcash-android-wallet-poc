@@ -1,13 +1,19 @@
 package cash.z.android.wallet.ui.fragment
 
+import android.graphics.Typeface
 import android.os.Bundle
+import android.text.Spanned
+import android.text.style.ForegroundColorSpan
+import android.text.style.StyleSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.text.toSpannable
 import androidx.fragment.app.Fragment
 import cash.z.android.wallet.R
 import cash.z.android.wallet.extention.Toaster
 import cash.z.android.wallet.extention.afterTextChanged
+import cash.z.android.wallet.extention.toAppColor
 import cash.z.android.wallet.extention.tryIgnore
 import cash.z.android.wallet.ui.activity.MainActivity
 import kotlinx.android.synthetic.main.fragment_send.*
@@ -67,6 +73,8 @@ class SendFragment : Fragment() {
         button_send_zec.setOnClickListener {
             onSendZec()
         }
+
+        onBalanceUpdated(12.82129334)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -85,6 +93,15 @@ class SendFragment : Fragment() {
             group_zec_selected.visibility = View.VISIBLE
             group_usd_selected.visibility = View.GONE
         }
+    }
+
+    fun onBalanceUpdated(zecBalance: Double) {
+        val availableZecFormatter = DecimalFormat("#.########")
+        // TODO: use a formatted string resource here
+        val availableTextSpan = "${availableZecFormatter.format(zecBalance)} ZEC Available".toSpannable()
+        availableTextSpan.setSpan(ForegroundColorSpan(R.color.colorPrimary.toAppColor()), availableTextSpan.length - "Available".length, availableTextSpan.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        availableTextSpan.setSpan(StyleSpan(Typeface.BOLD), 0, 6, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        text_zec_value.setText(availableTextSpan)
     }
 
     private fun onSendZec() {
