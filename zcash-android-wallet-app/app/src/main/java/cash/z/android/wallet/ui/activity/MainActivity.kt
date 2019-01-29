@@ -1,10 +1,14 @@
 package cash.z.android.wallet.ui.activity
 
 import android.os.Bundle
+import android.view.inputmethod.InputMethodManager
+import android.view.inputmethod.InputMethodManager.HIDE_NOT_ALWAYS
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.content.getSystemService
 import androidx.core.view.GravityCompat
 import androidx.core.view.doOnLayout
 import androidx.navigation.NavController
+import androidx.navigation.NavDestination
 import androidx.navigation.Navigation
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
@@ -20,20 +24,21 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.nav_header_main.*
 import cash.z.wallet.sdk.data.Synchronizer
 import kotlinx.coroutines.GlobalScope
+import javax.inject.Inject
 
-class MainActivity : DaggerAppCompatActivity() {
+class MainActivity : BaseActivity() {
+
+    @Inject
+    lateinit var synchronizer: Synchronizer
 
     // used to  manage the drawer and drawerToggle interactions
     private lateinit var appBarConfiguration: AppBarConfiguration
     lateinit var navController: NavController
-    lateinit var synchronizer: Synchronizer
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-//        synchronizer = Synchronizer(ZcashWalletApplication.instance, GlobalScope).also {
-//            it.start()
-//        }
+        synchronizer.start(this)
     }
 
     override fun onDestroy() {
@@ -65,6 +70,10 @@ class MainActivity : DaggerAppCompatActivity() {
                 nav_view.setupWithNavController(n)
                 setupActionBarWithNavController(n, a)
             }
+        }
+        navController.addOnNavigatedListener { _, _ ->
+            // hide the keyboard anytime we change destinations
+            getSystemService<InputMethodManager>()?.hideSoftInputFromWindow(nav_view.windowToken, HIDE_NOT_ALWAYS)
         }
 
         // remove icon tint so that our colored nav icons show through

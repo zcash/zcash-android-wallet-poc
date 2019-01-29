@@ -9,7 +9,7 @@ import cash.z.wallet.sdk.dao.BlockDao
 import cash.z.wallet.sdk.dao.NoteDao
 import cash.z.wallet.sdk.dao.TransactionDao
 import cash.z.wallet.sdk.db.DerivedDataDb
-import cash.z.wallet.sdk.vo.Note
+import cash.z.wallet.sdk.vo.NoteQuery
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.channels.ReceiveChannel
@@ -17,7 +17,6 @@ import kotlinx.coroutines.channels.produce
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import java.math.BigDecimal
-import cash.z.wallet.sdk.data.ScanResultDbCreator
 
 class ReceivedTransactionRepository(val scope: CoroutineScope) : TransactionRepository {
 
@@ -31,7 +30,7 @@ class ReceivedTransactionRepository(val scope: CoroutineScope) : TransactionRepo
     private var balanceChannel = BroadcastChannel<BigDecimal>(100)
 
     private fun injectDb() = Room
-        .databaseBuilder(ZcashWalletApplication.instance, DerivedDataDb::class.java, ScanResultDbCreator.DB_NAME)
+        .databaseBuilder(ZcashWalletApplication.instance, DerivedDataDb::class.java, "tmp")
         .setJournalMode(RoomDatabase.JournalMode.TRUNCATE)
         .fallbackToDestructiveMigration()
         .build()
@@ -79,11 +78,11 @@ class ReceivedTransactionRepository(val scope: CoroutineScope) : TransactionRepo
         return notes.subtract(existingTransactions)
     }
 
-    private fun toWalletTransaction(note: Note): WalletTransaction {
+    private fun toWalletTransaction(note: NoteQuery): WalletTransaction {
         return WalletTransaction(
-            timestamp = System.currentTimeMillis(),
             status = WalletTransactionStatus.RECEIVED,
-            amount = BigDecimal(note.value / 1e8)
+            amount = BigDecimal(note.value / 1e8),
+            timestamp = note.time
         )
     }
 }

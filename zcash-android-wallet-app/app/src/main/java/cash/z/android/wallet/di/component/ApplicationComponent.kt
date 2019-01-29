@@ -3,6 +3,7 @@ package cash.z.android.wallet.di.component
 import cash.z.android.wallet.ui.activity.MainActivityModule
 import cash.z.android.wallet.ZcashWalletApplication
 import cash.z.android.wallet.di.module.ApplicationModule
+import cash.z.android.wallet.di.module.SynchronizerModule
 import cash.z.android.wallet.ui.fragment.HomeFragmentModule
 import cash.z.android.wallet.ui.fragment.ReceiveFragmentModule
 import dagger.Component
@@ -19,6 +20,7 @@ import javax.inject.Singleton
     modules = [
         AndroidSupportInjectionModule::class,
         ApplicationModule::class,
+        SynchronizerModule::class,
         MainActivityModule::class,
         HomeFragmentModule::class,
         ReceiveFragmentModule::class

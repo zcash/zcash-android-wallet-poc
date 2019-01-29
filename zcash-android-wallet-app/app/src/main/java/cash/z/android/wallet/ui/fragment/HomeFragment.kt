@@ -14,7 +14,6 @@ import androidx.annotation.StringRes
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import cash.z.android.wallet.R
-import cash.z.android.wallet.data.ReceivedTransactionRepository
 import cash.z.android.wallet.extention.toAppColor
 import cash.z.android.wallet.extention.toAppString
 import cash.z.android.wallet.extention.tryIgnore
@@ -30,9 +29,6 @@ import dagger.android.ContributesAndroidInjector
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.include_home_content.*
 import kotlinx.android.synthetic.main.include_home_header.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlin.random.Random
 
@@ -40,16 +36,11 @@ import kotlin.random.Random
  * Fragment representing the home screen of the app. This is the screen most often seen by the user when launching the
  * application.
  */
-class HomeFragment : BaseFragment() {
+class HomeFragment : BaseFragment(), HomePresenter.HomeView {
 
     lateinit var homePresenter: HomePresenter
     lateinit var transactionAdapter: TransactionAdapter
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        val ioFragmentScope = CoroutineScope(Dispatchers.IO + scope.coroutineContext[Job]!!)
-//        homePresenter = HomePresenter(this, ReceivedTransactionRepository(ioFragmentScope), (activity as MainActivity).synchronizer)
-    }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -73,21 +64,19 @@ class HomeFragment : BaseFragment() {
         toggleViews(true)
 //        view!!.postDelayed( {toggle(false)}, delay *  2L)
 
-        // specifying the context/scope is redundant here because launch will automatically use the parent scope but let's do it anyway here to explicitly show that our basefragment is a coroutine scope
-//        scope.launch {
-////            homePresenter.start()
-//        }
+        launch {
+            homePresenter.start()
+        }
     }
 
     override fun onPause() {
         super.onPause()
-//        scope.launch {
-//            homePresenter.stop()
-//        }
+        homePresenter.stop()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        homePresenter = HomePresenter(this, mainActivity.synchronizer)
         initFab(activity!!)
 
         recycler_transactions.apply {
@@ -101,9 +90,9 @@ class HomeFragment : BaseFragment() {
     //
     // View API
     //
-
     // TODO: pull some of this logic into the presenter, particularly the part that deals with ZEC <-> USD price conversion
-    fun updateBalance(zecValue: Double, oldZecValue: Double) {
+    override fun updateBalance(old: Long, new: Long) {
+        val zecValue = old/1e8
         updateEmptyViews(zecValue)
 
         // TODO: animate the change in value
@@ -111,9 +100,14 @@ class HomeFragment : BaseFragment() {
         setUsdValue(MainActivity.USD_PER_ZEC * zecValue)
     }
 
-    fun addTransaction(transaction: WalletTransaction) {
+    override fun addTransaction(transaction: WalletTransaction) {
         transactionAdapter.add(transaction)
         recycler_transactions.smoothScrollToPosition(0)
+    }
+
+    override fun showProgress(progress: Int) {
+        val message = if(progress >=  100) "Download complete!" else "Downloading blocks ($progress%)"
+        text_wallet_message.text = message
     }
 
     //
