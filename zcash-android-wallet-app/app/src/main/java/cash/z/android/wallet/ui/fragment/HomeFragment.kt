@@ -32,6 +32,8 @@ import kotlinx.android.synthetic.main.include_home_content.*
 import kotlinx.android.synthetic.main.include_home_header.*
 import kotlinx.coroutines.launch
 import kotlin.random.Random
+import com.google.android.material.snackbar.Snackbar
+
 
 /**
  * Fragment representing the home screen of the app. This is the screen most often seen by the user when launching the
@@ -107,6 +109,9 @@ class HomeFragment : BaseFragment(), HomePresenter.HomeView {
     //
     // TODO: pull some of this logic into the presenter, particularly the part that deals with ZEC <-> USD price conversion
     override fun updateBalance(old: Long, new: Long) {
+        //TODO: remove this kind of thing
+        snackbar?.dismiss()
+
         Log.e("TWIG-t", "updating balance from $old to $new")
         val zecValue = new/1e8
         swapEmptyViewsForBalance(zecValue)
@@ -122,9 +127,26 @@ class HomeFragment : BaseFragment(), HomePresenter.HomeView {
         recycler_transactions.smoothScrollToPosition(0)
     }
 
+    var snackbar: Snackbar? = null
     override fun showProgress(progress: Int) {
-        val message = if(progress >=  100) "Download complete!" else "Downloading blocks ($progress%)"
-        text_wallet_message.text = message
+        Log.e("TWIG", "showing progress of $progress")
+        // TODO: improve this with Lottie animation. but for now just use the empty view for downloading...
+//        var hasEmptyViews = group_empty_view_items.visibility == View.VISIBLE
+//        if(!viewsInitialized) toggleViews(true)
+//
+        val message = if(progress >=  100) "Download complete! Processing...\n(this may take a while)" else "Downloading blocks ($progress%)"
+//        text_wallet_message.text = message
+
+        if (snackbar == null && progress <= 50) {
+            snackbar = Snackbar.make(view!!, "$message", Snackbar.LENGTH_INDEFINITE)
+                .setAction("OK") {
+                    snackbar?.dismiss()
+                }
+            snackbar?.show()
+        } else {
+            snackbar?.setText(message)
+            if(progress == 100 && snackbar?.isShownOrQueued != true) snackbar?.show()
+        }
     }
 
     //

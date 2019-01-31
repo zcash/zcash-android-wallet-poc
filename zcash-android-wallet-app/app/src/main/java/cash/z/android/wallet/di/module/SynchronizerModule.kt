@@ -69,7 +69,7 @@ internal object SynchronizerModule {
         wallet: Wallet,
         twigger: Twig
     ): Synchronizer {
-        return Synchronizer(downloader, processor, repository, wallet, twigger)
+        return Synchronizer(downloader, processor, repository, wallet, logger = twigger)
     }
 
 }
@@ -77,8 +77,8 @@ internal object SynchronizerModule {
 
 // TODO: load this stuff in, later
 object Properties {
-    const val COMPACT_BLOCK_SERVER = "10.0.2.2"
-//    const val COMPACT_BLOCK_SERVER = "lightwalletd.z.cash"
+//    const val COMPACT_BLOCK_SERVER = "10.0.2.2"
+    const val COMPACT_BLOCK_SERVER = "lightwalletd.z.cash"
     const val COMPACT_BLOCK_PORT = 9067
     const val CACHE_DB_NAME = "wallet_cache.db"
     const val DATA_DB_NAME = "wallet_data.db"

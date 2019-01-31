@@ -93,6 +93,13 @@ class HomePresenter(
 
     fun bind(progress: Int) {
         view.showProgress(progress)
+        if(progress == 100) {
+            view.launch {
+                // TODO: remove this behavior and pull it down into the synchronizer
+                Log.e("@TWIG-t", "triggering manual scan!")
+                synchronizer.processor.scanBlocks()
+            }
+        }
     }
 
     private fun NoteQuery.toWalletTransaction(timeOverride: Long? = null): WalletTransaction {
