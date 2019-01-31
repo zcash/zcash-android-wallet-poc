@@ -86,7 +86,7 @@ class MainActivity : BaseActivity() {
 
     companion object {
         // TODO: placeholder until we have a network service for this
-        const val USD_PER_ZEC = 56.38
+        const val USD_PER_ZEC = 49.07
         init {
             // Enable vector drawable magic
             AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)

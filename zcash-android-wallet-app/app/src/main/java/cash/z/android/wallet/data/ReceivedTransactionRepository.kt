@@ -80,6 +80,7 @@ class ReceivedTransactionRepository(val scope: CoroutineScope) : TransactionRepo
 
     private fun toWalletTransaction(note: NoteQuery): WalletTransaction {
         return WalletTransaction(
+            height = note.height,
             status = WalletTransactionStatus.RECEIVED,
             amount = BigDecimal(note.value / 1e8),
             timestamp = note.time

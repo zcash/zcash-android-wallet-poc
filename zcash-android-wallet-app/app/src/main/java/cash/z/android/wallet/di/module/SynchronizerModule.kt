@@ -6,9 +6,7 @@ import cash.z.android.wallet.di.module.Properties.CACHE_DB_NAME
 import cash.z.android.wallet.di.module.Properties.COMPACT_BLOCK_PORT
 import cash.z.android.wallet.di.module.Properties.COMPACT_BLOCK_SERVER
 import cash.z.android.wallet.di.module.Properties.DATA_DB_NAME
-import cash.z.android.wallet.di.module.Properties.OUTPUT_PARAMS_PATH
 import cash.z.android.wallet.di.module.Properties.SEED_PROVIDER
-import cash.z.android.wallet.di.module.Properties.SPEND_PARAMS_PATH
 import cash.z.wallet.sdk.data.*
 import cash.z.wallet.sdk.jni.JniConverter
 import cash.z.wallet.sdk.secure.Wallet
@@ -52,8 +50,8 @@ internal object SynchronizerModule {
     @JvmStatic
     @Provides
     @Singleton
-    fun provideWallet(application: ZcashWalletApplication, converter: JniConverter): Wallet {
-        return Wallet(converter, application.getDatabasePath(DATA_DB_NAME).absolutePath, SPEND_PARAMS_PATH, OUTPUT_PARAMS_PATH, seedProvider = SEED_PROVIDER)
+    fun provideWallet(application: ZcashWalletApplication, converter: JniConverter, twigger: Twig): Wallet {
+        return Wallet(converter, application.getDatabasePath(DATA_DB_NAME).absolutePath, "${application.cacheDir.absolutePath}/params", seedProvider = SEED_PROVIDER, logger = twigger)
     }
 
     @JvmStatic
@@ -80,10 +78,9 @@ internal object SynchronizerModule {
 // TODO: load this stuff in, later
 object Properties {
     const val COMPACT_BLOCK_SERVER = "10.0.2.2"
+//    const val COMPACT_BLOCK_SERVER = "lightwalletd.z.cash"
     const val COMPACT_BLOCK_PORT = 9067
     const val CACHE_DB_NAME = "wallet_cache.db"
     const val DATA_DB_NAME = "wallet_data.db"
-    const val SPEND_PARAMS_PATH = "/data/user/0/cash.z.wallet.sdk.test/databases/sapling-spend.params"
-    const val OUTPUT_PARAMS_PATH = "/data/user/0/cash.z.wallet.sdk.test/databases/sapling-output.params"
     val SEED_PROVIDER = SampleSeedProvider("dummyseed")
 }

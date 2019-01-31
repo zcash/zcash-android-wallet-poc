@@ -19,6 +19,9 @@
 
     <style name="ZcashTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+    <style name="Zcash.Progressbar.Indeterminate" parent="ZcashBaseTheme">
+        <item name="colorControlActivated">@color/progress_bar_active</item>
+    </style>
 
     <!--                  -->
     <!-- Text Appearances -->

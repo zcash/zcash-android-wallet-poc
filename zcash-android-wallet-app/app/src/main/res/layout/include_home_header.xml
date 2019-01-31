@@ -46,7 +46,7 @@
         android:shadowDx="0"
         android:shadowDy="8"
         android:shadowRadius="24"
-        android:text="35.021"
+        tools:text="35.021"
         android:textColor="@color/zcashWhite"
         android:textSize="60dp" />
 
@@ -108,7 +108,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="sans-serif-light"
-        android:text="$5,459.32"
+        tools:text="$5,459.32"
         android:textColor="@color/text_light_dimmed"
         android:textSize="24dp" />
 

@@ -13,7 +13,7 @@ import cash.z.android.wallet.ui.activity.MainActivity
  * Fragment for sending Zcash.
  *
  */
-open class PlaceholderFragment : Fragment() {
+open class PlaceholderFragment : BaseFragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

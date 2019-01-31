@@ -4,6 +4,7 @@ import android.app.Activity
 import android.os.Bundle
 import android.text.SpannableString
 import android.text.Spanned
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -40,11 +41,13 @@ class HomeFragment : BaseFragment(), HomePresenter.HomeView {
 
     lateinit var homePresenter: HomePresenter
     lateinit var transactionAdapter: TransactionAdapter
+    var viewsInitialized = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        viewsInitialized = false
         return inflater.inflate(R.layout.fragment_home, container, false)
     }
 
@@ -57,12 +60,24 @@ class HomeFragment : BaseFragment(), HomePresenter.HomeView {
         }
         headerFullViews = arrayOf(text_balance_usd, text_balance_includes_info, text_balance_zec, image_zec_symbol_balance_shadow, image_zec_symbol_balance)
         headerEmptyViews = arrayOf(text_balance_zec_info, text_balance_zec_empty, image_zec_symbol_balance_shadow_empty, image_zec_symbol_balance_empty)
+
+        // toggling determines visibility. hide it all.
+        headerFullViews.forEach { container_home_header.removeView(it) }
+        headerEmptyViews.forEach { container_home_header.removeView(it) }
+        group_empty_view_items.visibility = View.GONE
+        group_full_view_items.visibility = View.GONE
+
+        image_logo.setOnClickListener {
+            forceRedraw()
+            toggleViews(false)
+        }
     }
 
     override fun onResume() {
         super.onResume()
-        toggleViews(true)
-//        view!!.postDelayed( {toggle(false)}, delay *  2L)
+        val isEmpty = (recycler_transactions?.adapter?.itemCount ?: 0).let { it == 0 }
+//        Log.e("TWIG-t", "Resuming and isEmpty == $isEmpty")
+//        toggleViews(isEmpty)
 
         launch {
             homePresenter.start()
@@ -92,16 +107,18 @@ class HomeFragment : BaseFragment(), HomePresenter.HomeView {
     //
     // TODO: pull some of this logic into the presenter, particularly the part that deals with ZEC <-> USD price conversion
     override fun updateBalance(old: Long, new: Long) {
-        val zecValue = old/1e8
-        updateEmptyViews(zecValue)
+        Log.e("TWIG-t", "updating balance from $old to $new")
+        val zecValue = new/1e8
+        swapEmptyViewsForBalance(zecValue)
 
         // TODO: animate the change in value
         setZecValue(zecValue)
         setUsdValue(MainActivity.USD_PER_ZEC * zecValue)
     }
 
-    override fun addTransaction(transaction: WalletTransaction) {
-        transactionAdapter.add(transaction)
+    override fun setTransactions(transactions: List<WalletTransaction>) {
+        Log.e("TWIG-t", "submitList called with ${transactions.size} transactions")
+        transactionAdapter.submitList(transactions)
         recycler_transactions.smoothScrollToPosition(0)
     }
 
@@ -160,13 +177,22 @@ class HomeFragment : BaseFragment(), HomePresenter.HomeView {
 //        text_balance_zec.text = adjustedValue
     }
 
-    private fun updateEmptyViews(value: Double) {
+    /**
+     * If the balance goes to zero, the wallet is now empty so show the empty view.
+     * If the balance changes from zero, the wallet is no longer empty so hide the empty view.
+     * But don't do either of these things if the situation has not changed.
+     */
+    private fun swapEmptyViewsForBalance(value: Double) {
+        val isEmpty = value <= 0.0
+        // wasEmpty isn't enough info. it must be considered along with whether these views were ever initialized
         val wasEmpty = group_empty_view_items.visibility == View.VISIBLE
-        // only toggle the views when the situation has changed
-        if (wasEmpty && value > 0.0) {
-            toggleViews(false)
-        } else if (!wasEmpty && value <= 0.0) {
-            toggleViews (true)
+        // situation has changed when we weren't initialized but now we have a balance or emptiness has changed
+        val situationHasChanged = !viewsInitialized || (isEmpty != wasEmpty)
+
+        Log.e("TWIG-t", "updateEmptyViews called with value: $value  initialized: $viewsInitialized  isEmpty: $isEmpty  wasEmpty: $wasEmpty")
+        if (situationHasChanged) {
+            Log.e("TWIG-t", "The situation has changed! toggling views!")
+            toggleViews(isEmpty)
         }
     }
 
@@ -215,7 +241,7 @@ class HomeFragment : BaseFragment(), HomePresenter.HomeView {
 // ---------------------------------------------------------------------------------------------------------------------
 
     var empty = false
-    val delay = 20L
+    val delay = 50L
     lateinit var headerEmptyViews: Array<View>
     lateinit var headerFullViews: Array<View>
 
@@ -255,9 +281,13 @@ class HomeFragment : BaseFragment(), HomePresenter.HomeView {
     internal fun toggle(isEmpty: Boolean) {
         toggleValues(isEmpty)
     }
+
+    // TODO: get rid of all of this and consider two different fragments for the header, instead
     internal fun toggleViews(isEmpty: Boolean) {
-        if(isEmpty) {
-            view?.postDelayed({
+        Log.e("TWIG-t", "toggling views to isEmpty == $isEmpty")
+        var action: () -> Unit
+        if (isEmpty) {
+            action = {
                 group_empty_view_items.visibility = View.VISIBLE
                 group_full_view_items.visibility = View.GONE
                 headerFullViews.forEach { container_home_header.removeView(it) }
@@ -266,9 +296,9 @@ class HomeFragment : BaseFragment(), HomePresenter.HomeView {
                         container_home_header.addView(it)
                     }
                 }
-            }, delay)
+            }
         } else {
-            view?.postDelayed({
+            action = {
                 group_empty_view_items.visibility = View.GONE
                 group_full_view_items.visibility = View.VISIBLE
                 headerEmptyViews.forEach { container_home_header.removeView(it) }
@@ -277,8 +307,14 @@ class HomeFragment : BaseFragment(), HomePresenter.HomeView {
                         container_home_header.addView(it)
                     }
                 }
-            }, delay)
+            }
         }
+        view?.postDelayed({
+            action()
+            viewsInitialized = true
+        }, delay)
+        // TODO: the motion layout does not begin in the  right state for some reason. Debug this later.
+        view?.postDelayed(::forceRedraw, delay * 2)
     }
 
     internal fun toggleValues(isEmpty: Boolean) {

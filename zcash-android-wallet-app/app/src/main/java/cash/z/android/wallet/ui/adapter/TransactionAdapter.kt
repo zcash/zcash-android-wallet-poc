@@ -1,9 +1,13 @@
 package cash.z.android.wallet.ui.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.recyclerview.widget.AsyncListDiffer
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import cash.z.android.wallet.R
 import cash.z.android.wallet.extention.toAppColor
@@ -15,33 +19,17 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-class TransactionAdapter(private val transactions: MutableList<WalletTransaction> = mutableListOf()) :
-    RecyclerView.Adapter<TransactionViewHolder>() {
-
-    init {
-        transactions.sortBy { it.timestamp * -1 }
-    }
-
+class TransactionAdapter : ListAdapter<WalletTransaction, TransactionViewHolder>(DIFF_CALLBACK) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TransactionViewHolder {
         val itemView = LayoutInflater.from(parent.context).inflate(R.layout.item_transaction, parent, false)
         return TransactionViewHolder(itemView)
     }
+    override fun onBindViewHolder(holder: TransactionViewHolder, position: Int) = holder.bind(getItem(position))
+}
 
-    override fun getItemCount(): Int = transactions.size
-
-    override fun onBindViewHolder(holder: TransactionViewHolder, position: Int) = holder.bind(transactions[position])
-
-    fun setTransactions(txs: List<WalletTransaction>) {
-        transactions.clear()
-        transactions.addAll(txs)
-        notifyDataSetChanged()
-    }
-
-    fun add(tx: WalletTransaction) {
-        // TODO: work with a set of transactions rather than a list
-        transactions.add(0, tx)
-        notifyItemInserted(0)
-    }
+private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<WalletTransaction>() {
+    override fun areItemsTheSame(oldItem: WalletTransaction, newItem: WalletTransaction) = oldItem.height == newItem.height
+    override fun areContentsTheSame(oldItem: WalletTransaction, newItem: WalletTransaction) = oldItem == newItem
 }
 
 class TransactionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -58,6 +46,7 @@ class TransactionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
         timestamp.text = formatter.format(tx.timestamp)
         amount.text = String.format("$sign %,.3f", tx.amount.round(MathContext(3, RoundingMode.HALF_EVEN )).abs())
         amount.setTextColor(amountColor.toAppColor())
+        Log.e("TWIG-u", "formatted timestamp: ${tx.timestamp} for value ${amount.text}")
     }
 
 }

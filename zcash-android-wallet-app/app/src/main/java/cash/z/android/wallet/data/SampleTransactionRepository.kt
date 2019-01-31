@@ -46,9 +46,11 @@ class SampleTransactionRepository(val scope: CoroutineScope) : TransactionReposi
         val window = after + (0.05 * delta).roundToLong()
         val amount = BigDecimal(Random.nextDouble(0.1, 15.0) * arrayOf(-1, 1).random())
         val status = if (amount > BigDecimal.ZERO) WalletTransactionStatus.SENT else WalletTransactionStatus.RECEIVED
+        val timestamp = Random.nextLong(after, window)
         return WalletTransaction(
+            timestamp.toInt(),
             status,
-            Random.nextLong(after, window),
+            timestamp,
             amount
         )
     }

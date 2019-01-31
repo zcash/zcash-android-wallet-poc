@@ -54,10 +54,10 @@
             app:layout_constraintVertical_chainStyle="spread" />
 
         <TextView
-            android:id="@+id/text_zec_value"
+            android:id="@+id/text_zec_value_available"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="12.82129334 ZEC Available"
+            tools:text="12.82129334 ZEC Available"
             app:layout_constraintBottom_toBottomOf="@id/background_header"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -226,6 +226,18 @@
             app:layout_constraintEnd_toEndOf="@id/text_area_memo"
             app:layout_constraintTop_toBottomOf="@id/text_area_memo" />
 
+        <ProgressBar
+            android:id="@+id/progress_send"
+            android:indeterminate="true"
+            android:theme="@style/Zcash.Progressbar.Indeterminate"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:padding="8dp"
+            android:visibility="gone"
+            app:layout_constraintTop_toTopOf="@+id/button_send_zec"
+            app:layout_constraintBottom_toBottomOf="@+id/button_send_zec"
+            app:layout_constraintEnd_toStartOf="@+id/button_send_zec"/>
+
         <View
             android:id="@+id/divider_memo"
             android:layout_width="0dp"
@@ -264,6 +276,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:constraint_referenced_ids="image_zec_symbol_subheader,text_dollar_symbol_header" />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
