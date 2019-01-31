@@ -14,9 +14,10 @@ android {
         minSdkVersion buildConfig.minSdkVersion
         targetSdkVersion buildConfig.targetSdkVersion
         versionCode 17 // todo: change this to 1_00_04 format, once we graduate beyond zero for the major version number because leading zeros indicate on octal number.
-        versionName "0.3.0-alpha"
+        versionName "0.3.3-alpha"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
+        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -45,6 +46,7 @@ dependencies {
     implementation deps.androidx.navigation.ui
     implementation deps.androidx.navigation.uiKtx
     implementation deps.material
+    implementation 'androidx.multidex:multidex:2.0.1'
 
     // Kotlin
     implementation deps.kotlin.stdlib
