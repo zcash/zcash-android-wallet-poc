@@ -9,6 +9,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.text.toSpannable
+import androidx.navigation.fragment.FragmentNavigatorExtras
+import androidx.transition.TransitionInflater
+import androidx.transition.TransitionSet
 import cash.z.android.wallet.R
 import cash.z.android.wallet.extention.Toaster
 import cash.z.android.wallet.extention.afterTextChanged
@@ -76,7 +79,8 @@ class SendFragment : BaseFragment(), SendPresenter.SendView {
         }
 
         button_send_zec.setOnClickListener {
-            onSendZec()
+//            onSendZec()
+            onSendSuccess()
         }
 
 //        onBalanceUpdated(12.82129334)
@@ -102,7 +106,23 @@ class SendFragment : BaseFragment(), SendPresenter.SendView {
 
     override fun onSendSuccess() {
         setSendEnabled(true)
-        mainActivity.navController.navigateUp()
+
+        val enterTransitionSet = TransitionSet()
+        enterTransitionSet.addTransition(TransitionInflater.from(mainActivity).inflateTransition(android.R.transition.explode))
+        enterTransitionSet.duration = 1000L
+        enterTransitionSet.startDelay = 10L
+        this.sharedElementEnterTransition = enterTransitionSet
+        this.sharedElementReturnTransition = enterTransition
+
+
+//        mainActivity.navController.navigateUp()
+        val extras = FragmentNavigatorExtras(
+            transition_active_transaction_bg to getString(R.string.transition_active_transaction))
+
+        mainActivity.navController.navigate(R.id.nav_home_fragment,
+            null,
+            null,
+            extras)
     }
 
     override fun onSendFailure() {

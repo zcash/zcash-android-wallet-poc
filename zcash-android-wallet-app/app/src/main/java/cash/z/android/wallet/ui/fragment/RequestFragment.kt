@@ -9,6 +9,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import cash.z.android.wallet.R
 import cash.z.android.wallet.ui.activity.MainActivity
+import dagger.Module
+import dagger.android.ContributesAndroidInjector
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -107,4 +109,10 @@ class RequestFragment : BaseFragment() {
                 }
             }
     }
+}
+
+@Module
+abstract class RequestFragmentModule {
+    @ContributesAndroidInjector
+    abstract fun contributeRequestFragment(): RequestFragment
 }

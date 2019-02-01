@@ -14,6 +14,9 @@ import androidx.annotation.IdRes
 import androidx.annotation.StringRes
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.transition.ChangeBounds
+import androidx.transition.TransitionInflater
+import androidx.transition.TransitionSet
 import cash.z.android.wallet.R
 import cash.z.android.wallet.extention.toAppColor
 import cash.z.android.wallet.extention.toAppString
@@ -50,6 +53,19 @@ class HomeFragment : BaseFragment(), HomePresenter.HomeView {
         savedInstanceState: Bundle?
     ): View? {
         viewsInitialized = false
+        val enterTransitionSet = TransitionSet().apply {
+            addTransition(TransitionInflater.from(mainActivity).inflateTransition(android.R.transition.move))
+            duration = 400L
+        }
+        this.sharedElementEnterTransition = enterTransitionSet
+        this.sharedElementReturnTransition = enterTransitionSet
+
+//        sharedElementEnterTransition = ChangeBounds().apply {
+//            duration = 750
+//        }
+//        sharedElementReturnTransition= ChangeBounds().apply {
+//            duration = 750
+//        }
         return inflater.inflate(R.layout.fragment_home, container, false)
     }
 
@@ -69,10 +85,10 @@ class HomeFragment : BaseFragment(), HomePresenter.HomeView {
         group_empty_view_items.visibility = View.GONE
         group_full_view_items.visibility = View.GONE
 
-        image_logo.setOnClickListener {
-            forceRedraw()
-            toggleViews(false)
-        }
+//        image_logo.setOnClickListener {
+//            forceRedraw()
+//            toggleViews(false)
+//        }
     }
 
     override fun onResume() {

@@ -26,6 +26,9 @@
     <string name="destination_menu_label_import">Import</string>
     <string name="destination_menu_label_settings">Settings</string>
 
+    <!-- Transitions -->
+    <string name="transition_active_transaction">transition_active_transaction</string>
+
     <!-- Screen copy -->
     <string name="receive_address_title">Your Zcash shielded address</string>
     <string name="home_empty_wallet">Your wallet is empty.</string>

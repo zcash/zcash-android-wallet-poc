@@ -63,17 +63,13 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@id/background_header" />
 
-        <TextView
-            android:id="@+id/text_amount_background"
+        <View
+            android:id="@+id/transition_active_transaction_bg"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginTop="24dp"
             android:background="@drawable/background_rounded_corners"
-            android:backgroundTint="@color/zcashWhite_87"
-            android:paddingLeft="16dp"
-            android:paddingTop="16dp"
-            android:text="@string/send_label_amount"
-            android:textColor="@color/text_dark"
+            android:transitionName="@string/transition_active_transaction"
             app:layout_constraintBottom_toTopOf="@id/input_zcash_address"
             app:layout_constraintEnd_toEndOf="@id/guideline_content_end"
             app:layout_constraintHeight_default="percent"
@@ -81,6 +77,18 @@
             app:layout_constraintStart_toStartOf="@id/guideline_content_start"
             app:layout_constraintTop_toBottomOf="@id/background_header"
             app:layout_constraintVertical_chainStyle="spread_inside" />
+
+        <TextView
+            android:id="@+id/text_amount_background"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingStart="16dp"
+            android:paddingLeft="16dp"
+            android:paddingTop="16dp"
+            android:text="@string/send_label_amount"
+            android:textColor="@color/text_dark"
+            app:layout_constraintStart_toStartOf="@id/transition_active_transaction_bg"
+            app:layout_constraintTop_toTopOf="@id/transition_active_transaction_bg" />
 
         <!-- Currency swap symbol -->
         <ImageView
@@ -91,9 +99,9 @@
             android:backgroundTint="@color/zcashPrimaryMedium"
             android:foregroundTint="@color/colorAccent"
             android:tint="@color/zcashGray_light"
-            app:layout_constraintBottom_toBottomOf="@id/text_amount_background"
-            app:layout_constraintEnd_toEndOf="@id/text_amount_background"
-            app:layout_constraintTop_toTopOf="@id/text_amount_background"
+            app:layout_constraintBottom_toBottomOf="@id/transition_active_transaction_bg"
+            app:layout_constraintEnd_toEndOf="@id/transition_active_transaction_bg"
+            app:layout_constraintTop_toTopOf="@id/transition_active_transaction_bg"
             app:srcCompat="@drawable/ic_import_export_black" />
 
         <EditText
@@ -107,10 +115,10 @@
             android:textColor="@color/text_dark"
             android:textSize="@dimen/text_size_h3"
             android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@id/text_amount_background"
-            app:layout_constraintEnd_toEndOf="@id/text_amount_background"
-            app:layout_constraintStart_toStartOf="@id/text_amount_background"
-            app:layout_constraintTop_toTopOf="@id/text_amount_background" />
+            app:layout_constraintBottom_toBottomOf="@id/transition_active_transaction_bg"
+            app:layout_constraintEnd_toEndOf="@id/transition_active_transaction_bg"
+            app:layout_constraintStart_toStartOf="@id/transition_active_transaction_bg"
+            app:layout_constraintTop_toTopOf="@id/transition_active_transaction_bg" />
 
         <TextView
             android:id="@+id/text_value_subheader"
@@ -178,7 +186,7 @@
             app:layout_constraintEnd_toEndOf="@id/guideline_content_end"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="@id/guideline_content_start"
-            app:layout_constraintTop_toBottomOf="@id/text_amount_background" />
+            app:layout_constraintTop_toBottomOf="@id/transition_active_transaction_bg" />
 
         <!-- Scan QR code -->
         <ImageView
