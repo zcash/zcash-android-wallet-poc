@@ -7,14 +7,14 @@
 
             <objectAnimator
                 android:propertyName="backgroundColor"
-                android:valueFrom="@color/zcashGray_light"
-                android:valueTo="@color/zcashBlue"
+                android:valueFrom="@color/fragment_home_background"
+                android:valueTo="@color/zcashWhite"
                 android:duration="@android:integer/config_shortAnimTime"
                 android:valueType="colorType" />
 
             <objectAnimator
                 android:propertyName="translationZ"
-                android:valueTo="8dp"
+                android:valueTo="4dp"
                 android:startOffset="300"
                 android:duration="@android:integer/config_shortAnimTime"
                 android:interpolator="@android:interpolator/fast_out_slow_in" />
@@ -29,8 +29,8 @@
 
             <objectAnimator
                 android:propertyName="backgroundColor"
-                android:valueFrom="@color/zcashBlue"
-                android:valueTo="@color/zcashGray_light"
+                android:valueFrom="@color/zcashWhite"
+                android:valueTo="@color/fragment_home_background"
                 android:duration="@android:integer/config_shortAnimTime"
                 android:valueType="colorType" />
 

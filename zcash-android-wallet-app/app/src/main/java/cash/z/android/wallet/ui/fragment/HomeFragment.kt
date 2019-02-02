@@ -15,9 +15,11 @@ import androidx.annotation.StringRes
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.ChangeBounds
+import androidx.transition.Transition
 import androidx.transition.TransitionInflater
 import androidx.transition.TransitionSet
 import cash.z.android.wallet.R
+import cash.z.android.wallet.extention.Toaster
 import cash.z.android.wallet.extention.toAppColor
 import cash.z.android.wallet.extention.toAppString
 import cash.z.android.wallet.extention.tryIgnore
@@ -54,8 +56,26 @@ class HomeFragment : BaseFragment(), HomePresenter.HomeView {
     ): View? {
         viewsInitialized = false
         val enterTransitionSet = TransitionInflater.from(mainActivity).inflateTransition(R.transition.transition_zec_sent).apply {
-            duration = 3500L
-        }
+            duration = 350L
+        }.addListener(object : Transition.TransitionListener {
+            override fun onTransitionEnd(transition: Transition) {
+                // fixes a bug where the translation gets lost, during animation. As a nice side effect, visually, it makes the view appear to settle in to position
+                header_active_transaction.translationZ = 10.0f
+            }
+
+            override fun onTransitionResume(transition: Transition) {
+            }
+
+            override fun onTransitionPause(transition: Transition) {
+            }
+
+            override fun onTransitionCancel(transition: Transition) {
+            }
+
+            override fun onTransitionStart(transition: Transition) {
+            }
+
+        })
 
         this.sharedElementEnterTransition = enterTransitionSet
         this.sharedElementReturnTransition = enterTransitionSet
@@ -70,7 +90,7 @@ class HomeFragment : BaseFragment(), HomePresenter.HomeView {
             mainActivity.setupNavigation()
             mainActivity.supportActionBar?.setTitle(R.string.destination_title_home)
         }
-//        background_active_transaction.isActivated = true
+        header_active_transaction.isActivated = true
         headerFullViews = arrayOf(text_balance_usd, text_balance_includes_info, text_balance_zec, image_zec_symbol_balance_shadow, image_zec_symbol_balance)
         headerEmptyViews = arrayOf(text_balance_zec_info, text_balance_zec_empty, image_zec_symbol_balance_shadow_empty, image_zec_symbol_balance_empty)
 
@@ -83,7 +103,11 @@ class HomeFragment : BaseFragment(), HomePresenter.HomeView {
         image_logo.setOnClickListener {
 //            forceRedraw()
 //            toggleViews(false)
-            background_active_transaction.isActivated = !background_active_transaction.isActivated
+            header_active_transaction.isActivated = !header_active_transaction.isActivated
+        }
+
+        button_active_transaction_cancel.setOnClickListener {
+            onCancelActiveTransaction()
         }
     }
 
@@ -161,8 +185,9 @@ class HomeFragment : BaseFragment(), HomePresenter.HomeView {
         }
     }
 
+
     //
-    // Private API
+    // Private View API
     //
 
     /**
@@ -228,6 +253,13 @@ class HomeFragment : BaseFragment(), HomePresenter.HomeView {
             Log.e("TWIG-t", "The situation has changed! toggling views!")
             toggleViews(isEmpty)
         }
+    }
+
+    private fun onCancelActiveTransaction() {
+        button_active_transaction_cancel.isEnabled = false
+        button_active_transaction_cancel.text = "canceled"
+        header_active_transaction.isActivated = false
+        homePresenter.onCancelActiveTransaction()
     }
 
     /**

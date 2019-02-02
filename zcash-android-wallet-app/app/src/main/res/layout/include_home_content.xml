@@ -5,41 +5,76 @@
     android:id="@+id/scrollable"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/fragment_home_background"
     android:fillViewport="true"
     app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingTop="30dp"
-        android:paddingBottom="16dp"
         android:paddingStart="16dp"
-        android:paddingEnd="16dp">
+        android:paddingTop="30dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="16dp">
 
-        <View
-            android:id="@+id/background_active_transaction"
+        <!-- Active Transaction - primary -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/header_active_transaction"
             android:layout_width="match_parent"
-            android:layout_height="60dp"
+            android:layout_height="70dp"
             android:background="@drawable/background_rounded_corners"
-            android:transitionName="@string/transition_active_transaction"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            android:clipToPadding="false"
+            android:padding="16dp"
             android:stateListAnimator="@animator/selector_active_raise"
-            android:clickable="true"
-            android:focusableInTouchMode="true"
-            />
+            android:transitionName="@string/transition_active_transaction_background"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-        <com.airbnb.lottie.LottieAnimationView
-            android:id="@+id/animation_view"
-            android:layout_width="36dp"
-            android:layout_height="0dp"
-            android:layout_marginLeft="16dp"
-            app:lottie_autoPlay="true"
-            app:lottie_loop="false"
-            app:lottie_rawRes="@raw/lottie_active_transaction_fail"
-            app:layout_constraintTop_toTopOf="@id/background_active_transaction"
-            app:layout_constraintBottom_toBottomOf="@id/background_active_transaction"
-            app:layout_constraintStart_toStartOf="@id/background_active_transaction"/>
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/lottie_active_transaction"
+                android:layout_width="36dp"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:lottie_autoPlay="true"
+                app:lottie_loop="false"
+                app:lottie_rawRes="@raw/lottie_active_transaction_fail" />
+
+            <TextView
+                android:id="@+id/text_active_transaction_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:text="Preparing  1.01 ZEC"
+                android:textSize="@dimen/text_size_body_1"
+                android:textStyle="bold"
+                android:transitionName="@string/transition_active_transaction_title"
+                app:layout_constraintStart_toEndOf="@id/lottie_active_transaction"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/text_active_transaction_subtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="to zsapling...123456789"
+                android:textSize="@dimen/text_size_caption"
+                android:transitionName="@string/transition_active_transaction_address"
+                app:layout_constraintStart_toStartOf="@id/text_active_transaction_title"
+                app:layout_constraintTop_toBottomOf="@id/text_active_transaction_title" />
+
+            <Button
+                android:id="@+id/button_active_transaction_cancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:text="cancel"
+                android:textColor="@color/selector_red_button"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <!-- Label: Past Activity -->
         <TextView
@@ -47,13 +82,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
+            android:paddingBottom="16dp"
             android:text="Past Activity"
             android:textColor="@color/text_dark"
             android:textSize="@dimen/text_size_body_2"
             android:textStyle="bold"
-            android:paddingBottom="16dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/background_active_transaction" />
+            app:layout_constraintTop_toBottomOf="@id/header_active_transaction" />
 
         <!-- Transactions -->
         <androidx.recyclerview.widget.RecyclerView
@@ -90,8 +125,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:padding="16dp"
             android:gravity="center"
+            android:padding="16dp"
             android:text="@string/home_empty_wallet"
             android:textColor="#AAAAAA"
             app:layout_constraintEnd_toEndOf="parent"

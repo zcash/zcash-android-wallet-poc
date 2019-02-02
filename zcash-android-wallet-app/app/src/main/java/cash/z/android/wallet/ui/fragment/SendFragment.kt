@@ -116,7 +116,9 @@ class SendFragment : BaseFragment(), SendPresenter.SendView {
 
     override fun submit(){
         val extras = FragmentNavigatorExtras(
-            binding.dialogSendContents to getString(R.string.transition_active_transaction)
+            binding.dialogSendContents to getString(R.string.transition_active_transaction_background),
+            binding.dialogTextTitle to getString(R.string.transition_active_transaction_title),
+            binding.dialogTextAddress to getString(R.string.transition_active_transaction_address)
         )
 
         mainActivity.navController.navigate(R.id.nav_home_fragment,

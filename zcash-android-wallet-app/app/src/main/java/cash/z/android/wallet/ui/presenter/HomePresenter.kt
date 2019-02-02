@@ -1,6 +1,7 @@
 package cash.z.android.wallet.ui.presenter
 
 import android.util.Log
+import cash.z.android.wallet.extention.Toaster
 import cash.z.android.wallet.ui.presenter.Presenter.PresenterView
 import cash.z.android.wallet.vo.WalletTransaction
 import cash.z.android.wallet.vo.WalletTransactionStatus
@@ -102,11 +103,17 @@ class HomePresenter(
         }
     }
 
+    fun onCancelActiveTransaction() {
+        // TODO: hold a reference to the job and cancel it
+        Toaster.short("Cancelled transaction!")
+    }
+
     private fun NoteQuery.toWalletTransaction(timeOverride: Long? = null): WalletTransaction {
         // convert time from seconds to milliseconds
         val timestamp = if (timeOverride == null) time * 1000 else timeOverride * 1000
         Log.e("@TWIG-u", "setting timestamp to $timestamp for value $value")
         return WalletTransaction(height, if (sent) SENT else RECEIVED, timestamp, BigDecimal(value / 1e8))
     }
+
 }
 
