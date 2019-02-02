@@ -9,11 +9,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.text.toSpannable
+import androidx.databinding.DataBindingUtil
 import androidx.navigation.fragment.FragmentNavigatorExtras
-import androidx.transition.TransitionInflater
-import androidx.transition.TransitionSet
 import cash.z.android.wallet.R
-import cash.z.android.wallet.extention.Toaster
+import cash.z.android.wallet.databinding.FragmentSendBinding
 import cash.z.android.wallet.extention.afterTextChanged
 import cash.z.android.wallet.extention.toAppColor
 import cash.z.android.wallet.extention.tryIgnore
@@ -21,7 +20,6 @@ import cash.z.android.wallet.ui.activity.MainActivity
 import cash.z.android.wallet.ui.presenter.SendPresenter
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
-import kotlinx.android.synthetic.main.fragment_send.*
 import kotlinx.coroutines.launch
 import java.text.DecimalFormat
 
@@ -33,18 +31,22 @@ import java.text.DecimalFormat
 class SendFragment : BaseFragment(), SendPresenter.SendView {
 
     lateinit var sendPresenter: SendPresenter
-
+    lateinit var binding: FragmentSendBinding
 
     private val zecFormatter = DecimalFormat("#.######")
     private val usdFormatter = DecimalFormat("###,###,###.##")
-    private val zecSelected get() = group_zec_selected.visibility == View.VISIBLE
+    private val zecSelected get() = binding.groupZecSelected.visibility == View.VISIBLE
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_send, container, false)
+        return DataBindingUtil.inflate<FragmentSendBinding>(
+            inflater, R.layout.fragment_send, container, false
+        ).let {
+            binding = it
+            it.root
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -55,18 +57,19 @@ class SendFragment : BaseFragment(), SendPresenter.SendView {
             mainActivity.supportActionBar?.setTitle(R.string.destination_title_send)
         }
         initPresenter()
+        initDialog()
     }
 
     // temporary function until presenter is setup
     private fun initPresenter() {
-        image_swap_currency.setOnClickListener {
+        binding.imageSwapCurrency.setOnClickListener {
             onToggleCurrency()
         }
 
-        text_value_header.afterTextChanged {
+        binding.textValueHeader.afterTextChanged {
             tryIgnore {
-                val value = text_value_header.text.toString().toDouble()
-                text_value_subheader.text = if (zecSelected) {
+                val value = binding.textValueHeader.text.toString().toDouble()
+                binding.textValueSubheader.text = if (zecSelected) {
                     usdFormatter.format(value * MainActivity.USD_PER_ZEC)
                 } else {
                     zecFormatter.format(value / MainActivity.USD_PER_ZEC)
@@ -74,16 +77,23 @@ class SendFragment : BaseFragment(), SendPresenter.SendView {
             }
         }
 
-        text_area_memo.afterTextChanged {
-            text_memo_char_count.text = "${text_area_memo.text.length} / ${resources.getInteger(R.integer.max_memo_length)}"
+        binding.textAreaMemo.afterTextChanged {
+            binding.textMemoCharCount.text = "${binding.textAreaMemo.text.length} / ${resources.getInteger(R.integer.max_memo_length)}"
         }
 
-        button_send_zec.setOnClickListener {
-//            onSendZec()
-            onSendSuccess()
+        binding.buttonSendZec.setOnClickListener {
+            showSendDialog()
         }
 
-//        onBalanceUpdated(12.82129334)
+    }
+
+    private fun initDialog() {
+        binding.dialogSendBackground.setOnClickListener {
+            hideSendDialog()
+        }
+        binding.dialogSendContents.setOnClickListener {
+            sendPresenter.onDialogConfirm()
+        }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -104,20 +114,10 @@ class SendFragment : BaseFragment(), SendPresenter.SendView {
         sendPresenter.stop()
     }
 
-    override fun onSendSuccess() {
-        setSendEnabled(true)
-
-        val enterTransitionSet = TransitionSet()
-        enterTransitionSet.addTransition(TransitionInflater.from(mainActivity).inflateTransition(android.R.transition.explode))
-        enterTransitionSet.duration = 1000L
-        enterTransitionSet.startDelay = 10L
-        this.sharedElementEnterTransition = enterTransitionSet
-        this.sharedElementReturnTransition = enterTransition
-
-
-//        mainActivity.navController.navigateUp()
+    override fun submit(){
         val extras = FragmentNavigatorExtras(
-            transition_active_transaction_bg to getString(R.string.transition_active_transaction))
+            binding.dialogSendContents to getString(R.string.transition_active_transaction)
+        )
 
         mainActivity.navController.navigate(R.id.nav_home_fragment,
             null,
@@ -125,21 +125,16 @@ class SendFragment : BaseFragment(), SendPresenter.SendView {
             extras)
     }
 
-    override fun onSendFailure() {
-        setSendEnabled(true)
-        Toaster.short("Sending FAILED!")
-    }
-
     fun onToggleCurrency() {
-        val headerValue = text_value_header.text
-        text_value_header.setText(text_value_subheader.text)
-        text_value_subheader.text = headerValue
+        val headerValue = binding.textValueHeader.text
+        binding.textValueHeader.setText(binding.textValueSubheader.text)
+        binding.textValueSubheader.text = headerValue
         if (zecSelected) {
-            group_zec_selected.visibility = View.GONE
-            group_usd_selected.visibility = View.VISIBLE
+            binding.groupZecSelected.visibility = View.GONE
+            binding.groupUsdSelected.visibility = View.VISIBLE
         } else {
-            group_zec_selected.visibility = View.VISIBLE
-            group_usd_selected.visibility = View.GONE
+            binding.groupZecSelected.visibility = View.VISIBLE
+            binding.groupUsdSelected.visibility = View.GONE
         }
     }
 
@@ -151,7 +146,7 @@ class SendFragment : BaseFragment(), SendPresenter.SendView {
         val availableTextSpan = "${availableZecFormatter.format(zecBalance)} ZEC Available".toSpannable()
         availableTextSpan.setSpan(ForegroundColorSpan(R.color.colorPrimary.toAppColor()), availableTextSpan.length - "Available".length, availableTextSpan.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
         availableTextSpan.setSpan(StyleSpan(Typeface.BOLD), 0, 6, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-        text_zec_value_available.text = availableTextSpan
+        binding.textZecValueAvailable.text = availableTextSpan
     }
 
     private fun onSendZec() {
@@ -167,14 +162,29 @@ class SendFragment : BaseFragment(), SendPresenter.SendView {
         sendPresenter.sendToAddress(amount, address)
     }
 
-    fun setSendEnabled(isEnabled: Boolean) {
-        button_send_zec.isEnabled = isEnabled
+
+    //
+    // Internal View Logic
+    //
+
+    private fun showSendDialog() {
+        setSendEnabled(false) // partially because we need to lower the button elevation
+        binding.groupDialogSend.visibility = View.VISIBLE
+    }
+
+    private fun hideSendDialog() {
+        setSendEnabled(true)
+        binding.groupDialogSend.visibility = View.GONE
+    }
+
+    private fun setSendEnabled(isEnabled: Boolean) {
+        binding.buttonSendZec.isEnabled = isEnabled
         if (isEnabled) {
-            button_send_zec.text = "send zec"
-            progress_send.visibility = View.GONE
+            binding.buttonSendZec.text = "send zec"
+            binding.progressSend.visibility = View.GONE
         } else {
-            button_send_zec.text = "sending..."
-            progress_send.visibility = View.VISIBLE
+            binding.buttonSendZec.text = "sending..."
+            binding.progressSend.visibility = View.VISIBLE
         }
     }
 }

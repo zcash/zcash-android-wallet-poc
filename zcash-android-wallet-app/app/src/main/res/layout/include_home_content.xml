@@ -17,13 +17,29 @@
         android:paddingEnd="16dp">
 
         <View
-            android:id="@+id/transition_active_transaction_bg"
+            android:id="@+id/background_active_transaction"
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:background="@drawable/background_rounded_corners"
             android:transitionName="@string/transition_active_transaction"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"/>
+            app:layout_constraintStart_toStartOf="parent"
+            android:stateListAnimator="@animator/selector_active_raise"
+            android:clickable="true"
+            android:focusableInTouchMode="true"
+            />
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/animation_view"
+            android:layout_width="36dp"
+            android:layout_height="0dp"
+            android:layout_marginLeft="16dp"
+            app:lottie_autoPlay="true"
+            app:lottie_loop="false"
+            app:lottie_rawRes="@raw/lottie_active_transaction_fail"
+            app:layout_constraintTop_toTopOf="@id/background_active_transaction"
+            app:layout_constraintBottom_toBottomOf="@id/background_active_transaction"
+            app:layout_constraintStart_toStartOf="@id/background_active_transaction"/>
 
         <!-- Label: Past Activity -->
         <TextView
@@ -37,7 +53,7 @@
             android:textStyle="bold"
             android:paddingBottom="16dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/transition_active_transaction_bg" />
+            app:layout_constraintTop_toBottomOf="@id/background_active_transaction" />
 
         <!-- Transactions -->
         <androidx.recyclerview.widget.RecyclerView

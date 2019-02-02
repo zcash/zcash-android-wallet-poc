@@ -19,6 +19,9 @@ android {
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
     }
+    dataBinding {
+        enabled true
+    }
     buildTypes {
         release {
             minifyEnabled false
@@ -72,6 +75,7 @@ dependencies {
 
     // Other
     implementation deps.speeddial
+    implementation "com.airbnb.android:lottie:2.7.0"
     compile 'com.facebook.stetho:stetho:1.5.0'
 
     testImplementation deps.junit

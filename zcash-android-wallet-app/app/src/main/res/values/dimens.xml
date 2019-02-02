@@ -21,4 +21,8 @@
     <dimen name="text_size_button">14sp</dimen>
     <dimen name="text_size_caption">12sp</dimen>
     <dimen name="text_size_overline">10sp</dimen>
+
+    <!-- Ratios -->
+    <item name="ratio_golden_small" format="float" type="dimen">0.381966</item>
+    <item name="ratio_golden_large" format="float" type="dimen">0.618034</item>
 </resources>

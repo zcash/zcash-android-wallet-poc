@@ -16,9 +16,8 @@ class SendPresenter(
 ) : Presenter {
 
     interface SendView : PresenterView {
-        fun onSendSuccess()
-        fun onSendFailure()
         fun updateBalance(old: Long, new: Long)
+        fun submit()
     }
 
     private var balanceJob: Job? = null
@@ -56,18 +55,22 @@ class SendPresenter(
                     synchronizer.downloader.connection.submitTransaction(transactionRaw)
                     Log.e("@TWIG", "successfully submitted")
                     Toaster.short("Successfully sent $value ZEC")
-                    view.onSendSuccess()
+//                    view.onSendSuccess()  -- use CompleteableDeferred here, instead
                 } catch (t: Throwable) {
                     Log.e("@TWIG", "submit failed due to $t")
                     try{synchronizer.repository.deleteTransactionById(transactionId)}catch(t:Throwable){}
-                    view.onSendFailure()
+//                    view.onSendFailure()  -- use CompleteableDeferred here, instead
                 }
             } else {
                 Log.e("@TWIG", "calling send did not seem to result in a transaction being created")
                 try{synchronizer.repository.deleteTransactionById(transactionId)}catch(t:Throwable){}
-                view.onSendFailure()
+//                view.onSendFailure()  -- use CompleteableDeferred here, instead
             }
         }
+    }
+
+    fun onDialogConfirm() {
+        view.submit()
     }
 
     private suspend fun findTransaction(txId: Long): Transaction? {

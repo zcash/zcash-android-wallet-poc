@@ -53,19 +53,13 @@ class HomeFragment : BaseFragment(), HomePresenter.HomeView {
         savedInstanceState: Bundle?
     ): View? {
         viewsInitialized = false
-        val enterTransitionSet = TransitionSet().apply {
-            addTransition(TransitionInflater.from(mainActivity).inflateTransition(android.R.transition.move))
-            duration = 400L
+        val enterTransitionSet = TransitionInflater.from(mainActivity).inflateTransition(R.transition.transition_zec_sent).apply {
+            duration = 350L
         }
+
         this.sharedElementEnterTransition = enterTransitionSet
         this.sharedElementReturnTransition = enterTransitionSet
 
-//        sharedElementEnterTransition = ChangeBounds().apply {
-//            duration = 750
-//        }
-//        sharedElementReturnTransition= ChangeBounds().apply {
-//            duration = 750
-//        }
         return inflater.inflate(R.layout.fragment_home, container, false)
     }
 
@@ -76,6 +70,7 @@ class HomeFragment : BaseFragment(), HomePresenter.HomeView {
             mainActivity.setupNavigation()
             mainActivity.supportActionBar?.setTitle(R.string.destination_title_home)
         }
+//        background_active_transaction.isActivated = true
         headerFullViews = arrayOf(text_balance_usd, text_balance_includes_info, text_balance_zec, image_zec_symbol_balance_shadow, image_zec_symbol_balance)
         headerEmptyViews = arrayOf(text_balance_zec_info, text_balance_zec_empty, image_zec_symbol_balance_shadow_empty, image_zec_symbol_balance_empty)
 
@@ -85,10 +80,11 @@ class HomeFragment : BaseFragment(), HomePresenter.HomeView {
         group_empty_view_items.visibility = View.GONE
         group_full_view_items.visibility = View.GONE
 
-//        image_logo.setOnClickListener {
+        image_logo.setOnClickListener {
 //            forceRedraw()
 //            toggleViews(false)
-//        }
+            background_active_transaction.isActivated = !background_active_transaction.isActivated
+        }
     }
 
     override fun onResume() {
