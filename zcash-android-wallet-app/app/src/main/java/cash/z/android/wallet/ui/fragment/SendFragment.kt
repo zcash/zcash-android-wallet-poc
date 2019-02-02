@@ -91,7 +91,7 @@ class SendFragment : BaseFragment(), SendPresenter.SendView {
         binding.dialogSendBackground.setOnClickListener {
             hideSendDialog()
         }
-        binding.dialogSendContents.setOnClickListener {
+        binding.dialogSubmitButton.setOnClickListener {
             sendPresenter.onDialogConfirm()
         }
     }

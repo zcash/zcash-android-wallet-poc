@@ -278,27 +278,110 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@color/zcashBlack_54"
+                android:visibility="gone"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                android:visibility="gone"/>
+                tools:visibility="visible" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/dialog_send_contents"
                 android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:background="@drawable/background_rounded_corners"
+                android:layout_height="wrap_content"
+                android:background="@drawable/background_rounded_corners_opaque"
+                android:backgroundTint="@color/zcashWhite"
+                android:clickable="true"
+                android:focusable="true"
                 android:transitionName="@string/transition_active_transaction"
                 android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHeight_default="percent"
-                app:layout_constraintHeight_percent="0.25"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="@dimen/ratio_golden_small"
                 app:layout_constraintWidth_default="percent"
-                app:layout_constraintWidth_percent="0.80">
+                app:layout_constraintWidth_percent="0.80"
+                tools:visibility="visible">
 
+                <TextView
+                    android:id="@+id/dialog_text_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="16dp"
+                    android:text="Send 1.73 ZEC ($200.23)?"
+                    android:textSize="@dimen/text_size_h6"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toTopOf="@id/dialog_text_address"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_chainStyle="spread_inside" />
+
+                <TextView
+                    android:id="@+id/dialog_text_to"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="16dp"
+                    android:text="To"
+                    android:textColor="@color/text_dark_dimmed"
+                    android:textSize="@dimen/text_size_body_1"
+                    app:layout_constraintBottom_toBottomOf="@+id/dialog_text_address"
+                    app:layout_constraintEnd_toStartOf="@+id/dialog_text_address"
+                    app:layout_constraintHorizontal_chainStyle="spread_inside"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/dialog_text_address" />
+
+                <TextView
+                    android:id="@+id/dialog_text_address"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/inconsolata"
+                    android:lines="3"
+                    android:paddingTop="16dp"
+                    android:paddingEnd="16dp"
+                    android:paddingRight="16dp"
+                    android:text="ztestsapling1snmqdnfqnc407pvqw7sld8w5zxx6nd0523kvlj4jf39uvxvh7vn0hs3q38n07806dwwecqwke3t"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="@dimen/text_size_body_1"
+                    app:layout_constraintBottom_toTopOf="@+id/dialog_text_memo_included"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/dialog_text_to"
+                    app:layout_constraintTop_toBottomOf="@id/dialog_text_title" />
+
+                <TextView
+                    android:id="@+id/dialog_text_memo_included"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawableLeft="@drawable/ic_check_black_24dp"
+                    android:drawablePadding="8dp"
+                    android:drawableTint="@color/colorPrimary"
+                    android:paddingTop="30dp"
+                    android:paddingBottom="30dp"
+                    android:text="Includes a transaction memo"
+                    android:textColor="@color/text_dark_dimmed"
+                    android:textSize="@dimen/text_size_body_1"
+                    app:layout_constraintBottom_toTopOf="@id/dialog_divider"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/dialog_text_address" />
+
+                <View
+                    android:id="@+id/dialog_divider"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/divider_background"
+                    app:layout_constraintBottom_toTopOf="@+id/dialog_submit_button"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/dialog_text_memo_included" />
+
+                <Button
+                    android:id="@+id/dialog_submit_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:background="@null"
+                    android:text="swipe right to send"
+                    android:textColor="@color/colorPrimary"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/dialog_divider" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <!--        -->

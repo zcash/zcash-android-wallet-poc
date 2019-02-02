@@ -54,7 +54,7 @@ class HomeFragment : BaseFragment(), HomePresenter.HomeView {
     ): View? {
         viewsInitialized = false
         val enterTransitionSet = TransitionInflater.from(mainActivity).inflateTransition(R.transition.transition_zec_sent).apply {
-            duration = 350L
+            duration = 3500L
         }
 
         this.sharedElementEnterTransition = enterTransitionSet
