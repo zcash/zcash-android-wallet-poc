@@ -30,6 +30,7 @@
     <string name="transition_active_transaction_background">transition_active_transaction_background</string>
     <string name="transition_active_transaction_title">transition_active_transaction_title</string>
     <string name="transition_active_transaction_address">transition_active_transaction_address</string>
+    <string name="transition_active_transaction_card">transition_active_transaction_card</string>
 
     <!-- Screen copy -->
     <string name="receive_address_title">Your Zcash shielded address</string>

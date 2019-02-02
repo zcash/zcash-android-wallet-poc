@@ -1,5 +1,6 @@
 package cash.z.android.wallet.ui.fragment
 
+import android.animation.Animator
 import android.app.Activity
 import android.os.Bundle
 import android.text.SpannableString
@@ -8,6 +9,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AccelerateDecelerateInterpolator
+import android.view.animation.AccelerateInterpolator
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.IdRes
@@ -55,32 +58,37 @@ class HomeFragment : BaseFragment(), HomePresenter.HomeView {
         savedInstanceState: Bundle?
     ): View? {
         viewsInitialized = false
-        val enterTransitionSet = TransitionInflater.from(mainActivity).inflateTransition(R.transition.transition_zec_sent).apply {
-            duration = 350L
-        }.addListener(object : Transition.TransitionListener {
-            override fun onTransitionEnd(transition: Transition) {
-                // fixes a bug where the translation gets lost, during animation. As a nice side effect, visually, it makes the view appear to settle in to position
-                header_active_transaction.translationZ = 10.0f
-            }
+        setupSharedElementTransitions()
 
-            override fun onTransitionResume(transition: Transition) {
-            }
+        return inflater.inflate(R.layout.fragment_home, container, false)
+    }
 
-            override fun onTransitionPause(transition: Transition) {
-            }
+    private fun setupSharedElementTransitions() {
+        val enterTransitionSet =
+            TransitionInflater.from(mainActivity).inflateTransition(R.transition.transition_zec_sent).apply {
+                duration = 300L
+            }.addListener(object : Transition.TransitionListener {
+                override fun onTransitionEnd(transition: Transition) {
+                    // fixes a bug where the translation gets lost, during animation. As a nice side effect, visually, it makes the view appear to settle in to position
+                    header_active_transaction.translationZ = 10.0f
+                }
 
-            override fun onTransitionCancel(transition: Transition) {
-            }
+                override fun onTransitionResume(transition: Transition) {
+                }
 
-            override fun onTransitionStart(transition: Transition) {
-            }
+                override fun onTransitionPause(transition: Transition) {
+                }
 
-        })
+                override fun onTransitionCancel(transition: Transition) {
+                }
+
+                override fun onTransitionStart(transition: Transition) {
+                }
+
+            })
 
         this.sharedElementEnterTransition = enterTransitionSet
         this.sharedElementReturnTransition = enterTransitionSet
-
-        return inflater.inflate(R.layout.fragment_home, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -90,7 +98,6 @@ class HomeFragment : BaseFragment(), HomePresenter.HomeView {
             mainActivity.setupNavigation()
             mainActivity.supportActionBar?.setTitle(R.string.destination_title_home)
         }
-        header_active_transaction.isActivated = true
         headerFullViews = arrayOf(text_balance_usd, text_balance_includes_info, text_balance_zec, image_zec_symbol_balance_shadow, image_zec_symbol_balance)
         headerEmptyViews = arrayOf(text_balance_zec_info, text_balance_zec_empty, image_zec_symbol_balance_shadow_empty, image_zec_symbol_balance_empty)
 
@@ -100,10 +107,13 @@ class HomeFragment : BaseFragment(), HomePresenter.HomeView {
         group_empty_view_items.visibility = View.GONE
         group_full_view_items.visibility = View.GONE
 
-        image_logo.setOnClickListener {
-//            forceRedraw()
-//            toggleViews(false)
-            header_active_transaction.isActivated = !header_active_transaction.isActivated
+        if (MainActivity.DEV_MODE) {
+            image_logo.setOnClickListener {
+                mainActivity.navController.navigate(R.id.nav_send_fragment)
+                //            forceRedraw()
+                //            toggleViews(false)
+
+            }
         }
 
         button_active_transaction_cancel.setOnClickListener {
@@ -258,7 +268,27 @@ class HomeFragment : BaseFragment(), HomePresenter.HomeView {
     private fun onCancelActiveTransaction() {
         button_active_transaction_cancel.isEnabled = false
         button_active_transaction_cancel.text = "canceled"
-        header_active_transaction.isActivated = false
+        header_active_transaction.animate().apply {
+            translationZ(0f)
+            duration = 200L
+            interpolator = AccelerateInterpolator()
+            setListener(object : Animator.AnimatorListener {
+                override fun onAnimationRepeat(animation: Animator?) {
+                }
+
+                override fun onAnimationEnd(animation: Animator?) {
+                    header_active_transaction.setBackgroundResource(0)
+                }
+
+                override fun onAnimationCancel(animation: Animator?) {
+                }
+
+                override fun onAnimationStart(animation: Animator?) {
+                }
+
+            } )
+        }
+
         homePresenter.onCancelActiveTransaction()
     }
 

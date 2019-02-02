@@ -11,6 +11,9 @@ import android.view.ViewGroup
 import androidx.core.text.toSpannable
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.fragment.FragmentNavigatorExtras
+import androidx.transition.Fade
+import androidx.transition.Transition
+import androidx.transition.TransitionInflater
 import cash.z.android.wallet.R
 import cash.z.android.wallet.databinding.FragmentSendBinding
 import cash.z.android.wallet.extention.afterTextChanged
@@ -20,6 +23,7 @@ import cash.z.android.wallet.ui.activity.MainActivity
 import cash.z.android.wallet.ui.presenter.SendPresenter
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
+import kotlinx.android.synthetic.main.include_home_content.*
 import kotlinx.coroutines.launch
 import java.text.DecimalFormat
 
@@ -41,6 +45,16 @@ class SendFragment : BaseFragment(), SendPresenter.SendView {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        val enterTransitionSet = TransitionInflater.from(mainActivity).inflateTransition(R.transition.transition_zec_sent).apply {
+            duration = 3500L
+        }
+
+        this.sharedElementReturnTransition = enterTransitionSet
+        this.sharedElementEnterTransition = enterTransitionSet
+
+        this.allowReturnTransitionOverlap = false
+        allowEnterTransitionOverlap = false
+0
         return DataBindingUtil.inflate<FragmentSendBinding>(
             inflater, R.layout.fragment_send, container, false
         ).let {
@@ -107,6 +121,7 @@ class SendFragment : BaseFragment(), SendPresenter.SendView {
         launch {
             sendPresenter.start()
         }
+        if(MainActivity.DEV_MODE) showSendDialog()
     }
 
     override fun onPause() {
@@ -115,11 +130,17 @@ class SendFragment : BaseFragment(), SendPresenter.SendView {
     }
 
     override fun submit(){
-        val extras = FragmentNavigatorExtras(
-            binding.dialogSendContents to getString(R.string.transition_active_transaction_background),
-            binding.dialogTextTitle to getString(R.string.transition_active_transaction_title),
-            binding.dialogTextAddress to getString(R.string.transition_active_transaction_address)
-        )
+        var extras = with(binding) {
+            listOf(dialogSendBackground, dialogSendContents, dialogTextTitle, dialogTextAddress)
+                .map{ it to it.transitionName }
+                .let { FragmentNavigatorExtras(*it.toTypedArray()) }
+        }
+//        val extras = FragmentNavigatorExtras(
+//            binding.dialogSendContents to binding.dialogSendContents.transitionName,
+//            binding.dialogTextTitle to getString(R.string.transition_active_transaction_title),
+//            binding.dialogTextAddress to getString(R.string.transition_active_transaction_address),
+//            binding.dialogSendBackground to getString(R.string.transition_active_transaction_background)
+//        )
 
         mainActivity.navController.navigate(R.id.nav_home_fragment,
             null,

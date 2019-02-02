@@ -38,7 +38,7 @@ class MainActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        synchronizer.start(this)
+        if(!DEV_MODE)synchronizer.start(this)
     }
 
     override fun onDestroy() {
@@ -52,6 +52,11 @@ class MainActivity : BaseActivity() {
         } else {
             super.onBackPressed()
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if(DEV_MODE) navController.navigate(R.id.nav_send_fragment)
     }
 
     /**
@@ -85,6 +90,12 @@ class MainActivity : BaseActivity() {
     }
 
     companion object {
+        /**
+         * A simple flag that helps with removing shortcuts in the code used during development.
+         * TODO: either elevate this to a real thing (based off a system property or some such) or delete it!
+         */
+        const val DEV_MODE = true
+
         // TODO: placeholder until we have a network service for this
         const val USD_PER_ZEC = 49.07
         init {
