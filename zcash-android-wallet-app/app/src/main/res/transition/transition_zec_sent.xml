@@ -9,6 +9,10 @@
     <changeTransform/>
     <changeClipBounds/>
     <changeImageTransform/>
+    <slide
+        android:slideEdge="left"
+        android:duration="200"
+        android:interpolator="@android:interpolator/linear_out_slow_in"/>
     <!--<changeBounds android:interpolator="@android:interpolator/fast_out_slow_in">-->
         <!--<targets>-->
             <!--<target android:targetName="@string/transition_active_transaction" />-->

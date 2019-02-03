@@ -57,6 +57,13 @@ internal object SynchronizerModule {
     @JvmStatic
     @Provides
     @Singleton
+    fun provideManager(): ActiveTransactionManager {
+        return ActiveTransactionManager()
+    }
+
+    @JvmStatic
+    @Provides
+    @Singleton
     fun provideJniConverter(): JniConverter = JniConverter()
 
     @JvmStatic
@@ -66,10 +73,11 @@ internal object SynchronizerModule {
         downloader: CompactBlockStream,
         processor: CompactBlockProcessor,
         repository: TransactionRepository,
+        manager: ActiveTransactionManager,
         wallet: Wallet,
         twigger: Twig
     ): Synchronizer {
-        return Synchronizer(downloader, processor, repository, wallet, logger = twigger)
+        return Synchronizer(downloader, processor, repository, manager, wallet, logger = twigger)
     }
 
 }
