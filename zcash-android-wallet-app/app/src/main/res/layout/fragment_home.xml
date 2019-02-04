@@ -37,4 +37,6 @@
         app:layout_anchor="@id/home_app_bar"
         app:layout_anchorGravity="bottom|center"
         app:srcCompat="@drawable/ic_zcashlogo_badge" />
+
+    <include layout="@layout/activity_main_first_run"/>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

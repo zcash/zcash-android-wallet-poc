@@ -14,6 +14,7 @@ import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.IdRes
 import androidx.annotation.StringRes
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.Transition
@@ -39,6 +40,9 @@ import kotlinx.android.synthetic.main.include_home_header.*
 import kotlinx.coroutines.launch
 import kotlin.random.Random
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_main_first_run.*
+import kotlin.random.nextLong
 
 
 /**
@@ -75,11 +79,7 @@ class HomeFragment : BaseFragment(), HomePresenter.HomeView {
         super.onViewCreated(view, savedInstanceState)
 //        setActiveTransactionsShown(false)
 
-        (activity as MainActivity).let { mainActivity ->
-            mainActivity.setSupportActionBar(home_toolbar)
-            mainActivity.setupNavigation()
-            mainActivity.supportActionBar?.setTitle(R.string.destination_title_home)
-        }
+
         headerFullViews = arrayOf(text_balance_usd, text_balance_includes_info, text_balance_zec, image_zec_symbol_balance_shadow, image_zec_symbol_balance)
         headerEmptyViews = arrayOf(text_balance_zec_info, text_balance_zec_empty, image_zec_symbol_balance_shadow_empty, image_zec_symbol_balance_empty)
 
@@ -89,23 +89,44 @@ class HomeFragment : BaseFragment(), HomePresenter.HomeView {
         group_empty_view_items.visibility = View.GONE
         group_full_view_items.visibility = View.GONE
 
-        if (MainActivity.DEV_MODE) {
-            image_logo.setOnClickListener {
+        image_logo.setOnClickListener {
+            if (MainActivity.DEV_MODE) {
                 mainActivity.navController.navigate(R.id.nav_send_fragment)
                 //            forceRedraw()
                 //            toggleViews(false)
 
+            } else {
+                forceRedraw()
+                toggleViews(false)
             }
+
         }
 
         button_active_transaction_cancel.setOnClickListener {
             onCancelActiveTransaction()
         }
+
+        refresh_layout.setOnRefreshListener {
+            val fauxRefresh = Random.nextLong(750L..3000L)
+            refresh_layout.postDelayed({
+                refresh_layout.isRefreshing = false
+            }, fauxRefresh)
+        }
+
+        if (mainActivity.synchronizer.processor.dataDbExists) {
+            container_first_run.visibility = View.GONE
+            mainActivity.findViewById<DrawerLayout>(R.id.drawer_layout).setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
+            sd_fab.visibility = View.VISIBLE
+        } else {
+            container_first_run.visibility = View.VISIBLE
+            mainActivity.findViewById<DrawerLayout>(R.id.drawer_layout).setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+            sd_fab.visibility = View.GONE
+        }
     }
 
     override fun onResume() {
         super.onResume()
-        val isEmpty = (recycler_transactions?.adapter?.itemCount ?: 0).let { it == 0 }
+//        val isEmpty = (recycler_transactions?.adapter?.itemCount ?: 0).let { it == 0 }
 //        Log.e("TWIG-t", "Resuming and isEmpty == $isEmpty")
 //        toggleViews(isEmpty)
 
@@ -121,6 +142,12 @@ class HomeFragment : BaseFragment(), HomePresenter.HomeView {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        (activity as MainActivity).let { mainActivity ->
+            mainActivity.setSupportActionBar(home_toolbar)
+            mainActivity.setupNavigation()
+            mainActivity.supportActionBar?.setTitle(R.string.destination_title_home)
+        }
+
         homePresenter = HomePresenter(this, mainActivity.synchronizer)
         initFab(activity!!)
 
@@ -175,6 +202,12 @@ class HomeFragment : BaseFragment(), HomePresenter.HomeView {
             snackbar?.setText(message)
             if(progress == 100 && snackbar?.isShownOrQueued != true) snackbar?.show()
         }
+
+        if (progress >= 100) {
+            container_first_run.visibility = View.GONE
+            mainActivity.findViewById<DrawerLayout>(R.id.drawer_layout).setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
+            sd_fab.visibility = View.VISIBLE
+        }
     }
 
     override fun setActiveTransactions(activeTransactionMap: Map<ActiveTransaction, TransactionState>) {
@@ -206,6 +239,8 @@ class HomeFragment : BaseFragment(), HomePresenter.HomeView {
                 button_active_transaction_cancel.text = "${transaction.value/1000L}"
             }
             is TransactionState.Failure -> {
+                lottie_active_transaction.setAnimation(R.raw.lottie_send_failure)
+                lottie_active_transaction.playAnimation()
                 title = "Failed"
                 subtitle = when(transactionState.failedStep) {
                     TransactionState.Creating -> "Failed to create transaction"
@@ -216,8 +251,14 @@ class HomeFragment : BaseFragment(), HomePresenter.HomeView {
                 onCancelActiveTransaction()
             }
             is TransactionState.AwaitingConfirmations -> {
-                title = "ZEC Sent"
-                subtitle = "Awaiting Confirmations (${transactionState.confirmationCount}/10)"
+                if (transactionState.confirmationCount < 1) {
+                    lottie_active_transaction.setAnimation(R.raw.lottie_send_success)
+                    lottie_active_transaction.playAnimation()
+                    title = "ZEC Sent"
+                    subtitle = "Awaiting Confirmations (${transactionState.confirmationCount}/10)"
+                } else {
+                    // play confirmation counting animation
+                }
             }
         }
         text_active_transaction_title.text = title
@@ -305,11 +346,14 @@ class HomeFragment : BaseFragment(), HomePresenter.HomeView {
     private fun onActiveTransactionTransitionEnd() {
         // fixes a bug where the translation gets lost, during animation. As a nice side effect, visually, it makes the view appear to settle in to position
         header_active_transaction.translationZ = 10.0f
+        button_active_transaction_cancel.apply {
+            postDelayed({text  = "cancel"}, 50L)
+        }
     }
 
     private fun onCancelActiveTransaction() {
         button_active_transaction_cancel.isEnabled = false
-        button_active_transaction_cancel.text = "canceled"
+        button_active_transaction_cancel.text = "cancel"
         header_active_transaction.animate().apply {
             translationZ(0f)
             duration = 200L
@@ -330,7 +374,6 @@ class HomeFragment : BaseFragment(), HomePresenter.HomeView {
 
             } )
         }
-
         homePresenter.onCancelActiveTransaction()
     }
 

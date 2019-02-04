@@ -85,10 +85,10 @@ internal object SynchronizerModule {
 
 // TODO: load most of these properties in later, perhaps from settings
 object Properties {
-    const val COMPACT_BLOCK_SERVER = "10.0.2.2"
-//    const val COMPACT_BLOCK_SERVER = "lightwalletd.z.cash"
+//    const val COMPACT_BLOCK_SERVER = "10.0.0.26"
+    const val COMPACT_BLOCK_SERVER = "lightwalletd.z.cash"
     const val COMPACT_BLOCK_PORT = 9067
-    const val CACHE_DB_NAME = "wallet_cache.db"
-    const val DATA_DB_NAME = "wallet_data.db"
+    const val CACHE_DB_NAME = "wallet_cache9.db"
+    const val DATA_DB_NAME = "wallet_data9.db"
     val SEED_PROVIDER = SampleSeedProvider("dummyseed")
 }

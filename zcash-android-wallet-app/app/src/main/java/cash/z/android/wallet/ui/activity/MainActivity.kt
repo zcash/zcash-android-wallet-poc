@@ -1,6 +1,8 @@
 package cash.z.android.wallet.ui.activity
 
 import android.os.Bundle
+import android.util.Log
+import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.view.inputmethod.InputMethodManager.HIDE_NOT_ALWAYS
 import androidx.appcompat.app.AppCompatDelegate
@@ -23,7 +25,14 @@ import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.nav_header_main.*
 import cash.z.wallet.sdk.data.Synchronizer
+import com.google.android.material.snackbar.Snackbar
+import dagger.android.AndroidInjection
+import kotlinx.android.synthetic.main.activity_main_first_run.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.channels.ReceiveChannel
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class MainActivity : BaseActivity() {
