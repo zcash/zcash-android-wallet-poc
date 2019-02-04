@@ -7,7 +7,9 @@ import cash.z.android.wallet.vo.WalletTransaction
 import cash.z.android.wallet.vo.WalletTransactionStatus
 import cash.z.android.wallet.vo.WalletTransactionStatus.RECEIVED
 import cash.z.android.wallet.vo.WalletTransactionStatus.SENT
+import cash.z.wallet.sdk.data.ActiveTransaction
 import cash.z.wallet.sdk.data.Synchronizer
+import cash.z.wallet.sdk.data.TransactionState
 import cash.z.wallet.sdk.vo.NoteQuery
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
@@ -27,11 +29,13 @@ class HomePresenter(
         fun setTransactions(transactions: List<WalletTransaction>)
         fun updateBalance(old: Long, new: Long)
         fun showProgress(progress: Int)
+        fun setActiveTransactions(activeTransactionMap: Map<ActiveTransaction, TransactionState>)
     }
 
     private var balanceJob: Job? = null
     private var transactionJob: Job? = null
     private var progressJob: Job? = null
+    private var activeTransactionJob: Job? = null
 
     override suspend fun start() {
         Log.e("@TWIG-t", "homePresenter starting!")
@@ -39,6 +43,7 @@ class HomePresenter(
             balanceJob = launchBalanceBinder(synchronizer.repository.balance())
             transactionJob = launchTransactionBinder(synchronizer.repository.allTransactions())
             progressJob = launchProgressMonitor(synchronizer.downloader.progress())
+            activeTransactionJob = launchActiveTransactionMonitor(synchronizer.activeTransactions())
         }
     }
 
@@ -49,6 +54,7 @@ class HomePresenter(
         balanceJob?.cancel()?.also { balanceJob = null }
         transactionJob?.cancel()?.also { transactionJob = null }
         progressJob?.cancel()?.also { progressJob = null }
+        activeTransactionJob?.cancel()?.also { progressJob = null }
     }
 
     fun CoroutineScope.launchBalanceBinder(channel: ReceiveChannel<Long>) = launch {
@@ -82,17 +88,25 @@ class HomePresenter(
         Log.e("@TWIG", "progress monitor exiting!")
     }
 
-    fun bind(old: Long?, new: Long) {
+    fun CoroutineScope.launchActiveTransactionMonitor(channel: ReceiveChannel<Map<ActiveTransaction, TransactionState>>) = launch {
+        Log.e("@TWIG-v", "active transaction monitor starting!")
+        for (i in channel) {
+            bind(i)
+        }
+        Log.e("@TWIG-v", "active transaction monitor exiting!")
+    }
+
+    private fun bind(old: Long?, new: Long) {
         Log.e("@TWIG-t", "binding balance of $new")
         view.updateBalance(old ?: 0L, new)
     }
 
-    fun bind(transactions: List<WalletTransaction>) {
+    private fun bind(transactions: List<WalletTransaction>) {
         Log.e("@TWIG-t", "binding ${transactions.size} walletTransactions")
         view.setTransactions(transactions)
     }
 
-    fun bind(progress: Int) {
+    private fun bind(progress: Int) {
         view.showProgress(progress)
         if(progress == 100) {
             view.launch {
@@ -102,6 +116,12 @@ class HomePresenter(
             }
         }
     }
+
+    private fun bind(activeTransactionMap: Map<ActiveTransaction, TransactionState>) {
+        Log.e("@TWIG-v", "binding a.t. map of size ${activeTransactionMap.size}")
+        if (activeTransactionMap.isNotEmpty()) view.setActiveTransactions(activeTransactionMap)
+    }
+
 
     fun onCancelActiveTransaction() {
         // TODO: hold a reference to the job and cancel it
@@ -114,6 +134,7 @@ class HomePresenter(
         Log.e("@TWIG-u", "setting timestamp to $timestamp for value $value")
         return WalletTransaction(height, if (sent) SENT else RECEIVED, timestamp, BigDecimal(value / 1e8))
     }
+
 
 }
 

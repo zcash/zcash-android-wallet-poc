@@ -5,6 +5,7 @@ import cash.z.android.wallet.ui.presenter.Presenter.PresenterView
 import cash.z.wallet.sdk.data.Synchronizer
 import cash.z.wallet.sdk.vo.Transaction
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.launch
@@ -22,13 +23,14 @@ class SendPresenter(
     private var balanceJob: Job? = null
 
     override suspend fun start() {
-        Log.e("@TWIG-v", "homePresenter starting!")
+        Log.e("@TWIG-v", "sendPresenter starting!")
         with(view) {
             balanceJob = launchBalanceBinder(synchronizer.repository.balance())
         }
     }
 
     override fun stop() {
+        Log.e("@TWIG-v", "sendPresenter stopping!")
         balanceJob?.cancel()?.also { balanceJob = null }
     }
 
@@ -43,14 +45,12 @@ class SendPresenter(
     }
 
     fun sendToAddress(value: Double, toAddress: String) {
-        view.launch {
+        //TODO: prehaps grab the activity scope or let the sycnchronizer have scope and make that function not suspend
+        // also, we need to handle cancellations. So yeah, definitely do this differently
+        GlobalScope.launch {
             val zatoshi = Math.round(value * 1e8)
             synchronizer.sendToAddress(zatoshi, toAddress)
-            // TOOD: already be subscribed to active transactions channel!
         }
-    }
-
-    fun onDialogConfirm() {
         view.submit()
     }
 

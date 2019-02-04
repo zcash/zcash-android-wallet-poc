@@ -9,7 +9,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.AccelerateInterpolator
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
@@ -17,12 +16,9 @@ import androidx.annotation.IdRes
 import androidx.annotation.StringRes
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.transition.ChangeBounds
 import androidx.transition.Transition
 import androidx.transition.TransitionInflater
-import androidx.transition.TransitionSet
 import cash.z.android.wallet.R
-import cash.z.android.wallet.extention.Toaster
 import cash.z.android.wallet.extention.toAppColor
 import cash.z.android.wallet.extention.toAppString
 import cash.z.android.wallet.extention.tryIgnore
@@ -32,6 +28,8 @@ import cash.z.android.wallet.ui.presenter.HomePresenter
 import cash.z.android.wallet.ui.util.AlternatingRowColorDecoration
 import cash.z.android.wallet.ui.util.TopAlignedSpan
 import cash.z.android.wallet.vo.WalletTransaction
+import cash.z.wallet.sdk.data.ActiveTransaction
+import cash.z.wallet.sdk.data.TransactionState
 import com.leinardi.android.speeddial.SpeedDialActionItem
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
@@ -51,7 +49,7 @@ class HomeFragment : BaseFragment(), HomePresenter.HomeView {
 
     lateinit var homePresenter: HomePresenter
     lateinit var transactionAdapter: TransactionAdapter
-    var viewsInitialized = false
+    private var viewsInitialized = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -67,25 +65,7 @@ class HomeFragment : BaseFragment(), HomePresenter.HomeView {
         val enterTransitionSet =
             TransitionInflater.from(mainActivity).inflateTransition(R.transition.transition_zec_sent).apply {
                 duration = 300L
-            }.addListener(object : Transition.TransitionListener {
-                override fun onTransitionEnd(transition: Transition) {
-                    // fixes a bug where the translation gets lost, during animation. As a nice side effect, visually, it makes the view appear to settle in to position
-                    header_active_transaction.translationZ = 10.0f
-                }
-
-                override fun onTransitionResume(transition: Transition) {
-                }
-
-                override fun onTransitionPause(transition: Transition) {
-                }
-
-                override fun onTransitionCancel(transition: Transition) {
-                }
-
-                override fun onTransitionStart(transition: Transition) {
-                }
-
-            })
+            }.addListener(HomeTransitionListener())
 
         this.sharedElementEnterTransition = enterTransitionSet
         this.sharedElementReturnTransition = enterTransitionSet
@@ -93,6 +73,8 @@ class HomeFragment : BaseFragment(), HomePresenter.HomeView {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+//        setActiveTransactionsShown(false)
+
         (activity as MainActivity).let { mainActivity ->
             mainActivity.setSupportActionBar(home_toolbar)
             mainActivity.setupNavigation()
@@ -195,6 +177,57 @@ class HomeFragment : BaseFragment(), HomePresenter.HomeView {
         }
     }
 
+    override fun setActiveTransactions(activeTransactionMap: Map<ActiveTransaction, TransactionState>) {
+        if (activeTransactionMap.isEmpty()) {
+            setActiveTransactionsShown(false)
+            return
+        }
+
+        setActiveTransactionsShown(true)
+        val transactions = activeTransactionMap.entries.toTypedArray()
+        // primary is the last one that was inserted
+        val primaryEntry = transactions[transactions.size - 1]
+        updatePrimaryTransaction(primaryEntry.key, primaryEntry.value)
+        // TODO: update remaining transactions
+    }
+
+    private fun updatePrimaryTransaction(transaction: ActiveTransaction, transactionState: TransactionState) {
+        var title = "Active Transaction"
+        var subtitle = "Processing..."
+        when (transactionState) {
+            TransactionState.Creating -> {
+                title = "Preparing ${transaction.value} ZEC"
+                subtitle = "to ********"
+                button_active_transaction_cancel.text = "cancel"
+            }
+            TransactionState.SendingToNetwork -> {
+                title = "Sending Transaction"
+                subtitle = "to ********"
+                button_active_transaction_cancel.text = "${transaction.value/1000L}"
+            }
+            is TransactionState.Failure -> {
+                title = "Failed"
+                subtitle = when(transactionState.failedStep) {
+                    TransactionState.Creating -> "Failed to create transaction"
+                    TransactionState.SendingToNetwork -> "Failed to submit transaction to the network"
+                    else -> "Unrecoginzed error"
+                }
+                button_active_transaction_cancel.visibility = View.GONE
+                onCancelActiveTransaction()
+            }
+            is TransactionState.AwaitingConfirmations -> {
+                title = "ZEC Sent"
+                subtitle = "Awaiting Confirmations (${transactionState.confirmationCount}/10)"
+            }
+        }
+        text_active_transaction_title.text = title
+        text_active_transaction_subtitle.text = subtitle
+    }
+
+    private fun setActiveTransactionsShown(isShown: Boolean) {
+        header_active_transaction.visibility = if (isShown) View.VISIBLE else View.GONE
+    }
+
 
     //
     // Private View API
@@ -265,6 +298,15 @@ class HomeFragment : BaseFragment(), HomePresenter.HomeView {
         }
     }
 
+    private fun onActiveTransactionTransitionStart() {
+
+    }
+
+    private fun onActiveTransactionTransitionEnd() {
+        // fixes a bug where the translation gets lost, during animation. As a nice side effect, visually, it makes the view appear to settle in to position
+        header_active_transaction.translationZ = 10.0f
+    }
+
     private fun onCancelActiveTransaction() {
         button_active_transaction_cancel.isEnabled = false
         button_active_transaction_cancel.text = "canceled"
@@ -290,6 +332,18 @@ class HomeFragment : BaseFragment(), HomePresenter.HomeView {
         }
 
         homePresenter.onCancelActiveTransaction()
+    }
+
+    inner class HomeTransitionListener : Transition.TransitionListener {
+        override fun onTransitionStart(transition: Transition) {
+            onActiveTransactionTransitionStart()
+        }
+        override fun onTransitionEnd(transition: Transition) {
+            onActiveTransactionTransitionEnd()
+        }
+        override fun onTransitionResume(transition: Transition){}
+        override fun onTransitionPause(transition: Transition){}
+        override fun onTransitionCancel(transition: Transition) {}
     }
 
     /**

@@ -11,8 +11,6 @@ import android.view.ViewGroup
 import androidx.core.text.toSpannable
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.fragment.FragmentNavigatorExtras
-import androidx.transition.Fade
-import androidx.transition.Transition
 import androidx.transition.TransitionInflater
 import cash.z.android.wallet.R
 import cash.z.android.wallet.databinding.FragmentSendBinding
@@ -23,7 +21,6 @@ import cash.z.android.wallet.ui.activity.MainActivity
 import cash.z.android.wallet.ui.presenter.SendPresenter
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
-import kotlinx.android.synthetic.main.include_home_content.*
 import kotlinx.coroutines.launch
 import java.text.DecimalFormat
 
@@ -106,7 +103,7 @@ class SendFragment : BaseFragment(), SendPresenter.SendView {
             hideSendDialog()
         }
         binding.dialogSubmitButton.setOnClickListener {
-            sendPresenter.onDialogConfirm()
+            if (MainActivity.DEV_MODE) submit() else onSendZec()
         }
     }
 

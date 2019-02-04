@@ -94,7 +94,7 @@ class MainActivity : BaseActivity() {
          * A simple flag that helps with removing shortcuts in the code used during development.
          * TODO: either elevate this to a real thing (based off a system property or some such) or delete it!
          */
-        const val DEV_MODE = true
+        const val DEV_MODE = false
 
         // TODO: placeholder until we have a network service for this
         const val USD_PER_ZEC = 49.07
