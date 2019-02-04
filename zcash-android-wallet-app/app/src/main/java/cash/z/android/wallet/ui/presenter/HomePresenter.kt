@@ -102,13 +102,6 @@ class HomePresenter(
 
     private fun bind(progress: Int) = onMain {
         view.showProgress(progress)
-        if (progress == 100) {
-            launch {
-                // TODO: remove this behavior and pull it down into the synchronizer
-                Log.e("@TWIG-t", "triggering manual scan!")
-                synchronizer.processor.scanBlocks()
-            }
-        }
     }
 
     private fun bind(activeTransactionMap: Map<ActiveTransaction, TransactionState>) = onMain {

@@ -29,8 +29,10 @@ import cash.z.android.wallet.ui.presenter.HomePresenter
 import cash.z.android.wallet.ui.util.AlternatingRowColorDecoration
 import cash.z.android.wallet.ui.util.TopAlignedSpan
 import cash.z.android.wallet.vo.WalletTransaction
+import cash.z.wallet.sdk.data.ActiveSendTransaction
 import cash.z.wallet.sdk.data.ActiveTransaction
 import cash.z.wallet.sdk.data.TransactionState
+import cash.z.wallet.sdk.ext.toZec
 import com.leinardi.android.speeddial.SpeedDialActionItem
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
@@ -68,7 +70,7 @@ class HomeFragment : BaseFragment(), HomePresenter.HomeView {
     private fun setupSharedElementTransitions() {
         val enterTransitionSet =
             TransitionInflater.from(mainActivity).inflateTransition(R.transition.transition_zec_sent).apply {
-                duration = 300L
+                duration = 3000L
             }.addListener(HomeTransitionListener())
 
         this.sharedElementEnterTransition = enterTransitionSet
@@ -106,22 +108,24 @@ class HomeFragment : BaseFragment(), HomePresenter.HomeView {
             onCancelActiveTransaction()
         }
 
-        refresh_layout.setOnRefreshListener {
-            val fauxRefresh = Random.nextLong(750L..3000L)
-            refresh_layout.postDelayed({
-                refresh_layout.isRefreshing = false
-            }, fauxRefresh)
+//        refresh_layout.setOnRefreshListener {
+//            val fauxRefresh = Random.nextLong(750L..3000L)
+//            refresh_layout.postDelayed({
+//                refresh_layout.isRefreshing = false
+//            }, fauxRefresh)
+//        }
+
+        launch {
+            setFirstRunShown(mainActivity.synchronizer.isFirstRun())
         }
 
-        if (mainActivity.synchronizer.processor.dataDbExists) {
-            container_first_run.visibility = View.GONE
-            mainActivity.findViewById<DrawerLayout>(R.id.drawer_layout).setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
-            sd_fab.visibility = View.VISIBLE
-        } else {
-            container_first_run.visibility = View.VISIBLE
-            mainActivity.findViewById<DrawerLayout>(R.id.drawer_layout).setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
-            sd_fab.visibility = View.GONE
-        }
+//        refresh_layout.setProgressViewEndTarget(false, (86f * resources.displayMetrics.density).toInt())
+    }
+
+    private fun setFirstRunShown(isShown: Boolean) {
+        container_first_run?.visibility = if (isShown) View.VISIBLE else View.GONE
+        mainActivity.setDrawerLocked(isShown)
+        sd_fab?.visibility = if (!isShown) View.VISIBLE else View.GONE
     }
 
     override fun onResume() {
@@ -180,6 +184,7 @@ class HomeFragment : BaseFragment(), HomePresenter.HomeView {
         Log.e("TWIG-t", "submitList called with ${transactions.size} transactions")
         transactionAdapter.submitList(transactions)
         recycler_transactions.smoothScrollToPosition(0)
+        if (transactions.isNotEmpty()) setFirstRunShown(false)
     }
 
     var snackbar: Snackbar? = null
@@ -202,12 +207,6 @@ class HomeFragment : BaseFragment(), HomePresenter.HomeView {
             snackbar?.setText(message)
             if(progress == 100 && snackbar?.isShownOrQueued != true) snackbar?.show()
         }
-
-        if (progress >= 100) {
-            container_first_run.visibility = View.GONE
-            mainActivity.findViewById<DrawerLayout>(R.id.drawer_layout).setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
-            sd_fab.visibility = View.VISIBLE
-        }
     }
 
     override fun setActiveTransactions(activeTransactionMap: Map<ActiveTransaction, TransactionState>) {
@@ -229,13 +228,13 @@ class HomeFragment : BaseFragment(), HomePresenter.HomeView {
         var subtitle = "Processing..."
         when (transactionState) {
             TransactionState.Creating -> {
-                title = "Preparing ${transaction.value} ZEC"
-                subtitle = "to ********"
+                title = "Preparing ${transaction.value.toZec(2)} ZEC"
+                subtitle = "to ${(transaction as ActiveSendTransaction).toAddress}"
                 button_active_transaction_cancel.text = "cancel"
             }
             TransactionState.SendingToNetwork -> {
                 title = "Sending Transaction"
-                subtitle = "to ********"
+                subtitle = "to ${(transaction as ActiveSendTransaction).toAddress}"
                 button_active_transaction_cancel.text = "${transaction.value/1000L}"
             }
             is TransactionState.Failure -> {
@@ -336,11 +335,12 @@ class HomeFragment : BaseFragment(), HomePresenter.HomeView {
         if (situationHasChanged) {
             Log.e("TWIG-t", "The situation has changed! toggling views!")
             toggleViews(isEmpty)
+            if (!isEmpty) setFirstRunShown(false)
         }
     }
 
     private fun onActiveTransactionTransitionStart() {
-
+        button_active_transaction_cancel.visibility = View.INVISIBLE
     }
 
     private fun onActiveTransactionTransitionEnd() {
@@ -348,6 +348,7 @@ class HomeFragment : BaseFragment(), HomePresenter.HomeView {
         header_active_transaction.translationZ = 10.0f
         button_active_transaction_cancel.apply {
             postDelayed({text  = "cancel"}, 50L)
+            visibility = View.VISIBLE
         }
     }
 

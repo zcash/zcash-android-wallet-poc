@@ -18,17 +18,20 @@
     android:id="@+id/container_first_run"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:visibility="gone"
-    android:background="#81CAFF">
+    android:background="#81CAFF"
+    android:clickable="true"
+    android:focusableInTouchMode="true"
+    android:visibility="gone">
 
     <cash.z.android.wallet.ui.util.ViewpagerHeader
+        android:id="@+id/scenic_view"
         android:layout_width="match_parent"
-        android:layout_height="230dp"
+        android:layout_height="260dp"
         app:layoutDescription="@xml/scene_15"
-        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
             android:id="@+id/mountains"
@@ -62,4 +65,28 @@
             tools:layout_editor_absoluteY="194dp" />
 
     </cash.z.android.wallet.ui.util.ViewpagerHeader>
+
+    <TextView
+        android:id="@+id/first_run_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="36dp"
+        android:text="Initializing first run!"
+        android:textColor="@color/zcashBlack_40"
+        android:textSize="@dimen/text_size_h6"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/scenic_view" />
+
+    <TextView
+        android:id="@+id/first_run_submessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Enjoy the view because this may take a while..."
+        android:textColor="@color/zcashBlack_40"
+        android:textSize="@dimen/text_size_subtitle_1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/first_run_message" />
 </androidx.constraintlayout.widget.ConstraintLayout>
