@@ -108,18 +108,19 @@ class HomeFragment : BaseFragment(), HomePresenter.HomeView {
             onCancelActiveTransaction()
         }
 
-//        refresh_layout.setOnRefreshListener {
-//            val fauxRefresh = Random.nextLong(750L..3000L)
-//            refresh_layout.postDelayed({
-//                refresh_layout.isRefreshing = false
-//            }, fauxRefresh)
-//        }
+        refresh_layout.setOnRefreshListener {
+            val fauxRefresh = Random.nextLong(750L..3000L)
+            refresh_layout.postDelayed({
+                refresh_layout.isRefreshing = false
+            }, fauxRefresh)
+        }
 
         launch {
             setFirstRunShown(mainActivity.synchronizer.isFirstRun())
         }
 
-//        refresh_layout.setProgressViewEndTarget(false, (86f * resources.displayMetrics.density).toInt())
+        header_active_transaction.visibility = View.GONE
+        refresh_layout.setProgressViewEndTarget(false, (86f * resources.displayMetrics.density).toInt())
     }
 
     private fun setFirstRunShown(isShown: Boolean) {
@@ -228,9 +229,11 @@ class HomeFragment : BaseFragment(), HomePresenter.HomeView {
         var subtitle = "Processing..."
         when (transactionState) {
             TransactionState.Creating -> {
-                title = "Preparing ${transaction.value.toZec(2)} ZEC"
+                header_active_transaction.visibility = View.VISIBLE
+                title = "Preparing ${transaction.value.toZec(3)} ZEC"
                 subtitle = "to ${(transaction as ActiveSendTransaction).toAddress}"
                 button_active_transaction_cancel.text = "cancel"
+                setActiveTransactionRaised(true)
             }
             TransactionState.SendingToNetwork -> {
                 title = "Sending Transaction"
@@ -353,10 +356,14 @@ class HomeFragment : BaseFragment(), HomePresenter.HomeView {
     }
 
     private fun onCancelActiveTransaction() {
-        button_active_transaction_cancel.isEnabled = false
+        setActiveTransactionRaised(false)
         button_active_transaction_cancel.text = "cancel"
+    }
+
+    private fun setActiveTransactionRaised(isRaised: Boolean) {
+        button_active_transaction_cancel.isEnabled = isRaised
         header_active_transaction.animate().apply {
-            translationZ(0f)
+            translationZ(if (isRaised) 10f else 0f)
             duration = 200L
             interpolator = AccelerateInterpolator()
             setListener(object : Animator.AnimatorListener {
@@ -364,7 +371,9 @@ class HomeFragment : BaseFragment(), HomePresenter.HomeView {
                 }
 
                 override fun onAnimationEnd(animation: Animator?) {
-                    header_active_transaction.setBackgroundResource(0)
+                    header_active_transaction.apply {
+                        if(translationZ == 0f) setBackgroundResource(0)
+                    }
                 }
 
                 override fun onAnimationCancel(animation: Animator?) {
@@ -375,8 +384,8 @@ class HomeFragment : BaseFragment(), HomePresenter.HomeView {
 
             } )
         }
-        homePresenter.onCancelActiveTransaction()
     }
+
 
     inner class HomeTransitionListener : Transition.TransitionListener {
         override fun onTransitionStart(transition: Transition) {

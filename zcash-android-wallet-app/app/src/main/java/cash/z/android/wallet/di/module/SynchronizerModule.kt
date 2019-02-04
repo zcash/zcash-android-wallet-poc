@@ -87,8 +87,8 @@ internal object SynchronizerModule {
 object Properties {
     val COMPACT_BLOCK_SERVER = Servers.ZCASH_TESTNET.host
     const val COMPACT_BLOCK_PORT = 9067
-    const val CACHE_DB_NAME = "wallet_cache19.db"
-    const val DATA_DB_NAME = "wallet_data19.db"
+    const val CACHE_DB_NAME = "wallet_cache21.db"
+    const val DATA_DB_NAME = "wallet_data21.db"
     val SEED_PROVIDER = SampleSeedProvider("dummyseed")
 }
 

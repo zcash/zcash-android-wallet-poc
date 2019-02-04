@@ -42,15 +42,15 @@ class SendFragment : BaseFragment(), SendPresenter.SendView {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val enterTransitionSet = TransitionInflater.from(mainActivity).inflateTransition(R.transition.transition_zec_sent).apply {
-            duration = 3500L
-        }
-
-        this.sharedElementReturnTransition = enterTransitionSet
-        this.sharedElementEnterTransition = enterTransitionSet
-
-        this.allowReturnTransitionOverlap = false
-        allowEnterTransitionOverlap = false
+//        val enterTransitionSet = TransitionInflater.from(mainActivity).inflateTransition(R.transition.transition_zec_sent).apply {
+//            duration = 3500L
+//        }
+//
+//        this.sharedElementReturnTransition = enterTransitionSet
+//        this.sharedElementEnterTransition = enterTransitionSet
+//
+//        this.allowReturnTransitionOverlap = false
+//        allowEnterTransitionOverlap = false
 0
         return DataBindingUtil.inflate<FragmentSendBinding>(
             inflater, R.layout.fragment_send, container, false
@@ -126,7 +126,14 @@ class SendFragment : BaseFragment(), SendPresenter.SendView {
         sendPresenter.stop()
     }
 
-    override fun submit(){
+    override fun submit() {
+        mainActivity.navController.navigate(R.id.nav_home_fragment,
+            null,
+            null,
+            FragmentNavigatorExtras(binding.dialogTextTitle to "transition_active_transaction_title"))
+    }
+
+    fun submitOld() {
         var extras = with(binding) {
             listOf(dialogSendBackground, dialogSendContents, dialogTextTitle, dialogTextAddress)
                 .map{ it to it.transitionName }
