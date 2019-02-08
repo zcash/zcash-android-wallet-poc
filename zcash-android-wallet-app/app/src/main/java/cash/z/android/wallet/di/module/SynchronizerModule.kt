@@ -97,10 +97,10 @@ internal object SynchronizerModule {
 object Properties {
     val COMPACT_BLOCK_SERVER = Servers.EMULATOR.host
     const val COMPACT_BLOCK_PORT = 9067
-    const val CACHE_DB_NAME = "wallet_cache421.db"
-    const val DATA_DB_NAME = "wallet_data421.db"
-    val SEED_PROVIDER = SampleImportedSeedProvider("295761fce7fdc89fa1095259f5be6375c4a36f7a214767d668f9ef6e17aa6314")
-    val SPENDING_KEY_PROVIDER = SampleSpendingKeyProvider2("dummyseed")
+    const val CACHE_DB_NAME = "wallet_cache4821.db"
+    const val DATA_DB_NAME = "wallet_data4821.db"
+    val SEED_PROVIDER = SampleSeedProvider("dummyseed")
+    val SPENDING_KEY_PROVIDER = SampleSpendingKeyProvider("dummyseed")
 }
 
 enum class Servers(val host: String) {
