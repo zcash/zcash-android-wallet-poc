@@ -49,15 +49,17 @@ dependencies {
     implementation deps.androidx.navigation.ui
     implementation deps.androidx.navigation.uiKtx
     implementation deps.material
-    implementation 'androidx.multidex:multidex:2.0.1'
+    implementation deps.androidx.multidex
 
     // Kotlin
     implementation deps.kotlin.stdlib
+    implementation deps.kotlin.reflect
     implementation deps.kotlin.coroutines.core
     implementation deps.kotlin.coroutines.android
 
     // Zcash
     implementation deps.zcash.walletSdk
+    compile project(path: ':qrecycler')
 
     // TODO: get the AAR to provide these
     implementation "io.grpc:grpc-okhttp:1.17.1"
@@ -75,11 +77,10 @@ dependencies {
 
     // Other
     implementation deps.speeddial
-    implementation "com.airbnb.android:lottie:2.7.0"
-    compile 'com.facebook.stetho:stetho:1.5.0'
+    implementation deps.lottie
+    debugImplementation deps.stetho
 
     testImplementation deps.junit
     androidTestImplementation deps.androidx.test.runner
     androidTestImplementation deps.androidx.test.espresso
-    compile project(path: ':qrecycler')
 }

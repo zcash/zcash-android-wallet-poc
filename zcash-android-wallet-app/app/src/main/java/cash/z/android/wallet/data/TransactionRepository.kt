@@ -1,6 +1,6 @@
 package cash.z.android.wallet.data
 
-import cash.z.android.wallet.vo.WalletTransaction
+import cash.z.wallet.sdk.dao.WalletTransaction
 import kotlinx.coroutines.channels.ReceiveChannel
 import java.math.BigDecimal
 

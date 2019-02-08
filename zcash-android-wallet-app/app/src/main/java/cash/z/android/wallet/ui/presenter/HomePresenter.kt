@@ -1,19 +1,15 @@
 package cash.z.android.wallet.ui.presenter
 
 import android.util.Log
-import cash.z.android.wallet.extention.Toaster
 import cash.z.android.wallet.ui.presenter.Presenter.PresenterView
-import cash.z.android.wallet.vo.WalletTransaction
-import cash.z.android.wallet.vo.WalletTransactionStatus.RECEIVED
-import cash.z.android.wallet.vo.WalletTransactionStatus.SENT
+import cash.z.wallet.sdk.dao.WalletTransaction
+import cash.z.wallet.sdk.data.ActiveSendTransaction
 import cash.z.wallet.sdk.data.ActiveTransaction
 import cash.z.wallet.sdk.data.Synchronizer
 import cash.z.wallet.sdk.data.TransactionState
-import cash.z.wallet.sdk.vo.NoteQuery
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.channels.ReceiveChannel
-import java.math.BigDecimal
 import kotlin.coroutines.CoroutineContext
 
 class HomePresenter(
@@ -29,6 +25,7 @@ class HomePresenter(
         fun updateBalance(old: Long, new: Long)
         fun showProgress(progress: Int)
         fun setActiveTransactions(activeTransactionMap: Map<ActiveTransaction, TransactionState>)
+        fun onCancelledTooLate()
     }
 
     override suspend fun start() {
@@ -54,19 +51,14 @@ class HomePresenter(
         Log.e("@TWIG", "balance binder exiting!")
     }
 
-    private fun CoroutineScope.launchTransactionBinder(channel: ReceiveChannel<List<NoteQuery>>) = launch {
+    private fun CoroutineScope.launchTransactionBinder(channel: ReceiveChannel<List<WalletTransaction>>) = launch {
         Log.e("@TWIG", "transaction binder starting!")
-        for (noteQueryList in channel) {
-            Log.e("@TWIG", "received ${noteQueryList.size} transactions for presenting")
-            bind(noteQueryList.map {
-                val time = updateTimeStamp(it)
-                it.toWalletTransaction(time)
-            })
+        for (walletTransactionList in channel) {
+            Log.e("@TWIG", "received ${walletTransactionList.size} transactions for presenting")
+            bind(walletTransactionList)
         }
         Log.e("@TWIG", "transaction binder exiting!")
     }
-
-    private suspend fun updateTimeStamp(noteQuery: NoteQuery) = synchronizer.updateTimeStamp(noteQuery.height)
 
     private fun CoroutineScope.launchProgressMonitor(channel: ReceiveChannel<Int>) = launch {
         Log.e("@TWIG", "progress monitor starting on thread ${Thread.currentThread().name}!")
@@ -109,9 +101,12 @@ class HomePresenter(
         if (activeTransactionMap.isNotEmpty()) view.setActiveTransactions(activeTransactionMap)
     }
 
-    fun onCancelActiveTransaction() {
-        // TODO: hold a reference to the job and cancel it
-        Toaster.short("Cancelled transaction!")
+    fun onCancelActiveTransaction(transaction: ActiveSendTransaction) {
+        Log.e("@TWIG", "requesting to cancel send for transaction ${transaction.internalId}")
+        val isTooLate = !synchronizer.cancelSend(transaction)
+        if (isTooLate) {
+            view.onCancelledTooLate()
+        }
     }
 
     private fun onMain(block: () -> Unit) = launch {
@@ -122,11 +117,5 @@ class HomePresenter(
         }
     }
 
-    private fun NoteQuery.toWalletTransaction(timeOverride: Long? = null): WalletTransaction {
-        // convert time from seconds to milliseconds
-        val timestamp = if (timeOverride == null) time * 1000 else timeOverride * 1000
-        Log.e("@TWIG-u", "setting timestamp to $timestamp for value $value")
-        return WalletTransaction(height, if (sent) SENT else RECEIVED, timestamp, BigDecimal(value / 1e8))
-    }
 }
 

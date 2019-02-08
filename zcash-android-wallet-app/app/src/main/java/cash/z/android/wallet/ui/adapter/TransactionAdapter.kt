@@ -5,18 +5,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import cash.z.android.wallet.R
 import cash.z.android.wallet.extention.toAppColor
-import cash.z.android.wallet.vo.WalletTransaction
-import java.math.BigDecimal
-import java.math.MathContext
-import java.math.RoundingMode
+import cash.z.wallet.sdk.dao.WalletTransaction
+import cash.z.wallet.sdk.ext.toZec
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.math.absoluteValue
 
 
 class TransactionAdapter : ListAdapter<WalletTransaction, TransactionViewHolder>(DIFF_CALLBACK) {
@@ -36,18 +34,18 @@ class TransactionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
     private val status = itemView.findViewById<View>(R.id.view_transaction_status)
     private val timestamp = itemView.findViewById<TextView>(R.id.text_transaction_timestamp)
     private val amount = itemView.findViewById<TextView>(R.id.text_transaction_amount)
-    private val background = itemView.findViewById<View>(R.id.container_transaction)
     private val formatter = SimpleDateFormat("M/d h:mma", Locale.getDefault())
 
     fun bind(tx: WalletTransaction) {
-        val sign = if(tx.amount > BigDecimal.ZERO) "+" else "-"
-        val amountColor = if(tx.amount > BigDecimal.ZERO) R.color.colorPrimary else R.color.text_dark_dimmed
-        status.setBackgroundColor(tx.status.color.toAppColor())
-        timestamp.text = formatter.format(tx.timestamp)
-        amount.text = String.format("$sign %,.3f", tx.amount.round(MathContext(3, RoundingMode.HALF_EVEN )).abs())
+        val sign = if(tx.isSend) "-" else "+"
+        val amountColor = if (tx.isSend) R.color.text_dark_dimmed else R.color.colorPrimary
+        val transactionColor = if(tx.isSend) R.color.send_associated else R.color.receive_associated
+        val zecAbsoluteValue = tx.value.absoluteValue.toZec(3)
+        status.setBackgroundColor(transactionColor.toAppColor())
+        timestamp.text = if (!tx.isMined || tx.timeInSeconds == 0L) "Pending" else formatter.format(tx.timeInSeconds * 1000)
+        Log.e("TWIG-z", "TimeInSeconds: ${tx.timeInSeconds}")
+        amount.text = "$sign$zecAbsoluteValue"
         amount.setTextColor(amountColor.toAppColor())
-        Log.e("TWIG-u", "formatted timestamp: ${tx.timestamp} for value ${amount.text}")
     }
-
 }
 

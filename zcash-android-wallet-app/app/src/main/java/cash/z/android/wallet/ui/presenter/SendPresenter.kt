@@ -3,7 +3,7 @@ package cash.z.android.wallet.ui.presenter
 import android.util.Log
 import cash.z.android.wallet.ui.presenter.Presenter.PresenterView
 import cash.z.wallet.sdk.data.Synchronizer
-import cash.z.wallet.sdk.vo.Transaction
+import cash.z.wallet.sdk.entity.Transaction
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job

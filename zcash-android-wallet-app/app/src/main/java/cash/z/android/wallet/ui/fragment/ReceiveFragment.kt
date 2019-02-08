@@ -13,6 +13,7 @@ import cash.z.android.wallet.R
 import cash.z.android.wallet.ui.activity.MainActivity
 import cash.z.android.wallet.ui.util.AddressPartNumberSpan
 import cash.z.wallet.sdk.jni.JniConverter
+import cash.z.wallet.sdk.secure.Wallet
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 import kotlinx.android.synthetic.main.fragment_receive.*
@@ -27,7 +28,7 @@ class ReceiveFragment : BaseFragment() {
     lateinit var qrecycler: QRecycler
 
     @Inject
-    lateinit var converter: JniConverter
+    lateinit var wallet: Wallet
 
     lateinit var addressParts: Array<TextView>
 
@@ -87,7 +88,7 @@ class ReceiveFragment : BaseFragment() {
 
     // TODO: replace with tiered load. First check memory reference (textview contents?) then check DB, then load from JNI and write to DB
     private fun loadAddress(): String {
-        return converter.getAddress("dummyseed".toByteArray())
+        return wallet.getAddress()
     }
 
 }

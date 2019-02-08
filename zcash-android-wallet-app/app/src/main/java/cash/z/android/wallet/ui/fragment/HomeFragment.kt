@@ -1,6 +1,5 @@
 package cash.z.android.wallet.ui.fragment
 
-import android.animation.Animator
 import android.app.Activity
 import android.os.Bundle
 import android.text.SpannableString
@@ -10,16 +9,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateInterpolator
+import android.view.animation.DecelerateInterpolator
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.IdRes
 import androidx.annotation.StringRes
-import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.Transition
 import androidx.transition.TransitionInflater
 import cash.z.android.wallet.R
+import cash.z.android.wallet.extention.Toaster
 import cash.z.android.wallet.extention.toAppColor
 import cash.z.android.wallet.extention.toAppString
 import cash.z.android.wallet.extention.tryIgnore
@@ -28,22 +28,21 @@ import cash.z.android.wallet.ui.adapter.TransactionAdapter
 import cash.z.android.wallet.ui.presenter.HomePresenter
 import cash.z.android.wallet.ui.util.AlternatingRowColorDecoration
 import cash.z.android.wallet.ui.util.TopAlignedSpan
-import cash.z.android.wallet.vo.WalletTransaction
+import cash.z.wallet.sdk.dao.WalletTransaction
 import cash.z.wallet.sdk.data.ActiveSendTransaction
 import cash.z.wallet.sdk.data.ActiveTransaction
 import cash.z.wallet.sdk.data.TransactionState
 import cash.z.wallet.sdk.ext.toZec
+import com.google.android.material.snackbar.Snackbar
 import com.leinardi.android.speeddial.SpeedDialActionItem
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
+import kotlinx.android.synthetic.main.activity_main_first_run.*
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.include_home_content.*
 import kotlinx.android.synthetic.main.include_home_header.*
 import kotlinx.coroutines.launch
 import kotlin.random.Random
-import com.google.android.material.snackbar.Snackbar
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.activity_main_first_run.*
 import kotlin.random.nextLong
 
 
@@ -56,6 +55,7 @@ class HomeFragment : BaseFragment(), HomePresenter.HomeView {
     lateinit var homePresenter: HomePresenter
     lateinit var transactionAdapter: TransactionAdapter
     private var viewsInitialized = false
+    private var snackbar: Snackbar? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -97,15 +97,16 @@ class HomeFragment : BaseFragment(), HomePresenter.HomeView {
                 //            forceRedraw()
                 //            toggleViews(false)
 
-            } else {
-                forceRedraw()
-                toggleViews(false)
             }
-
         }
 
         button_active_transaction_cancel.setOnClickListener {
-            onCancelActiveTransaction()
+            val transaction = button_active_transaction_cancel.tag as? ActiveSendTransaction
+            if (transaction != null) {
+                homePresenter.onCancelActiveTransaction(transaction)
+            } else {
+                Toaster.short("Error: unable to find transaction to cancel!")
+            }
         }
 
         refresh_layout.setOnRefreshListener {
@@ -167,7 +168,8 @@ class HomeFragment : BaseFragment(), HomePresenter.HomeView {
     //
     // View API
     //
-    // TODO: pull some of this logic into the presenter, particularly the part that deals with ZEC <-> USD price conversion
+
+    //TODO: pull some of this logic into the presenter, particularly the part that deals with ZEC <-> USD price conversion
     override fun updateBalance(old: Long, new: Long) {
         //TODO: remove this kind of thing
         snackbar?.dismiss()
@@ -184,18 +186,19 @@ class HomeFragment : BaseFragment(), HomePresenter.HomeView {
     override fun setTransactions(transactions: List<WalletTransaction>) {
         Log.e("TWIG-t", "submitList called with ${transactions.size} transactions")
         transactionAdapter.submitList(transactions)
-        recycler_transactions.smoothScrollToPosition(0)
+        recycler_transactions.postDelayed({
+            recycler_transactions.smoothScrollToPosition(0)
+        }, 100L)
         if (transactions.isNotEmpty()) setFirstRunShown(false)
     }
 
-    var snackbar: Snackbar? = null
     override fun showProgress(progress: Int) {
         Log.e("TWIG", "showing progress of $progress")
         // TODO: improve this with Lottie animation. but for now just use the empty view for downloading...
 //        var hasEmptyViews = group_empty_view_items.visibility == View.VISIBLE
 //        if(!viewsInitialized) toggleViews(true)
 //
-        val message = if(progress >=  100) "Download complete! Processing...\n(this may take a while)" else "Downloading blocks ($progress%)"
+        val message = if(progress >=  100) "Download complete! Processing blocks..." else "Downloading blocks ($progress%)"
 //        text_wallet_message.text = message
 
         if (snackbar == null && progress <= 50) {
@@ -207,6 +210,19 @@ class HomeFragment : BaseFragment(), HomePresenter.HomeView {
         } else {
             snackbar?.setText(message)
             if(progress == 100 && snackbar?.isShownOrQueued != true) snackbar?.show()
+        }
+    }
+
+    fun showOkSnack(message: String) {
+        if (snackbar == null) {
+            snackbar = Snackbar.make(view!!, "$message", Snackbar.LENGTH_INDEFINITE).setAction("OK") {
+                snackbar?.dismiss()
+                snackbar = null
+            }
+            snackbar?.show()
+        } else {
+            snackbar?.setText(message)
+            if (snackbar?.isShownOrQueued != true) snackbar?.show()
         }
     }
 
@@ -224,7 +240,12 @@ class HomeFragment : BaseFragment(), HomePresenter.HomeView {
         // TODO: update remaining transactions
     }
 
+    override fun onCancelledTooLate() {
+        showOkSnack("Oops! It was too late to cancel!")
+    }
+
     private fun updatePrimaryTransaction(transaction: ActiveTransaction, transactionState: TransactionState) {
+        Log.e("TWIG", "setting transaction state to ${transactionState::class.simpleName}")
         var title = "Active Transaction"
         var subtitle = "Processing..."
         when (transactionState) {
@@ -232,13 +253,14 @@ class HomeFragment : BaseFragment(), HomePresenter.HomeView {
                 header_active_transaction.visibility = View.VISIBLE
                 title = "Preparing ${transaction.value.toZec(3)} ZEC"
                 subtitle = "to ${(transaction as ActiveSendTransaction).toAddress}"
-                button_active_transaction_cancel.text = "cancel"
-                setActiveTransactionRaised(true)
+                setTransactionActive(transaction, true)
             }
             TransactionState.SendingToNetwork -> {
                 title = "Sending Transaction"
                 subtitle = "to ${(transaction as ActiveSendTransaction).toAddress}"
-                button_active_transaction_cancel.text = "${transaction.value/1000L}"
+                text_active_transaction_value.text = "${transaction.value/1000L}"
+                text_active_transaction_value.visibility = View.VISIBLE
+                button_active_transaction_cancel.visibility = View.GONE
             }
             is TransactionState.Failure -> {
                 lottie_active_transaction.setAnimation(R.raw.lottie_send_failure)
@@ -250,17 +272,26 @@ class HomeFragment : BaseFragment(), HomePresenter.HomeView {
                     else -> "Unrecoginzed error"
                 }
                 button_active_transaction_cancel.visibility = View.GONE
-                onCancelActiveTransaction()
+                text_active_transaction_value.visibility = View.GONE
+                setTransactionActive(transaction, false)
             }
             is TransactionState.AwaitingConfirmations -> {
                 if (transactionState.confirmationCount < 1) {
                     lottie_active_transaction.setAnimation(R.raw.lottie_send_success)
                     lottie_active_transaction.playAnimation()
                     title = "ZEC Sent"
-                    subtitle = "Awaiting Confirmations (${transactionState.confirmationCount}/10)"
+                    subtitle = "Today at 4:46pm"
+                    text_active_transaction_value.text = transaction.value.toZec(3).toString()
+                    text_active_transaction_value.visibility = View.VISIBLE
+                    button_active_transaction_cancel.visibility = View.GONE
                 } else {
                     // play confirmation counting animation
                 }
+            }
+            is TransactionState.Cancelled -> {
+                title = text_active_transaction_title.text.toString()
+                subtitle = text_active_transaction_subtitle.text.toString()
+                setTransactionActive(transaction, false)
             }
         }
         text_active_transaction_title.text = title
@@ -347,6 +378,7 @@ class HomeFragment : BaseFragment(), HomePresenter.HomeView {
     }
 
     private fun onActiveTransactionTransitionEnd() {
+        // TODO: investigate if this fix is still required after getting transition animation working again
         // fixes a bug where the translation gets lost, during animation. As a nice side effect, visually, it makes the view appear to settle in to position
         header_active_transaction.translationZ = 10.0f
         button_active_transaction_cancel.apply {
@@ -355,37 +387,29 @@ class HomeFragment : BaseFragment(), HomePresenter.HomeView {
         }
     }
 
-    private fun onCancelActiveTransaction() {
-        setActiveTransactionRaised(false)
-        button_active_transaction_cancel.text = "cancel"
-    }
-
-    private fun setActiveTransactionRaised(isRaised: Boolean) {
-        button_active_transaction_cancel.isEnabled = isRaised
-        header_active_transaction.animate().apply {
-            translationZ(if (isRaised) 10f else 0f)
-            duration = 200L
-            interpolator = AccelerateInterpolator()
-            setListener(object : Animator.AnimatorListener {
-                override fun onAnimationRepeat(animation: Animator?) {
-                }
-
-                override fun onAnimationEnd(animation: Animator?) {
-                    header_active_transaction.apply {
-                        if(translationZ == 0f) setBackgroundResource(0)
-                    }
-                }
-
-                override fun onAnimationCancel(animation: Animator?) {
-                }
-
-                override fun onAnimationStart(animation: Animator?) {
-                }
-
-            } )
+    private fun setTransactionActive(transaction: ActiveTransaction, isActive: Boolean) {
+        // TODO: get view for transaction, mostly likely keep a sparse array of these or something
+        if (isActive) {
+            button_active_transaction_cancel.setText(R.string.cancel)
+            button_active_transaction_cancel.isEnabled = true
+            button_active_transaction_cancel.tag = transaction
+            header_active_transaction.animate().apply {
+                translationZ(10f)
+                duration = 200L
+                interpolator = DecelerateInterpolator()
+            }
+        } else {
+            button_active_transaction_cancel.setText(R.string.cancelled)
+            button_active_transaction_cancel.isEnabled = false
+            button_active_transaction_cancel.tag = null
+            header_active_transaction.animate().apply {
+                translationZ(2f)
+                duration = 300L
+                interpolator = AccelerateInterpolator()
+            }
+            lottie_active_transaction.cancelAnimation()
         }
     }
-
 
     inner class HomeTransitionListener : Transition.TransitionListener {
         override fun onTransitionStart(transition: Transition) {

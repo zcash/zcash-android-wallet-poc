@@ -7,6 +7,10 @@
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
 
+    <!-- General -->
+    <string name="cancel">cancel</string>
+    <string name="cancelled">cancelled</string>
+
     <!--  Destinations -->
     <string name="destination_title_home" />
     <string name="destination_title_send">Send Zcash</string>

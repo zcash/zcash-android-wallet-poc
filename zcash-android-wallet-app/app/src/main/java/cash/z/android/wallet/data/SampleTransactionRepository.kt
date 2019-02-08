@@ -1,8 +1,7 @@
 package cash.z.android.wallet.data
 
 import android.text.format.DateUtils
-import cash.z.android.wallet.vo.WalletTransaction
-import cash.z.android.wallet.vo.WalletTransactionStatus
+import cash.z.wallet.sdk.dao.WalletTransaction
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.produce
@@ -11,6 +10,8 @@ import kotlinx.coroutines.isActive
 import java.math.BigDecimal
 import kotlin.math.roundToLong
 import kotlin.random.Random
+import kotlin.random.nextInt
+import kotlin.random.nextLong
 
 class SampleTransactionRepository(val scope: CoroutineScope) : TransactionRepository {
     /**
@@ -32,34 +33,27 @@ class SampleTransactionRepository(val scope: CoroutineScope) : TransactionReposi
         var oldestTimestamp = System.currentTimeMillis() - (4 * DateUtils.WEEK_IN_MILLIS)
         while (isActive) {
             delay(1500L)
-            send(createSampleTransaction(oldestTimestamp).also { oldestTimestamp = it.timestamp })
+            send(createSampleTransaction(oldestTimestamp).also { oldestTimestamp = it.timeInSeconds * 1000 })
         }
     }
 
-    private fun createSampleTransaction(): WalletTransaction {
-        return createSampleTransaction(System.currentTimeMillis() - (4 * DateUtils.WEEK_IN_MILLIS))
-    }
-
-    private fun createSampleTransaction(after: Long): WalletTransaction {
-        val now = System.currentTimeMillis()
-        val delta = now - after
-        val window = after + (0.05 * delta).roundToLong()
-        val amount = BigDecimal(Random.nextDouble(0.1, 15.0) * arrayOf(-1, 1).random())
-        val status = if (amount > BigDecimal.ZERO) WalletTransactionStatus.SENT else WalletTransactionStatus.RECEIVED
-        val timestamp = Random.nextLong(after, window)
+    private fun createSampleTransaction(oldestTimestamp: Long): WalletTransaction {
+        // up to 20% of the delta
+        val upperBound = System.currentTimeMillis() + Math.round(0.2 * (System.currentTimeMillis() - oldestTimestamp))
+        val txId = Random.nextInt(0..(Int.MAX_VALUE - 1))
+        val value = Random.nextLong(1L..1_500_000_000L) - 750_000_000L
+        val height = Random.nextInt(0..(Int.MAX_VALUE - 1))
+        val isSend = value > 0L
+        val time = Random.nextLong(oldestTimestamp..upperBound)
+        val isMined = Random.nextBoolean()
         return WalletTransaction(
-            timestamp.toInt(),
-            status,
-            timestamp,
-            amount
+            txId = txId,
+            value = value,
+            height = height,
+            isSend = isSend,
+            timeInSeconds = time/1000,
+            isMined = isMined
         )
     }
 
-    private fun createSampleTransactions(size: Int): MutableList<WalletTransaction> {
-        val transactions = mutableListOf<WalletTransaction>()
-        repeat(size) {
-            transactions.add(createSampleTransaction())
-        }
-        return transactions
-    }
 }

@@ -13,9 +13,10 @@ buildscript {
     ext.deps = [
         'androidx': [
             'appcompat': 'androidx.appcompat:appcompat:1.0.0',
-            'constraintLayout': 'androidx.constraintlayout:constraintlayout:2.0.0-alpha2',
+            'constraintLayout': 'androidx.constraintlayout:constraintlayout:2.0.0-alpha3',
             'core': 'androidx.core:core:1.0.0',
             'coreKtx': 'androidx.core:core-ktx:1.0.0',
+            'multidex': 'androidx.multidex:multidex:2.0.1',
             'navigation': [
                 'fragment': "android.arch.navigation:navigation-fragment:${versions.navigation}",
                 'fragmentKtx': "android.arch.navigation:navigation-fragment-ktx:${versions.navigation}",
@@ -40,12 +41,15 @@ buildscript {
                 'core': "org.jetbrains.kotlinx:kotlinx-coroutines-core:${versions.coroutines}",
                 'android': "org.jetbrains.kotlinx:kotlinx-coroutines-android:${versions.coroutines}"
              ],
+            'reflect': "org.jetbrains.kotlin:kotlin-reflect:${versions.kotlin}",
             'stdlib': "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin}"
         ],
+        'lottie': "com.airbnb.android:lottie:2.7.0",
         'material': 'com.google.android.material:material:1.0.0',
         'speeddial': 'com.leinardi.android:speed-dial:2.0.0',
+        'stetho': 'com.facebook.stetho:stetho:1.5.0',
         'zcash': [
-            'walletSdk': "cash.z.android.wallet:zcash-android-wallet-sdk:1.4.0@aar"
+            'walletSdk': "cash.z.android.wallet:zcash-android-wallet-sdk:1.6.0@aar"
         ]
     ]
     repositories {

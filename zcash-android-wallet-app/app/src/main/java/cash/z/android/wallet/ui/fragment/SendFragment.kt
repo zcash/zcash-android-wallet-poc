@@ -8,6 +8,9 @@ import android.text.style.StyleSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
+import androidx.core.content.ContextCompat.getSystemService
+import androidx.core.content.getSystemService
 import androidx.core.text.toSpannable
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.fragment.FragmentNavigatorExtras
@@ -21,6 +24,7 @@ import cash.z.android.wallet.ui.activity.MainActivity
 import cash.z.android.wallet.ui.presenter.SendPresenter
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.launch
 import java.text.DecimalFormat
 
@@ -195,6 +199,10 @@ class SendFragment : BaseFragment(), SendPresenter.SendView {
     //
 
     private fun showSendDialog() {
+        // hide soft keyboard
+        mainActivity.getSystemService<InputMethodManager>()
+            ?.hideSoftInputFromWindow(view?.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
+
         setSendEnabled(false) // partially because we need to lower the button elevation
         binding.groupDialogSend.visibility = View.VISIBLE
     }
@@ -208,10 +216,10 @@ class SendFragment : BaseFragment(), SendPresenter.SendView {
         binding.buttonSendZec.isEnabled = isEnabled
         if (isEnabled) {
             binding.buttonSendZec.text = "send zec"
-            binding.progressSend.visibility = View.GONE
+//            binding.progressSend.visibility = View.GONE
         } else {
             binding.buttonSendZec.text = "sending..."
-            binding.progressSend.visibility = View.VISIBLE
+//            binding.progressSend.visibility = View.VISIBLE
         }
     }
 }

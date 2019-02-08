@@ -40,10 +40,15 @@
 
     <!-- every color here should be a reference to a palette color but have a more useful name for use in code -->
 
+    <!-- association -->
+    <color name="send_associated">@color/colorAccent</color>
+    <color name="receive_associated">@color/colorPrimary</color> <!-- design decision: when you get money it should be associated with green -->
+    <color name="request_associated">@color/zcashBlue</color>
+
     <!-- icons -->
-    <color name="icon_send">@color/colorPrimary</color>
-    <color name="icon_receive">@color/colorAccent</color>
-    <color name="icon_request">@color/zcashBlue</color>
+    <color name="icon_send">@color/send_associated</color>
+    <color name="icon_receive">@color/receive_associated</color>
+    <color name="icon_request">@color/request_associated</color>
     <color name="fab_icon_color">@color/zcashWhite</color>
     <color name="fab_closed_color">@color/colorPrimary</color>
     <color name="fab_open_color">@color/colorPrimaryDark</color>

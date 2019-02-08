@@ -29,9 +29,14 @@
                 android:id="@+id/header_active_transaction"
                 android:layout_width="match_parent"
                 android:layout_height="70dp"
-                android:background="@drawable/background_rounded_corners_opaque"
+                android:background="@drawable/background_rounded_corners_slight"
                 android:clipToPadding="false"
-                android:padding="16dp"
+                android:paddingStart="16dp"
+                android:paddingLeft="16dp"
+                android:paddingTop="16dp"
+                android:paddingEnd="8dp"
+                android:paddingRight="8dp"
+                android:paddingBottom="16dp"
                 android:transitionName="@string/transition_active_transaction_card"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
@@ -57,8 +62,10 @@
                     android:textSize="@dimen/text_size_body_1"
                     android:textStyle="bold"
                     android:transitionName="@string/transition_active_transaction_title"
+                    app:layout_constraintBottom_toTopOf="@id/text_active_transaction_subtitle"
                     app:layout_constraintStart_toEndOf="@id/lottie_active_transaction"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_chainStyle="packed" />
 
                 <TextView
                     android:id="@+id/text_active_transaction_subtitle"
@@ -67,8 +74,22 @@
                     android:text="to zsapling...123456789"
                     android:textSize="@dimen/text_size_caption"
                     android:transitionName="@string/transition_active_transaction_address"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="@id/text_active_transaction_title"
                     app:layout_constraintTop_toBottomOf="@id/text_active_transaction_title" />
+
+                <TextView
+                    android:id="@+id/text_active_transaction_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
+                    android:textColor="@color/text_dark_dimmed"
+                    android:textSize="@dimen/text_size_h5"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <Button
                     android:id="@+id/button_active_transaction_cancel"
