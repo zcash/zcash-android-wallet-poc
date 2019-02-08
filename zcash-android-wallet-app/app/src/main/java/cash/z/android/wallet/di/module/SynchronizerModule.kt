@@ -63,8 +63,8 @@ internal object SynchronizerModule {
     @JvmStatic
     @Provides
     @Singleton
-    fun provideManager(twigger: Twig): ActiveTransactionManager {
-        return ActiveTransactionManager(twigger)
+    fun provideManager(wallet: Wallet, repository: TransactionRepository, downloader: CompactBlockStream, twigger: Twig): ActiveTransactionManager {
+        return ActiveTransactionManager(repository, downloader.connection, wallet, twigger)
     }
 
     @JvmStatic
@@ -97,10 +97,10 @@ internal object SynchronizerModule {
 object Properties {
     val COMPACT_BLOCK_SERVER = Servers.EMULATOR.host
     const val COMPACT_BLOCK_PORT = 9067
-    const val CACHE_DB_NAME = "wallet_cache50.db"
-    const val DATA_DB_NAME = "wallet_data50.db"
-    val SEED_PROVIDER = SampleSeedProvider("dummyseed")
-    val SPENDING_KEY_PROVIDER = SampleSpendingKeyProvider("dummyseed")
+    const val CACHE_DB_NAME = "wallet_cache421.db"
+    const val DATA_DB_NAME = "wallet_data421.db"
+    val SEED_PROVIDER = SampleImportedSeedProvider("295761fce7fdc89fa1095259f5be6375c4a36f7a214767d668f9ef6e17aa6314")
+    val SPENDING_KEY_PROVIDER = SampleSpendingKeyProvider2("dummyseed")
 }
 
 enum class Servers(val host: String) {
@@ -116,22 +116,6 @@ class SampleImportedSeedProvider(private val seedHex: String) : ReadOnlyProperty
         Log.e("TWIG-x", "byteString: $stringBytes")
         return decodeHex(seedHex).also { Log.e("TWIG-x", "$it") }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     fun decodeHex(hex: String): ByteArray {
@@ -155,6 +139,7 @@ class SampleImportedSeedProvider(private val seedHex: String) : ReadOnlyProperty
 class SampleSpendingKeyProvider2(private val seedValue: String) : ReadOnlyProperty<Any?, String> {
     override fun getValue(thisRef: Any?, property: KProperty<*>): String {
         // dynamically generating keyes, based on seed is out of scope for this sample
-        return "secret-extended-key-test1q0f0urnmqqqqpqxlree5urprcmg9pdgvr2c88qhm862etv65eu84r9zwannpz4g88299xyhv7wf9xke5cag653jlwwwyxrymfraqsnz8qfgds70qjammscxxyl7s7p9xz9w906epdpy8ztsjd7ez7phcd5vj7syx68sjskqs8j9lef2uuacghsh8puuvsy9u25pfvcdznta33qe6xh5lrlnhdkgymnpdug4jm6tpf803cad6tqa9c0ewq9l03fqxatevm97jmuv8u0ccxjews5"
+        return "secret-extended-key-test1q0ks5jkcqqqqpqywf2mh5g2aw5smt252mqscphjr8svrqyvgtgss0av3jh37jc05pngstr6qcqu5x64zuk8entc97pfla68jd7g9fyhwv5l8pdey662qy3lr07w9yddpgwdlwt3tjgzhpszatyw90kpn4zs7feu5cudwnxcpts5k0za96xy0wt59nu7hg3ntalck7gwhn0nuyztmf8yceuhp0fn3wmrtr9mk9v6fhg8hwvsxp0thr4cn9r8pc0w3zh45czmnr7e3mrctlzaq7"
+//        return "secret-extended-key-test1q0f0urnmqqqqpqxlree5urprcmg9pdgvr2c88qhm862etv65eu84r9zwannpz4g88299xyhv7wf9xkecag653jlwwwyxrymfraqsnz8qfgds70qjammscxxyl7s7p9xz9w906epdpy8ztsjd7ez7phcd5vj7syx68sjskqs8j9lef2uuacghsh8puuvsy9u25pfvcdznta33qe6xh5lrlnhdkgymnpdug4jm6tpf803cad6tqa9c0ewq9l03fqxatevm97jmuv8u0ccxjews5"
     }
 }

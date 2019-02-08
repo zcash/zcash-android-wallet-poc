@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:dist="http://schemas.android.com/apk/distribution"
+    xmlns:tools="http://schemas.android.com/tools"
     package="cash.z.android.wallet">
 
     <dist:module dist:instant="true" />
@@ -12,7 +13,8 @@
         android:roundIcon="@mipmap/ic_launcher_shield_round"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/ZcashTheme">
+        android:theme="@style/ZcashTheme"
+        tools:replace="android:name">
         <activity
             android:name=".ui.activity.MainActivity"
             android:label="@string/app_name"

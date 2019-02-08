@@ -48,4 +48,3 @@ class TransactionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
         amount.setTextColor(amountColor.toAppColor())
     }
 }
-

@@ -40,7 +40,7 @@ class SampleTransactionRepository(val scope: CoroutineScope) : TransactionReposi
     private fun createSampleTransaction(oldestTimestamp: Long): WalletTransaction {
         // up to 20% of the delta
         val upperBound = System.currentTimeMillis() + Math.round(0.2 * (System.currentTimeMillis() - oldestTimestamp))
-        val txId = Random.nextInt(0..(Int.MAX_VALUE - 1))
+        val txId = Random.nextLong(0L..(Long.MAX_VALUE - 1L))
         val value = Random.nextLong(1L..1_500_000_000L) - 750_000_000L
         val height = Random.nextInt(0..(Int.MAX_VALUE - 1))
         val isSend = value > 0L

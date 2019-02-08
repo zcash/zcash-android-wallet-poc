@@ -559,5 +559,3 @@ abstract class HomeFragmentModule {
     @ContributesAndroidInjector
     abstract fun contributeHomeFragment(): HomeFragment
 }
-
-
