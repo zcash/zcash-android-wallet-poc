@@ -6,6 +6,7 @@ import android.text.SpannableString
 import android.text.Spanned
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateInterpolator
@@ -44,6 +45,7 @@ import kotlinx.android.synthetic.main.include_home_header.*
 import kotlinx.coroutines.launch
 import kotlin.random.Random
 import kotlin.random.nextLong
+import kotlin.system.measureTimeMillis
 
 
 /**
@@ -117,7 +119,11 @@ class HomeFragment : BaseFragment(), HomePresenter.HomeView {
         }
 
         launch {
-            setFirstRunShown(mainActivity.synchronizer.isFirstRun())
+            Log.e("TWIG", "deciding whether to show first run")
+            val extraDelay = measureTimeMillis {
+                setFirstRunShown(mainActivity.synchronizer.isFirstRun() || mainActivity.synchronizer.isOutOfSync())
+            }
+            Log.e("TWIG", "done deciding whether to show first run in $extraDelay ms. Was that worth it? Or should we toggle a boolean in the application class?")
         }
 
         header_active_transaction.visibility = View.GONE
@@ -161,7 +167,11 @@ class HomeFragment : BaseFragment(), HomePresenter.HomeView {
             layoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
             adapter = TransactionAdapter().also { transactionAdapter = it }
             addItemDecoration(AlternatingRowColorDecoration())
+
         }
+//        recycler_transactions.setOnClickListener {
+//            mainActivity.navController.navigate(R.id.nav_history_fragment)
+//        }
     }
 
 
@@ -198,7 +208,7 @@ class HomeFragment : BaseFragment(), HomePresenter.HomeView {
 //        var hasEmptyViews = group_empty_view_items.visibility == View.VISIBLE
 //        if(!viewsInitialized) toggleViews(true)
 //
-        val message = if(progress >=  100) "Download complete! Processing blocks..." else "Downloading blocks ($progress%)"
+        val message = if(progress >=  100) "Download complete! Processing blocks..." else "Downloading remaining blocks ($progress%)"
 //        text_wallet_message.text = message
 
         if (snackbar == null && progress <= 50) {
@@ -209,7 +219,7 @@ class HomeFragment : BaseFragment(), HomePresenter.HomeView {
             snackbar?.show()
         } else {
             snackbar?.setText(message)
-            if(progress == 100 && snackbar?.isShownOrQueued != true) snackbar?.show()
+            if(snackbar?.isShownOrQueued != true) snackbar?.show()
         }
     }
 

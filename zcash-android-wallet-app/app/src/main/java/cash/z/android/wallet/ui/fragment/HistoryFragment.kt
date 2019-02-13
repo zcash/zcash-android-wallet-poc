@@ -3,21 +3,23 @@ package cash.z.android.wallet.ui.fragment
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
-import cash.z.android.wallet.R
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import cash.z.android.wallet.R
+import cash.z.android.wallet.databinding.FragmentHistoryBinding
+import cash.z.android.wallet.ui.adapter.TransactionAdapter
 import cash.z.android.wallet.ui.presenter.HistoryPresenter
+import cash.z.android.wallet.ui.util.AlternatingRowColorDecoration
+import cash.z.wallet.sdk.dao.WalletTransaction
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 import kotlinx.coroutines.launch
-import cash.z.android.wallet.databinding.FragmentHistoryBinding
-import cash.z.wallet.sdk.dao.WalletTransaction
 
 
 class HistoryFragment : BaseFragment(), HistoryPresenter.HistoryView {
 
-
-    override val titleResId: Int get() = R.string.destination_title_history
     lateinit var historyPresenter: HistoryPresenter
     lateinit var binding: FragmentHistoryBinding
 
@@ -26,6 +28,25 @@ class HistoryFragment : BaseFragment(), HistoryPresenter.HistoryView {
             .inflate<FragmentHistoryBinding>(inflater, R.layout.fragment_history, container, false)
             .also { binding = it }
             .root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        mainActivity.let { mainActivity ->
+            mainActivity.setSupportActionBar(view.findViewById(R.id.toolbar))
+            mainActivity.supportActionBar?.setDisplayHomeAsUpEnabled(true)
+            mainActivity.supportActionBar?.setTitle(R.string.destination_title_history)
+        }
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        historyPresenter = HistoryPresenter(this, mainActivity.synchronizer)
+        binding.recyclerTransactionsHistory.apply {
+            layoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
+            adapter = TransactionAdapter()
+            addItemDecoration(AlternatingRowColorDecoration())
+        }
     }
 
     override fun onResume() {
@@ -41,7 +62,8 @@ class HistoryFragment : BaseFragment(), HistoryPresenter.HistoryView {
     }
 
     override fun setTransactions(transactions: List<WalletTransaction>) {
-    }
+        (binding.recyclerTransactionsHistory.adapter as TransactionAdapter).submitList(transactions)
+     }
 }
 
 @Module

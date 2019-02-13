@@ -82,22 +82,23 @@ class HomePresenter(
     //
 
     private fun bind(old: Long?, new: Long) = onMain {
-        Log.e("@TWIG-t", "binding balance of $new")
+        Log.e("@TWIG-b", "binding balance of $new")
         view.updateBalance(old ?: 0L, new)
     }
 
 
     private fun bind(transactions: List<WalletTransaction>) = onMain {
-        Log.e("@TWIG-t", "binding ${transactions.size} walletTransactions")
+        Log.e("@TWIG-b", "binding ${transactions.size} walletTransactions")
         view.setTransactions(transactions)
     }
 
     private fun bind(progress: Int) = onMain {
+        Log.e("@TWIG-b", "binding progress of $progress")
         view.showProgress(progress)
     }
 
     private fun bind(activeTransactionMap: Map<ActiveTransaction, TransactionState>) = onMain {
-        Log.e("@TWIG-v", "binding a.t. map of size ${activeTransactionMap.size}")
+        Log.e("@TWIG-b", "binding a.t. map of size ${activeTransactionMap.size}")
         if (activeTransactionMap.isNotEmpty()) view.setActiveTransactions(activeTransactionMap)
     }
 

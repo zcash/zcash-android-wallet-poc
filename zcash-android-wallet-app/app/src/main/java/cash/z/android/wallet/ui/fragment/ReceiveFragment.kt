@@ -67,6 +67,7 @@ class ReceiveFragment : BaseFragment() {
     }
 
     private fun onAddressLoaded(address: String) {
+        Log.e("TWIG", "onAddressLoaded:  $address")
         qrecycler.load(address)
             .withQuietZoneSize(3)
             .withCorrectionLevel(QRecycler.CorrectionLevel.MEDIUM)
