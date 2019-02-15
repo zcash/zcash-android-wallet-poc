@@ -20,6 +20,7 @@ import androidx.navigation.ui.setupWithNavController
 import cash.z.android.wallet.BuildConfig
 import cash.z.android.wallet.R
 import cash.z.android.wallet.ZcashWalletApplication
+import cash.z.android.wallet.sample.SampleProperties.DEV_MODE
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 import dagger.android.support.DaggerAppCompatActivity
@@ -53,7 +54,7 @@ class MainActivity : BaseActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        synchronizer.stop()
+        if(!DEV_MODE)synchronizer.stop()
     }
 
     override fun onBackPressed() {
@@ -66,7 +67,7 @@ class MainActivity : BaseActivity() {
 
     override fun onResume() {
         super.onResume()
-        if(DEV_MODE) navController.navigate(R.id.nav_send_fragment)
+//        if(DEV_MODE) navController.navigate(R.id.nav_send_fragment)
     }
 
     /**
@@ -104,14 +105,6 @@ class MainActivity : BaseActivity() {
     }
 
     companion object {
-        /**
-         * A simple flag that helps with removing shortcuts in the code used during development.
-         * TODO: either elevate this to a real thing (based off a system property or some such) or delete it!
-         */
-        const val DEV_MODE = false
-
-        // TODO: placeholder until we have a network service for this
-        const val USD_PER_ZEC = 49.07
         init {
             // Enable vector drawable magic
             AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)

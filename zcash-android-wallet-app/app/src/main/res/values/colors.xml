@@ -33,6 +33,7 @@
     <color name="zcashBlack">#00000000</color>
     <color name="zcashPrimaryMedium">#136E6E</color>
     <color name="zcashRed">#B00016</color>
+    <color name="zcashYellow">#f4b728</color>
 
     <!--                  -->
     <!-- named colors     -->

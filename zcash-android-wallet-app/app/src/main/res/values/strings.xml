@@ -10,6 +10,7 @@
     <!-- General -->
     <string name="cancel">cancel</string>
     <string name="cancelled">cancelled</string>
+    <string name="ok_allcaps">OK</string>
 
     <!--  Destinations -->
     <string name="destination_title_home" />
@@ -36,10 +37,21 @@
     <string name="transition_active_transaction_address">transition_active_transaction_address</string>
     <string name="transition_active_transaction_card">transition_active_transaction_card</string>
 
+
+    <!--             -->
     <!-- Screen copy -->
-    <string name="receive_address_title">Your Zcash shielded address</string>
+    <!--             -->
+
+    <!-- Home -->
     <string name="home_empty_wallet">Your wallet is empty.</string>
+    <string name="home_empty_wallet_updating">Updating your wallet...</string>
     <string name="home_empty_wallet_collapse">Future transactions will show up here.</string>
+    <string name="home_current_transaction_label">Current Activity</string>
+    <string name="home_past_transaction_label">Past Activity</string>
+
+
+    <!-- Receive -->
+    <string name="receive_address_title">Your Zcash shielded address</string>
 
     <!-- Send -->
     <string name="send_hint_input_zcash_address">Enter a Zcash address</string>

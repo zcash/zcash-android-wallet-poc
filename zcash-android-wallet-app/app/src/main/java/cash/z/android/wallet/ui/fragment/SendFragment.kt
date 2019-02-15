@@ -9,7 +9,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.content.getSystemService
 import androidx.core.text.toSpannable
 import androidx.databinding.DataBindingUtil
@@ -20,11 +19,12 @@ import cash.z.android.wallet.databinding.FragmentSendBinding
 import cash.z.android.wallet.extention.afterTextChanged
 import cash.z.android.wallet.extention.toAppColor
 import cash.z.android.wallet.extention.tryIgnore
+import cash.z.android.wallet.sample.SampleProperties
+import cash.z.android.wallet.sample.SampleProperties.DEV_MODE
 import cash.z.android.wallet.ui.activity.MainActivity
 import cash.z.android.wallet.ui.presenter.SendPresenter
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.launch
 import java.text.DecimalFormat
 
@@ -55,7 +55,7 @@ class SendFragment : BaseFragment(), SendPresenter.SendView {
 //
 //        this.allowReturnTransitionOverlap = false
 //        allowEnterTransitionOverlap = false
-0
+
         return DataBindingUtil.inflate<FragmentSendBinding>(
             inflater, R.layout.fragment_send, container, false
         ).let {
@@ -85,9 +85,9 @@ class SendFragment : BaseFragment(), SendPresenter.SendView {
             tryIgnore {
                 val value = binding.textValueHeader.text.toString().toDouble()
                 binding.textValueSubheader.text = if (zecSelected) {
-                    usdFormatter.format(value * MainActivity.USD_PER_ZEC)
+                    usdFormatter.format(value * SampleProperties.USD_PER_ZEC)
                 } else {
-                    zecFormatter.format(value / MainActivity.USD_PER_ZEC)
+                    zecFormatter.format(value / SampleProperties.USD_PER_ZEC)
                 }
             }
         }
@@ -107,7 +107,7 @@ class SendFragment : BaseFragment(), SendPresenter.SendView {
             hideSendDialog()
         }
         binding.dialogSubmitButton.setOnClickListener {
-            if (MainActivity.DEV_MODE) submit() else onSendZec()
+            if (DEV_MODE) submit() else onSendZec()
         }
     }
 
@@ -122,7 +122,7 @@ class SendFragment : BaseFragment(), SendPresenter.SendView {
         launch {
             sendPresenter.start()
         }
-        if(MainActivity.DEV_MODE) showSendDialog()
+        if(DEV_MODE) showSendDialog()
     }
 
     override fun onPause() {
@@ -131,13 +131,19 @@ class SendFragment : BaseFragment(), SendPresenter.SendView {
     }
 
     override fun submit() {
-        mainActivity.navController.navigate(R.id.nav_home_fragment,
-            null,
-            null,
-            FragmentNavigatorExtras(binding.dialogTextTitle to "transition_active_transaction_title"))
+        submitNoAnimations()
     }
 
-    fun submitOld() {
+    private fun submitNoAnimations() {
+        mainActivity.navController.navigate(
+            R.id.nav_home_fragment,
+            null,
+            null,
+            FragmentNavigatorExtras(binding.dialogTextTitle to "transition_active_transaction_title")
+        )
+    }
+
+    fun submitWithSharedElements() {
         var extras = with(binding) {
             listOf(dialogSendBackground, dialogSendContents, dialogTextTitle, dialogTextAddress)
                 .map{ it to it.transitionName }
@@ -171,7 +177,7 @@ class SendFragment : BaseFragment(), SendPresenter.SendView {
 
     override fun updateBalance(old: Long, new: Long) {
         val zecBalance = new / 100000000.0
-        val usdBalance = zecBalance * MainActivity.USD_PER_ZEC
+        val usdBalance = zecBalance * SampleProperties.USD_PER_ZEC
         val availableZecFormatter = DecimalFormat("#.########")
         // TODO: use a formatted string resource here
         val availableTextSpan = "${availableZecFormatter.format(zecBalance)} ZEC Available".toSpannable()
