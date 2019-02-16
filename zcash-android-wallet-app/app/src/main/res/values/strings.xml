@@ -11,12 +11,15 @@
     <string name="cancel">cancel</string>
     <string name="cancelled">cancelled</string>
     <string name="ok_allcaps">OK</string>
+    <string name="zec_abbreviation">ZECC</string>
+    <string name="usd_abbreviation">USD</string>
 
     <!--  Destinations -->
     <string name="destination_title_home" />
     <string name="destination_title_send">Send Zcash</string>
     <string name="destination_title_receive">Receive Zcash</string>
     <string name="destination_title_request">Request Zcash</string>
+    <string name="destination_title_scan">Scan Address</string>
     <string name="destination_title_history">History</string>
     <string name="destination_title_about">About</string>
     <string name="destination_title_import">Import</string>
@@ -60,5 +63,11 @@
     <string name="send_label_to">To</string>
     <string name="send_label_memo">Memo (optional)</string>
     <string name="send_submit_button_text">Send Zec</string>
+    <string name="send_tooltip_scan_qr">Scan QR Code</string>
+    <string name="send_tooltip_address_shortcut">Paste Sample Address</string>
+    <string name="send_subheader_value">0 %1$s</string>
+    <string name="send_dialog_title">Send %1$s %2$s ($%3$s)?</string>
+    <string name="send_alert_shortcut_clicked">Paste a valid sample address for testing?</string>
+    <string name="send_error_address_too_short">Address is too short.</string>
 
 </resources>

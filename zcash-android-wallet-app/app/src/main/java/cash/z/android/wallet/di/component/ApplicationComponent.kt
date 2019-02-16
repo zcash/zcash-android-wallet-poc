@@ -30,6 +30,7 @@ import javax.inject.Singleton
         ReceiveFragmentModule::class,
         RequestFragmentModule::class,
         SendFragmentModule::class,
+        ScanFragmentModule::class,
         SettingsFragmentModule::class
     ]
 )

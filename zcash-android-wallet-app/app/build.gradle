@@ -6,6 +6,7 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'deploygate'
 apply plugin: 'com.github.ben-manes.versions'
+apply plugin: 'com.google.gms.google-services'
 
 android {
     compileSdkVersion buildConfig.compileSdkVersion
@@ -19,19 +20,43 @@ android {
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
     }
+
     dataBinding {
         enabled true
     }
+
+    flavorDimensions 'network'
+    productFlavors {
+        // product flavor names cannot start with the word "test" because they would clash with other targets
+        ztestnet {
+            dimension 'network'
+            applicationId 'cash.z.android.wallet.testnet'
+            matchingFallbacks = ['debug']
+        }
+
+        zmainnet {
+            dimension 'network'
+            applicationId 'cash.z.android.wallet.mainnet'
+            matchingFallbacks = ['release']
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+        mock {
+            initWith debug
+            matchingFallbacks = ['debug', 'release']
+        }
     }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
     lintOptions {
         lintConfig file("zcash-lint-options.xml")
     }
@@ -59,7 +84,7 @@ dependencies {
 
     // Zcash
     implementation deps.zcash.walletSdk
-    compile project(path: ':qrecycler')
+    implementation project(path: ':qrecycler')
 
     // TODO: get the AAR to provide these
     implementation "io.grpc:grpc-okhttp:1.17.1"
@@ -79,6 +104,7 @@ dependencies {
     implementation deps.speeddial
     implementation deps.lottie
     debugImplementation deps.stetho
+    mockImplementation deps.stetho
 
     testImplementation deps.junit
     androidTestImplementation deps.androidx.test.runner

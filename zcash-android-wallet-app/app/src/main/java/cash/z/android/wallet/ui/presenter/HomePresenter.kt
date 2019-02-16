@@ -30,9 +30,9 @@ class HomePresenter(
 
     override suspend fun start() {
         Log.e("@TWIG-t", "homePresenter starting!")
-        launchBalanceBinder(synchronizer.repository.balance())
-        launchTransactionBinder(synchronizer.repository.allTransactions())
-        launchProgressMonitor(synchronizer.downloader.progress())
+        launchBalanceBinder(synchronizer.balance())
+        launchTransactionBinder(synchronizer.allTransactions())
+        launchProgressMonitor(synchronizer.progress())
         launchActiveTransactionMonitor(synchronizer.activeTransactions())
     }
 

@@ -8,6 +8,7 @@ object AliceWallet {
     val spendingKeyProvider = SampleSpendingKeySharedPref(name)
     const val cacheDbName = "testalice_cache.db"
     const val dataDbName = "testalice_data8.db"
+    const val defaultSendAddress = "ztestsapling1snmqdnfqnc407pvqw7sld8w5zxx6nd0523kvlj4jf39uvxvh7vn0hs3q38n07806dwwecqwke3t" // dummyseed //TODO: add bob's address here
 }
 
 object BobWallet {
@@ -17,6 +18,7 @@ object BobWallet {
     val spendingKeyProvider = SampleSpendingKeySharedPref(name)
     const val cacheDbName = "testbob_cache.db"
     const val dataDbName = "testbob_data.db"
+    const val defaultSendAddress = "ztestsapling1snmqdnfqnc407pvqw7sld8w5zxx6nd0523kvlj4jf39uvxvh7vn0hs3q38n07806dwwecqwke3t" // dummyseed //TODO: add alice's address here
 }
 
 object MyWallet {
@@ -26,6 +28,7 @@ object MyWallet {
     val spendingKeyProvider = SampleSpendingKeySharedPref(name)
     const val cacheDbName = "wallet_cache1202.db"
     const val dataDbName = "wallet_data1202.db"
+    const val defaultSendAddress = "ztestsapling1snmqdnfqnc407pvqw7sld8w5zxx6nd0523kvlj4jf39uvxvh7vn0hs3q38n07806dwwecqwke3t" // dummyseed
 }
 
 enum class Servers(val host: String) {

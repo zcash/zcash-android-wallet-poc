@@ -26,7 +26,7 @@ class HistoryPresenter(
 
     override suspend fun start() {
         Log.e("@TWIG", "historyPresenter starting!")
-        launchTransactionBinder(synchronizer.repository.allTransactions())
+        launchTransactionBinder(synchronizer.allTransactions())
     }
 
     override fun stop() {

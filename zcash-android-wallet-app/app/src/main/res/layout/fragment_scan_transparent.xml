@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/content_fragment_send"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/fragment_send_background">
+
+        <!--            -->
+        <!-- Guidelines -->
+        <!--            -->
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_content_start"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.1" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_content_end"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.9" />
+
+        <View
+            android:id="@+id/background_header"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="@color/zcashWhite"
+            android:visibility="invisible"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/appbar"
+            app:layout_constraintVertical_chainStyle="spread" />
+
+        <View
+            android:id="@+id/transition_active_transaction_bg"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="24dp"
+            android:background="@drawable/background_rounded_corners"
+            android:backgroundTint="@color/zcashWhite_40"
+            app:layout_constraintBottom_toTopOf="@id/input_zcash_address"
+            app:layout_constraintEnd_toEndOf="@id/guideline_content_end"
+            app:layout_constraintHeight_default="percent"
+            app:layout_constraintHeight_percent="0.2"
+            app:layout_constraintStart_toStartOf="@id/guideline_content_start"
+            app:layout_constraintTop_toBottomOf="@id/background_header"
+            app:layout_constraintVertical_chainStyle="spread_inside" />
+
+        <cash.z.android.wallet.ui.util.vision.CameraSourcePreview
+            android:id="@+id/preview_camera_source"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="@id/transition_active_transaction_bg"
+            app:layout_constraintEnd_toEndOf="@id/guideline_content_end"
+            app:layout_constraintStart_toStartOf="@id/guideline_content_start"
+            app:layout_constraintTop_toTopOf="@id/transition_active_transaction_bg">
+
+            <cash.z.android.wallet.ui.util.vision.GraphicOverlay
+                android:id="@+id/graphic_overlay"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentBottom="true" />
+        </cash.z.android.wallet.ui.util.vision.CameraSourcePreview>
+
+        <TextView
+            android:id="@+id/text_amount_background"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingStart="16dp"
+            android:paddingLeft="16dp"
+            android:paddingTop="16dp"
+            android:text="Scan"
+            android:textColor="@color/text_dark"
+            app:layout_constraintStart_toStartOf="@id/transition_active_transaction_bg"
+            app:layout_constraintTop_toTopOf="@id/transition_active_transaction_bg" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

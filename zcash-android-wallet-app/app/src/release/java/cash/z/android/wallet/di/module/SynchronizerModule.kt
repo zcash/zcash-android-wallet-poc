@@ -79,7 +79,7 @@ internal object SynchronizerModule {
         wallet: Wallet,
         twigger: Twig
     ): Synchronizer {
-        return Synchronizer(downloader, processor, repository, manager, wallet, logger = twigger)
+        return SdkSynchronizer(downloader, processor, repository, manager, wallet, blockPollFrequency = 500_000L, logger = twigger)
     }
 
 }

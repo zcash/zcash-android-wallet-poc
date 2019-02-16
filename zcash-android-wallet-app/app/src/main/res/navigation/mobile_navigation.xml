@@ -24,7 +24,11 @@
         android:id="@+id/nav_send_fragment"
         android:name="cash.z.android.wallet.ui.fragment.SendFragment"
         android:label="@string/destination_title_send"
-        tools:layout="@layout/fragment_send" />
+        tools:layout="@layout/fragment_send" >
+        <action
+            android:id="@+id/action_send_fragment_to_scan_fragment"
+            app:destination="@+id/nav_scan_fragment" />
+    </fragment>
     <fragment
         android:id="@+id/nav_receive_fragment"
         android:name="cash.z.android.wallet.ui.fragment.ReceiveFragment"
@@ -35,6 +39,11 @@
         android:name="cash.z.android.wallet.ui.fragment.RequestFragment"
         android:label="@string/destination_title_request"
         tools:layout="@layout/fragment_request" />
+    <fragment
+        android:id="@+id/nav_scan_fragment"
+        android:name="cash.z.android.wallet.ui.fragment.ScanFragment"
+        android:label="@string/destination_title_scan"
+        tools:layout="@layout/fragment_scan" />
     
     <!-- unimplemented -->
     <fragment

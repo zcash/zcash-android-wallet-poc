@@ -12,6 +12,7 @@ import cash.z.android.qrecycler.QRecycler
 import cash.z.android.wallet.R
 import cash.z.android.wallet.ui.activity.MainActivity
 import cash.z.android.wallet.ui.util.AddressPartNumberSpan
+import cash.z.wallet.sdk.data.Synchronizer
 import cash.z.wallet.sdk.jni.JniConverter
 import cash.z.wallet.sdk.secure.Wallet
 import dagger.Module
@@ -28,7 +29,7 @@ class ReceiveFragment : BaseFragment() {
     lateinit var qrecycler: QRecycler
 
     @Inject
-    lateinit var wallet: Wallet
+    lateinit var synchronizer: Synchronizer
 
     lateinit var addressParts: Array<TextView>
 
@@ -89,7 +90,7 @@ class ReceiveFragment : BaseFragment() {
 
     // TODO: replace with tiered load. First check memory reference (textview contents?) then check DB, then load from JNI and write to DB
     private fun loadAddress(): String {
-        return wallet.getAddress()
+        return synchronizer.getAddress()
     }
 
 }

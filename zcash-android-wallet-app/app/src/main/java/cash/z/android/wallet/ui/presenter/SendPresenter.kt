@@ -25,7 +25,7 @@ class SendPresenter(
     override suspend fun start() {
         Log.e("@TWIG-v", "sendPresenter starting!")
         with(view) {
-            balanceJob = launchBalanceBinder(synchronizer.repository.balance())
+            balanceJob = launchBalanceBinder(synchronizer.balance())
         }
     }
 
@@ -52,10 +52,6 @@ class SendPresenter(
             synchronizer.sendToAddress(zatoshi, toAddress)
         }
         view.submit()
-    }
-
-    private suspend fun findTransaction(txId: Long): Transaction? {
-        return if (txId < 0) null else synchronizer.repository.findTransactionById(txId)
     }
 
     fun bind(old: Long?, new: Long) {

@@ -1,7 +1,7 @@
 buildscript {
     ext.buildConfig = [
         'compileSdkVersion': 28,
-        'minSdkVersion': 16,
+        'minSdkVersion': 21,
         'targetSdkVersion': 28
     ]
     ext.versions = [
@@ -61,6 +61,7 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}"
         classpath "com.github.ben-manes:gradle-versions-plugin:0.20.0"
         classpath 'com.deploygate:gradle:1.1.5'
+        classpath 'com.google.gms:google-services:4.2.0'
     }
 }
 

@@ -8,9 +8,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true"
+        android:isScrollContainer="true"
         tools:context=".ui.fragment.SendFragment">
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/content_fragment_send"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/fragment_send_background">
@@ -71,6 +73,7 @@
                 android:layout_height="0dp"
                 android:layout_marginTop="24dp"
                 android:background="@drawable/background_rounded_corners"
+                android:backgroundTint="@color/zcashWhite_40"
                 app:layout_constraintBottom_toTopOf="@id/input_zcash_address"
                 app:layout_constraintEnd_toEndOf="@id/guideline_content_end"
                 app:layout_constraintHeight_default="percent"
@@ -78,6 +81,15 @@
                 app:layout_constraintStart_toStartOf="@id/guideline_content_start"
                 app:layout_constraintTop_toBottomOf="@id/background_header"
                 app:layout_constraintVertical_chainStyle="spread_inside" />
+
+            <FrameLayout
+                android:id="@+id/camera_placeholder"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintTop_toTopOf="@id/transition_active_transaction_bg"
+                app:layout_constraintBottom_toBottomOf="@id/transition_active_transaction_bg"
+                app:layout_constraintStart_toStartOf="@id/transition_active_transaction_bg"
+                app:layout_constraintEnd_toEndOf="@id/transition_active_transaction_bg"/>
 
             <TextView
                 android:id="@+id/text_amount_background"
@@ -99,7 +111,6 @@
                 android:layout_marginRight="28dp"
                 android:backgroundTint="@color/zcashPrimaryMedium"
                 android:foregroundTint="@color/colorAccent"
-                android:tint="@color/zcashGray_light"
                 app:layout_constraintBottom_toBottomOf="@id/transition_active_transaction_bg"
                 app:layout_constraintEnd_toEndOf="@id/transition_active_transaction_bg"
                 app:layout_constraintTop_toTopOf="@id/transition_active_transaction_bg"
@@ -125,11 +136,11 @@
                 android:id="@+id/text_value_subheader"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="0"
                 android:textColor="@color/text_dark"
                 app:layout_constraintEnd_toEndOf="@id/text_value_header"
                 app:layout_constraintStart_toStartOf="@id/text_value_header"
-                app:layout_constraintTop_toBottomOf="@id/text_value_header" />
+                app:layout_constraintTop_toBottomOf="@id/text_value_header"
+                tools:text="0 ZEC" />
 
             <!-- Zec symbol : header -->
             <ImageView
@@ -178,16 +189,32 @@
                 app:layout_constraintEnd_toStartOf="@id/image_zec_symbol_subheader"
                 app:layout_constraintTop_toTopOf="@id/image_zec_symbol_subheader" />
 
+            <!-- Address -->
             <EditText
                 android:id="@+id/input_zcash_address"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:hint="@string/send_hint_input_zcash_address"
+                android:paddingRight="68dp"
+                android:singleLine="true"
+                app:backgroundTint="@color/zcashBlack_12"
                 app:layout_constraintBottom_toTopOf="@id/text_area_memo"
                 app:layout_constraintEnd_toEndOf="@id/guideline_content_end"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="@id/guideline_content_start"
                 app:layout_constraintTop_toBottomOf="@id/transition_active_transaction_bg" />
+
+            <TextView
+                android:id="@+id/text_address_error"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:fontFamily="@font/inconsolata"
+                android:textColor="@color/zcashRed"
+                android:textSize="@dimen/text_size_caption"
+                app:layout_constraintStart_toStartOf="@id/input_zcash_address"
+                app:layout_constraintTop_toBottomOf="@id/input_zcash_address" />
 
             <!-- Scan QR code -->
             <ImageView
@@ -201,6 +228,16 @@
                 app:layout_constraintTop_toTopOf="@id/input_zcash_address"
                 app:srcCompat="@drawable/ic_qrcode_24dp" />
 
+            <ImageView
+                android:id="@+id/image_address_shortcut"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="8dp"
+                app:layout_constraintBottom_toBottomOf="@id/image_scan_qr"
+                app:layout_constraintEnd_toStartOf="@id/image_scan_qr"
+                app:layout_constraintTop_toTopOf="@id/image_scan_qr"
+                app:srcCompat="@drawable/ic_content_paste_black_24dp" />
+
             <TextView
                 android:id="@+id/text_to_label"
                 android:layout_width="wrap_content"
@@ -209,16 +246,17 @@
                 app:layout_constraintBottom_toTopOf="@id/input_zcash_address"
                 app:layout_constraintStart_toStartOf="@id/input_zcash_address" />
 
+            <!-- memo -->
             <EditText
                 android:id="@+id/text_area_memo"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:background="@drawable/background_rounded_corners"
-                android:backgroundTint="@color/zcashWhite_87"
                 android:gravity="top|left"
                 android:inputType="textMultiLine"
-                android:maxLength="@integer/max_memo_length"
+                android:maxLength="@integer/memo_max_length"
                 android:padding="16dp"
+                app:backgroundTint="@color/zcashWhite_60"
                 app:layout_constraintBottom_toTopOf="@id/button_send_zec"
                 app:layout_constraintEnd_toEndOf="@id/guideline_content_end"
                 app:layout_constraintHeight_default="percent"
@@ -252,7 +290,7 @@
                 android:layout_width="0dp"
                 android:layout_height="1dp"
                 android:layout_marginBottom="40dp"
-                android:background="@color/zcashGray_light"
+                android:background="@color/zcashBlack_12"
                 app:layout_constraintBottom_toBottomOf="@id/text_area_memo"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -264,7 +302,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="0 / 512"
-                android:textColor="@color/zcashGray_light"
+                android:textColor="@color/zcashGray"
                 app:layout_constraintBottom_toBottomOf="@id/text_area_memo"
                 app:layout_constraintEnd_toEndOf="@id/divider_memo"
                 app:layout_constraintTop_toBottomOf="@id/divider_memo" />
@@ -371,6 +409,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:background="@color/divider_background"
+                    app:layout_goneMarginTop="32dp"
                     app:layout_constraintBottom_toTopOf="@+id/dialog_submit_button"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/dialog_text_memo_included" />
@@ -380,7 +419,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
                     android:background="@null"
-                    android:text="swipe right to send"
+                    android:text="send"
                     android:textColor="@color/colorPrimary"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -409,7 +448,6 @@
                 android:layout_height="wrap_content"
                 android:visibility="gone"
                 app:constraint_referenced_ids="dialog_send_contents, dialog_send_background" />
-
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
