@@ -20,7 +20,6 @@ import androidx.navigation.ui.setupWithNavController
 import cash.z.android.wallet.BuildConfig
 import cash.z.android.wallet.R
 import cash.z.android.wallet.ZcashWalletApplication
-import cash.z.android.wallet.sample.SampleProperties.DEV_MODE
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 import dagger.android.support.DaggerAppCompatActivity
@@ -49,12 +48,12 @@ class MainActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        if(!DEV_MODE)synchronizer.start(this)
+        synchronizer.start(this)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        if(!DEV_MODE)synchronizer.stop()
+        synchronizer.stop()
     }
 
     override fun onBackPressed() {

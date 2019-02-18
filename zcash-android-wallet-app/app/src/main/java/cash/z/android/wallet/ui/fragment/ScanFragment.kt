@@ -1,18 +1,30 @@
 package cash.z.android.wallet.ui.fragment
 
+import android.animation.Animator
 import android.content.Context
 import android.content.pm.PackageManager
+import android.hardware.camera2.CameraCharacteristics
+import android.hardware.camera2.CameraManager
+import android.media.Image
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewAnimationUtils
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
+import cash.z.android.cameraview.CameraView
 import cash.z.android.wallet.R
 import cash.z.android.wallet.databinding.FragmentScanBinding
+import cash.z.android.wallet.extention.Toaster
 import cash.z.android.wallet.ui.activity.MainActivity
+import com.google.firebase.ml.vision.FirebaseVision
+import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode
+import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcodeDetectorOptions
+import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
+
 
 /**
  * Fragment for scanning addresss, hopefully.
@@ -20,8 +32,36 @@ import dagger.android.ContributesAndroidInjector
 class ScanFragment : BaseFragment() {
 
     lateinit var binding: FragmentScanBinding
+    var barcodeCallback: BarcodeCallback? = null
 
-//    private var cameraSource: CameraSource? = null
+    interface BarcodeCallback {
+        fun onBarcodeScanned(value: String)
+    }
+
+    private val revealCamera = Runnable {
+        binding.overlayBarcodeScan.apply {
+            val cX = measuredWidth / 2
+            val cY = measuredHeight / 2
+            ViewAnimationUtils.createCircularReveal(this, cX, cY, 0.0f, cX.toFloat()).start()
+            postDelayed({
+                val v:View = this
+                v.animate().alpha(0.0f).apply { duration = 2400L }.setListener(object : Animator.AnimatorListener {
+                    override fun onAnimationRepeat(animation: Animator?) {
+                    }
+
+                    override fun onAnimationStart(animation: Animator?) {
+                    }
+
+                    override fun onAnimationEnd(animation: Animator?) {
+                        binding.overlayBarcodeScan.visibility = View.GONE
+                    }
+                    override fun onAnimationCancel(animation: Animator?) {
+                        binding.overlayBarcodeScan.visibility = View.GONE
+                    }
+                })
+            },500L)
+        }
+    }
 
     private val requiredPermissions: Array<String?>
         get() {
@@ -77,6 +117,8 @@ class ScanFragment : BaseFragment() {
 
     override fun onResume() {
         super.onResume()
+        binding.overlayBarcodeScan.post(revealCamera)
+        System.err.println("camoorah : onResume ScanFragment")
         if(allPermissionsGranted()) onStartCamera()
 //        launch {
 //            sendPresenter.start()
@@ -161,9 +203,62 @@ class ScanFragment : BaseFragment() {
 
     private fun onStartCamera() {
         with(binding.cameraView) {
+            // workaround race conditions with google play services downloading the binaries for Firebase Vision APIs
             postDelayed({
+                firebaseCallback = PoCallback()
                 start()
-            }, 1500L)
+            }, 1000L)
+        }
+    }
+
+    inner class PoCallback : CameraView.FirebaseCallback {
+        val options = FirebaseVisionBarcodeDetectorOptions.Builder()
+            .setBarcodeFormats(FirebaseVisionBarcode.FORMAT_QR_CODE)
+            .build()
+        val barcodeDetector = FirebaseVision.getInstance().getVisionBarcodeDetector(options)
+        var cameraId = getBackCameraId()
+
+        private fun getBackCameraId(): String {
+            val manager = mainActivity.getSystemService(Context.CAMERA_SERVICE) as CameraManager
+
+            for (cameraId in manager.cameraIdList) {
+                val characteristics = manager.getCameraCharacteristics(cameraId)
+                val cOrientation = characteristics.get(CameraCharacteristics.LENS_FACING)!!
+                if (cOrientation == CameraCharacteristics.LENS_FACING_BACK) return cameraId
+            }
+            throw IllegalArgumentException("no rear-facing camera found!")
+        }
+
+        override fun onImageAvailable(image: Image) {
+            System.err.println("camoorah : onImageAvailable: $image  width: ${image.width}  height: ${image.height}")
+            var firebaseImage = FirebaseVisionImage.fromMediaImage(image, getRotationCompensation(cameraId, mainActivity))
+            barcodeDetector
+                .detectInImage(firebaseImage)
+                .addOnSuccessListener { results ->
+                    if (results.isNotEmpty()) {
+                        val barcode = results[0]
+                        val value = barcode.rawValue
+                        val message = "found: $value"
+                        Toaster.short(message)
+                        onScanSuccess(value!!)
+                        // TODO: highlight the barcode
+                        var bounds = barcode.boundingBox
+                        var corners = barcode.cornerPoints
+                        binding.cameraView.setBarcode(barcode)
+                    }
+                }
+        }
+    }
+
+    private var pendingSuccess = false
+    private fun onScanSuccess(value: String) {
+        if (!pendingSuccess) {
+            pendingSuccess = true
+            with(binding.cameraView) {
+                postDelayed({
+                    barcodeCallback?.onBarcodeScanned(value)
+                }, 3000L)
+            }
         }
     }
 
@@ -176,7 +271,6 @@ class ScanFragment : BaseFragment() {
         }
     }
 }
-
 
 @Module
 abstract class ScanFragmentModule {

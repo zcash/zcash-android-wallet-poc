@@ -106,7 +106,13 @@ dependencies {
     debugImplementation deps.stetho
     mockImplementation deps.stetho
 
-    testImplementation deps.junit
+    testImplementation 'org.mockito:mockito-junit-jupiter:2.24.0'
+    testImplementation 'com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0'
+    testImplementation "org.junit.jupiter:junit-jupiter-api:5.4.0"
+    testImplementation "org.junit.jupiter:junit-jupiter-engine:5.4.0"
+    testImplementation "org.junit.jupiter:junit-jupiter-migrationsupport:5.4.0"
+
     androidTestImplementation deps.androidx.test.runner
     androidTestImplementation deps.androidx.test.espresso
+
 }

@@ -7,6 +7,7 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcodeDetector
+import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcodeDetectorOptions
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import java.io.IOException
 
@@ -18,8 +19,11 @@ class BarcodeScanningProcessor : VisionProcessorBase<List<FirebaseVisionBarcode>
     // FirebaseVisionBarcodeDetectorOptions.Builder()
     //     .setBarcodeFormats(FirebaseVisionBarcode.FORMAT_QR_CODE)
     //     .build()
-    public val detector: FirebaseVisionBarcodeDetector by lazy {
-        FirebaseVision.getInstance().visionBarcodeDetector
+    val detector: FirebaseVisionBarcodeDetector by lazy {
+        val options = FirebaseVisionBarcodeDetectorOptions.Builder()
+            .setBarcodeFormats(FirebaseVisionBarcode.FORMAT_QR_CODE)
+            .build()
+        FirebaseVision.getInstance().getVisionBarcodeDetector(options)
     }
 
 

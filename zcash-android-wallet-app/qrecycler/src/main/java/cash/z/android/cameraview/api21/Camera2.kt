@@ -23,17 +23,23 @@ import android.graphics.ImageFormat
 import android.hardware.camera2.*
 import android.hardware.camera2.params.StreamConfigurationMap
 import android.media.ImageReader
+import android.os.Handler
 import android.util.Log
 import android.util.SparseIntArray
 import androidx.annotation.NonNull
 import androidx.annotation.RequiresPermission
+import cash.z.android.cameraview.CameraView
 import cash.z.android.cameraview.base.*
-import java.util.*
+import android.os.HandlerThread
+
+
 
 @TargetApi(21)
 internal open class Camera2(callback: CameraViewImpl.Callback, preview: PreviewImpl, context: Context) : CameraViewImpl(callback, preview) {
 
     private val mCameraManager: CameraManager
+
+    var firebaseCallback: CameraView.FirebaseCallback? = null
 
     private val mCameraDeviceCallback = object : CameraDevice.StateCallback() {
 
@@ -70,7 +76,7 @@ internal open class Camera2(callback: CameraViewImpl.Callback, preview: PreviewI
             try {
                 mCaptureSession!!.setRepeatingRequest(
                     mPreviewRequestBuilder!!.build(),
-                    mCaptureCallback, null
+                    mCaptureCallback, backgroundHandler
                 )
             } catch (e: CameraAccessException) {
                 Log.e(TAG, "Failed to start camera preview because it couldn't access camera", e)
@@ -101,7 +107,7 @@ internal open class Camera2(callback: CameraViewImpl.Callback, preview: PreviewI
             )
             setState(Camera2.PictureCaptureCallback.STATE_PRECAPTURE)
             try {
-                mCaptureSession!!.capture(mPreviewRequestBuilder!!.build(), this, null)
+                mCaptureSession!!.capture(mPreviewRequestBuilder!!.build(), this, backgroundHandler)
                 mPreviewRequestBuilder!!.set(
                     CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER,
                     CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER_IDLE
@@ -119,19 +125,21 @@ internal open class Camera2(callback: CameraViewImpl.Callback, preview: PreviewI
     }
 
     private val mOnImageAvailableListener = ImageReader.OnImageAvailableListener { reader ->
+
         reader.acquireNextImage().use { image ->
             val planes = image.planes
-            if (planes.size > 0) {
-                val buffer = planes[0].buffer
-                val data = ByteArray(buffer.remaining())
-                buffer.get(data)
-                mCallback.onPictureTaken(data)
+            if (planes.isNotEmpty()) {
+                System.err.println("camoorah : planes was empty: $firebaseCallback")
+                firebaseCallback?.onImageAvailable(image)
+                try{ image.close() } catch(t: Throwable){ System.err.println("camoorah : failed to close")}
+            } else {
+                System.err.println("planes was empty")
             }
         }
     }
 
 
-    private var mCameraId: String? = null
+    var cameraId: String? = null
 
     private var mCameraCharacteristics: CameraCharacteristics? = null
 
@@ -167,7 +175,7 @@ internal open class Camera2(callback: CameraViewImpl.Callback, preview: PreviewI
                     try {
                         mCaptureSession!!.setRepeatingRequest(
                             mPreviewRequestBuilder!!.build(),
-                            mCaptureCallback, null
+                            mCaptureCallback, backgroundHandler
                         )
                     } catch (e: CameraAccessException) {
                         field = saved
@@ -212,7 +220,7 @@ internal open class Camera2(callback: CameraViewImpl.Callback, preview: PreviewI
                     try {
                         mCaptureSession!!.setRepeatingRequest(
                             mPreviewRequestBuilder!!.build(),
-                            mCaptureCallback, null
+                            mCaptureCallback, backgroundHandler
                         )
                     } catch (e: CameraAccessException) {
                         mAutoFocus = !mAutoFocus
@@ -236,6 +244,7 @@ internal open class Camera2(callback: CameraViewImpl.Callback, preview: PreviewI
         if (!chooseCameraIdByFacing()) {
             return false
         }
+        startBackgroundThread()
         collectCameraInfo()
         prepareImageReader()
         startOpeningCamera()
@@ -243,6 +252,7 @@ internal open class Camera2(callback: CameraViewImpl.Callback, preview: PreviewI
     }
 
     override fun stop() {
+        stopBackgroundThread()
         if (mCaptureSession != null) {
             mCaptureSession!!.close()
             mCaptureSession = null
@@ -314,14 +324,14 @@ internal open class Camera2(callback: CameraViewImpl.Callback, preview: PreviewI
                 val internal = characteristics.get(CameraCharacteristics.LENS_FACING)
                     ?: throw NullPointerException("Unexpected state: LENS_FACING null")
                 if (internal == internalFacing) {
-                    mCameraId = id
+                    cameraId = id
                     mCameraCharacteristics = characteristics
                     return true
                 }
             }
             // Not found
-            mCameraId = ids[0]
-            mCameraCharacteristics = mCameraManager.getCameraCharacteristics(mCameraId!!)
+            cameraId = ids[0]
+            mCameraCharacteristics = mCameraManager.getCameraCharacteristics(cameraId!!)
             val level = mCameraCharacteristics!!.get(
                 CameraCharacteristics.INFO_SUPPORTED_HARDWARE_LEVEL
             )
@@ -359,7 +369,7 @@ internal open class Camera2(callback: CameraViewImpl.Callback, preview: PreviewI
     private fun collectCameraInfo() {
         val map = mCameraCharacteristics!!.get(
             CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP
-        ) ?: throw IllegalStateException("Failed to get configuration map: " + mCameraId!!)
+        ) ?: throw IllegalStateException("Failed to get configuration map: " + cameraId!!)
         mPreviewSizes.clear()
         for (size in map.getOutputSizes(mPreview.outputClass)) {
             val width = size.width
@@ -392,12 +402,12 @@ internal open class Camera2(callback: CameraViewImpl.Callback, preview: PreviewI
         if (mImageReader != null) {
             mImageReader!!.close()
         }
-        val largest = mPictureSizes.sizes(mAspectRatio).last()
+//        val largest = mPictureSizes.sizes(mAspectRatio).last()
+        val previewSize = chooseOptimalSize()
         mImageReader = ImageReader.newInstance(
-            largest.width, largest.height,
-            ImageFormat.JPEG, /* maxImages */ 2
+            previewSize.width / 4, previewSize.height / 4, ImageFormat.YUV_420_888, 2
         )
-        mImageReader!!.setOnImageAvailableListener(mOnImageAvailableListener, null)
+        mImageReader!!.setOnImageAvailableListener(mOnImageAvailableListener, backgroundHandler)
     }
 
     /**
@@ -409,9 +419,9 @@ internal open class Camera2(callback: CameraViewImpl.Callback, preview: PreviewI
     @RequiresPermission(Manifest.permission.CAMERA)
     private fun startOpeningCamera() {
         try {
-            mCameraManager.openCamera(mCameraId!!, mCameraDeviceCallback, null)
+            mCameraManager.openCamera(cameraId!!, mCameraDeviceCallback, backgroundHandler)
         } catch (e: CameraAccessException) {
-            throw RuntimeException("Failed to open camera: " + mCameraId!!, e)
+            throw RuntimeException("Failed to open camera: " + cameraId!!, e)
         }
 
     }
@@ -434,9 +444,10 @@ internal open class Camera2(callback: CameraViewImpl.Callback, preview: PreviewI
         try {
             mPreviewRequestBuilder = mCamera!!.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW)
             mPreviewRequestBuilder!!.addTarget(surface)
+            mPreviewRequestBuilder!!.addTarget(mImageReader!!.surface)
             mCamera!!.createCaptureSession(
-                Arrays.asList(surface, mImageReader!!.surface),
-                mSessionCallback, null
+                listOf(surface, mImageReader!!.surface),
+                mSessionCallback, backgroundHandler
             )
         } catch (e: CameraAccessException) {
             throw RuntimeException("Failed to start camera session")
@@ -572,7 +583,7 @@ internal open class Camera2(callback: CameraViewImpl.Callback, preview: PreviewI
         )
         try {
             mCaptureCallback.setState(PictureCaptureCallback.STATE_LOCKING)
-            mCaptureSession!!.capture(mPreviewRequestBuilder!!.build(), mCaptureCallback, null)
+            mCaptureSession!!.capture(mPreviewRequestBuilder!!.build(), mCaptureCallback, backgroundHandler)
         } catch (e: CameraAccessException) {
             Log.e(TAG, "Failed to lock focus.", e)
         }
@@ -583,6 +594,7 @@ internal open class Camera2(callback: CameraViewImpl.Callback, preview: PreviewI
      * Captures a still picture.
      */
     fun captureStillPicture() {
+        Log.e("camoorah", "capturing  still picture")
         try {
             val captureRequestBuilder = mCamera!!.createCaptureRequest(
                 CameraDevice.TEMPLATE_STILL_CAPTURE
@@ -647,7 +659,7 @@ internal open class Camera2(callback: CameraViewImpl.Callback, preview: PreviewI
                     ) {
                         unlockFocus()
                     }
-                }, null
+                }, backgroundHandler
             )
         } catch (e: CameraAccessException) {
             Log.e(TAG, "Cannot capture a still picture.", e)
@@ -665,20 +677,46 @@ internal open class Camera2(callback: CameraViewImpl.Callback, preview: PreviewI
             CaptureRequest.CONTROL_AF_TRIGGER_CANCEL
         )
         try {
-            mCaptureSession!!.capture(mPreviewRequestBuilder!!.build(), mCaptureCallback, null)
+            mCaptureSession!!.capture(mPreviewRequestBuilder!!.build(), mCaptureCallback, backgroundHandler)
             updateAutoFocus()
             updateFlash()
             mPreviewRequestBuilder!!.set(
                 CaptureRequest.CONTROL_AF_TRIGGER,
                 CaptureRequest.CONTROL_AF_TRIGGER_IDLE
             )
-            mCaptureSession!!.setRepeatingRequest(mPreviewRequestBuilder!!.build(), mCaptureCallback, null)
+            mCaptureSession!!.setRepeatingRequest(mPreviewRequestBuilder!!.build(), mCaptureCallback, backgroundHandler)
             mCaptureCallback.setState(PictureCaptureCallback.STATE_PREVIEW)
         } catch (e: CameraAccessException) {
             Log.e(TAG, "Failed to restart camera preview.", e)
         }
-
     }
+
+    var backgroundHandlerThread: HandlerThread? = null
+    var backgroundHandler: Handler? = null
+
+    /**
+     * Starts a background thread and its [Handler].
+     */
+    private fun startBackgroundThread() {
+        backgroundHandlerThread = HandlerThread("CameraBackgroundProcessor")
+        backgroundHandlerThread?.start()
+        backgroundHandler = Handler(backgroundHandlerThread?.looper)
+    }
+
+    /**
+     * Stops the background thread and its [Handler].
+     */
+    private fun stopBackgroundThread() {
+        backgroundHandlerThread?.quitSafely()
+        try {
+            backgroundHandlerThread?.join()
+            backgroundHandlerThread = null
+            backgroundHandler = null
+        } catch (e: InterruptedException) {
+            e.printStackTrace()
+        }
+    }
+
 
     /**
      * A [CameraCaptureSession.CaptureCallback] for capturing a still picture.

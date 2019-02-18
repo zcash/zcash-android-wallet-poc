@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import cash.z.android.wallet.R
 import cash.z.android.wallet.extention.toAppColor
 import cash.z.wallet.sdk.dao.WalletTransaction
+import cash.z.wallet.sdk.ext.convertZatoshiToZec
 import cash.z.wallet.sdk.ext.toZec
 import java.text.SimpleDateFormat
 import java.util.*
@@ -40,7 +41,7 @@ class TransactionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
         val sign = if(tx.isSend) "-" else "+"
         val amountColor = if (tx.isSend) R.color.text_dark_dimmed else R.color.colorPrimary
         val transactionColor = if(tx.isSend) R.color.send_associated else R.color.receive_associated
-        val zecAbsoluteValue = tx.value.absoluteValue.toZec(3)
+        val zecAbsoluteValue = tx.value.absoluteValue.convertZatoshiToZec(3)
         status.setBackgroundColor(transactionColor.toAppColor())
         timestamp.text = if (!tx.isMined || tx.timeInSeconds == 0L) "Pending" else formatter.format(tx.timeInSeconds * 1000)
         Log.e("TWIG-z", "TimeInSeconds: ${tx.timeInSeconds}")

@@ -1,6 +1,8 @@
 package cash.z.android.wallet.sample
 
 import cash.z.wallet.sdk.data.SampleSeedProvider
+import java.math.BigDecimal
+import java.math.MathContext
 
 object AliceWallet {
     const val name = "test.reference.alice"
@@ -45,11 +47,5 @@ object SampleProperties {
     const val COMPACT_BLOCK_PORT = 9067
     val wallet = AliceWallet
     // TODO: placeholder until we have a network service for this
-    const val USD_PER_ZEC = 49.07
-
-    /**
-     * A simple flag that helps with removing shortcuts in the code used during development.
-     * TODO: either elevate this to a real thing (based off a system property or some such) or delete it!
-     */
-    const val DEV_MODE = false
+    val USD_PER_ZEC = BigDecimal("49.07", MathContext.DECIMAL128)
 }

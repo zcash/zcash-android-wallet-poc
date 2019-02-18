@@ -23,7 +23,6 @@ import cash.z.android.wallet.R
 import cash.z.android.wallet.databinding.FragmentHomeBinding
 import cash.z.android.wallet.extention.*
 import cash.z.android.wallet.sample.SampleProperties
-import cash.z.android.wallet.sample.SampleProperties.DEV_MODE
 import cash.z.android.wallet.ui.adapter.TransactionAdapter
 import cash.z.android.wallet.ui.presenter.HomePresenter
 import cash.z.android.wallet.ui.util.AlternatingRowColorDecoration
@@ -33,7 +32,7 @@ import cash.z.wallet.sdk.dao.WalletTransaction
 import cash.z.wallet.sdk.data.ActiveSendTransaction
 import cash.z.wallet.sdk.data.ActiveTransaction
 import cash.z.wallet.sdk.data.TransactionState
-import cash.z.wallet.sdk.ext.toZec
+import cash.z.wallet.sdk.ext.*
 import com.google.android.material.snackbar.Snackbar
 import com.leinardi.android.speeddial.SpeedDialActionItem
 import dagger.Module
@@ -168,11 +167,11 @@ class HomeFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, HomeP
 
     //TODO: pull some of this logic into the presenter, particularly the part that deals with ZEC <-> USD price conversion
     override fun updateBalance(old: Long, new: Long) {
-        val zecValue = new/1e8
-        setZecValue(zecValue)
-        setUsdValue(SampleProperties.USD_PER_ZEC * zecValue)
+        val zecValue = new.convertZatoshiToZec()
+        setZecValue(zecValue.toZecString(3))
+        setUsdValue(zecValue.convertZecToUsd(SampleProperties.USD_PER_ZEC).toUsdString())
 
-        onContentRefreshComplete(zecValue)
+        onContentRefreshComplete(new)
     }
 
     override fun setTransactions(transactions: List<WalletTransaction>) {
@@ -245,12 +244,12 @@ class HomeFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, HomeP
     private fun updatePrimaryTransaction(transaction: ActiveTransaction, transactionState: TransactionState) {
         setActiveTransactionsShown(true)
         Log.e("TWIG", "setting transaction state to ${transactionState::class.simpleName}")
-        var title = "Active Transaction"
-        var subtitle = "Processing..."
+        var title = binding.includeContent.textActiveTransactionTitle.text?.toString()  ?: ""
+        var subtitle = binding.includeContent.textActiveTransactionSubtitle.text?.toString() ?: ""
         when (transactionState) {
             TransactionState.Creating -> {
                 binding.includeContent.headerActiveTransaction.visibility = View.VISIBLE
-                title = "Preparing ${transaction.value.toZec(3)} ZEC"
+                title = "Preparing ${transaction.value.convertZatoshiToZecString(3)} ZEC"
                 subtitle = "to ${(transaction as ActiveSendTransaction).toAddress}"
                 setTransactionActive(transaction, true)
             }
@@ -281,7 +280,7 @@ class HomeFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, HomeP
                     binding.includeContent.lottieActiveTransaction.playAnimation()
                     title = "ZEC Sent"
                     subtitle = "Today at 2:11pm"
-                    binding.includeContent.textActiveTransactionValue.text = transaction.value.toZec(3).toString()
+                    binding.includeContent.textActiveTransactionValue.text = transaction.value.convertZatoshiToZecString(3)
                     binding.includeContent.textActiveTransactionValue.visibility = View.VISIBLE
                     binding.includeContent.buttonActiveTransactionCancel.visibility = View.GONE
                 } else {
@@ -405,8 +404,7 @@ class HomeFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, HomeP
             .create()
     }
 
-    private fun setUsdValue(value: Double) {
-        val valueString = String.format("$ %,.2f",value)
+    private fun setUsdValue(valueString: String) {
         val hairSpace = "\u200A"
 //        val adjustedValue = "$$hairSpace$valueString"
         val textSpan = SpannableString(valueString)
@@ -415,8 +413,8 @@ class HomeFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, HomeP
         binding.includeHeader.textBalanceUsd.text = textSpan
     }
 
-    private fun setZecValue(value: Double) {
-        binding.includeHeader.textBalanceZec.text = if(value == 0.0) "0" else String.format("%.3f",value)
+    private fun setZecValue(value: String) {
+        binding.includeHeader.textBalanceZec.text = value
 
 
 //        // bugfix: there is a bug in motionlayout that causes text to flicker as it is resized because the last character doesn't fit. Padding both sides with a thin space works around this bug.
@@ -431,8 +429,8 @@ class HomeFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, HomeP
      * If the balance changes from zero, the wallet is no longer empty so hide the empty view.
      * But don't do either of these things if the situation has not changed.
      */
-    private fun onContentRefreshComplete(value: Double) {
-        val isEmpty = value <= 0.0
+    private fun onContentRefreshComplete(value: Long) {
+        val isEmpty = value <= 0L
         // wasEmpty isn't enough info. it must be considered along with whether these views were ever initialized
         val wasEmpty = binding.includeContent.groupEmptyViewItems.visibility == View.VISIBLE
         // situation has changed when we weren't initialized but now we have a balance or emptiness has changed
@@ -537,42 +535,15 @@ class HomeFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, HomeP
     lateinit var headerEmptyViews: Array<View>
     lateinit var headerFullViews: Array<View>
 
-    fun shrink(): Double {
-        return binding.includeHeader.textBalanceZec.text.toString().trim().toDouble() - Random.nextDouble(5.0)
-    }
-    fun grow(): Double {
-        return binding.includeHeader.textBalanceZec.text.toString().trim().toDouble() + Random.nextDouble(5.0)
-    }
-    fun reduceValue() {
-        shrink().let {
-            if(it < 0) { setZecValue(0.0); toggleViews(empty); forceRedraw() }
-            else view?.postDelayed({
-                setZecValue(it)
-                setUsdValue(it*75.0)
-                reduceValue()
-            }, delay)
-        }
-    }
-    fun increaseValue(target: Double) {
-        grow().let {
-            if(it > target) { setZecValue(target); setUsdValue(target*75.0); toggleViews(empty) }
-            else view?.postDelayed({
-                setZecValue(it)
-                setUsdValue(it*75.0)
-                increaseValue(target)
-                if (headerFullViews[0].parent == null || headerEmptyViews[0].parent != null) toggleViews(false)
-                forceRedraw()
-            }, delay)
-        }
-    }
+
     fun forceRedraw() {
         view?.postDelayed({
             binding.includeHeader.containerHomeHeader.progress = binding.includeHeader.containerHomeHeader.progress - 0.1f
         }, delay * 2)
     }
-    internal fun toggle(isEmpty: Boolean) {
-        toggleValues(isEmpty)
-    }
+//    internal fun toggle(isEmpty: Boolean) {
+//        toggleValues(isEmpty)
+//    }
 
     internal fun toggleViews(isEmpty: Boolean) {
         Log.e("TWIG-t", "toggling views to isEmpty == $isEmpty")
@@ -643,14 +614,14 @@ class HomeFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, HomeP
         view?.postDelayed(::forceRedraw, delay * 2)
     }
 
-    internal fun toggleValues(isEmpty: Boolean) {
-        empty = isEmpty
-        if(empty) {
-            reduceValue()
-        } else {
-            increaseValue(Random.nextDouble(20.0, 100.0))
-        }
-    }
+//    internal fun toggleValues(isEmpty: Boolean) {
+//        empty = isEmpty
+//        if(empty) {
+//            reduceValue()
+//        } else {
+//            increaseValue(Random.nextDouble(20.0, 100.0))
+//        }
+//    }
 
 
     inner class HomeTransitionListener : Transition.TransitionListener {

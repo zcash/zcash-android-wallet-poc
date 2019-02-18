@@ -16,31 +16,39 @@
 
 package cash.z.android.cameraview
 
-import cash.z.android.qrecycler.R
 import android.app.Activity
 import android.content.Context
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.RectF
+import android.hardware.camera2.CameraAccessException
+import android.hardware.camera2.CameraCharacteristics
+import android.hardware.camera2.CameraManager
+import android.media.Image
 import android.os.Build
 import android.os.Parcel
 import android.os.Parcelable
 import android.util.AttributeSet
+import android.view.Surface
 import android.view.View
 import android.widget.FrameLayout
 import androidx.annotation.IntDef
 import androidx.annotation.NonNull
 import androidx.annotation.Nullable
-import androidx.core.os.ParcelableCompat
-import androidx.core.os.ParcelableCompatCreatorCallbacks
+import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import cash.z.android.cameraview.api21.Camera2
 import cash.z.android.cameraview.base.AspectRatio
 import cash.z.android.cameraview.base.CameraViewImpl
 import cash.z.android.cameraview.base.Constants
 import cash.z.android.cameraview.base.PreviewImpl
+import cash.z.android.qrecycler.R
 import com.google.android.cameraview.Camera2Api23
 import com.google.android.cameraview.TextureViewPreview
-import java.lang.IllegalStateException
-import java.lang.annotation.Retention
-import java.lang.annotation.RetentionPolicy
+import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode
+import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata
 import java.util.*
 
 open class CameraView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
@@ -55,6 +63,16 @@ open class CameraView(context: Context, attrs: AttributeSet?, defStyleAttr: Int)
     private var mAdjustViewBounds: Boolean = false
 
     private var mDisplayOrientationDetector: DisplayOrientationDetector?
+
+    var firebaseCallback: FirebaseCallback? = null
+        set(value) {
+            (mImpl as? Camera2)?.firebaseCallback = value
+            field = value
+        }
+
+
+    lateinit var cameraId: String
+
 
     /**
      * @return `true` if the camera is opened.
@@ -293,6 +311,18 @@ open class CameraView(context: Context, attrs: AttributeSet?, defStyleAttr: Int)
         }
     }
 
+    private var rectPaint = Paint().apply {
+        color = Color.GREEN
+        style = Paint.Style.FILL
+        strokeWidth = 8f
+    }
+
+    override fun draw(canvas: Canvas) {
+        super.draw(canvas)
+        val rect = RectF(0f,0f,canvas.width.toFloat(),canvas.height.toFloat())
+        canvas.drawRect(rect, rectPaint)
+    }
+
     override fun onSaveInstanceState(): Parcelable? {
         val state = SavedState(super.onSaveInstanceState())
         state.facing = facing
@@ -328,6 +358,11 @@ open class CameraView(context: Context, attrs: AttributeSet?, defStyleAttr: Int)
 //            mImpl = Camera1(mCallbacks, createPreviewImpl(context))
 //            onRestoreInstanceState(state)
 //            mImpl.start()
+        }
+
+        // start results in cameraId being set so bubble that up for firebase rotation use
+        when(mImpl) {
+            is Camera2 -> cameraId = (mImpl as Camera2).cameraId!!
         }
     }
 
@@ -365,6 +400,56 @@ open class CameraView(context: Context, attrs: AttributeSet?, defStyleAttr: Int)
      */
     fun takePicture() {
         mImpl.takePicture()
+    }
+
+    fun setBarcode(barcode: FirebaseVisionBarcode) {
+
+    }
+
+    interface FirebaseCallback {
+        fun onImageAvailable(image: Image)
+
+        // TODO: attribute this code. The library I found it in has no attribution but it clearly came from somewhere. Modified it to not require instantiating a sparsearray of orientations (just use when instead) also simplified method signature
+        // one source : https://github.com/firebase/snippets-android/blob/master/mlkit/app/src/main/java/com/google/firebase/example/mlkit/VisionImage.java
+        /**
+         * Get the angle by which an image must be rotated given the device's current
+         * orientation.
+         */
+        @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+        @Throws(CameraAccessException::class)
+        fun getRotationCompensation(cameraId: String, activity: Activity): Int {
+            // Get the device's current rotation relative to its "native" orientation.
+            // Then, from the ORIENTATIONS table, look up the angle the image must be
+            // rotated to compensate for the device's rotation.
+            val deviceRotation = activity.windowManager.defaultDisplay.rotation
+            var rotationCompensation = when(deviceRotation) {
+                Surface.ROTATION_0 -> 90
+                Surface.ROTATION_90 -> 0
+                Surface.ROTATION_180 -> 270
+                Surface.ROTATION_270 -> 180
+                else -> throw IllegalArgumentException("Unsupported rotation value! Expected [0|90|180|270] but got: $deviceRotation")
+            }
+
+            // On most devices, the sensor orientation is 90 degrees, but for some
+            // devices it is 270 degrees. For devices with a sensor orientation of
+            // 270, rotate the image an additional 180 ((270 + 270) % 360) degrees.
+            val cameraManager = activity.getSystemService(AppCompatActivity.CAMERA_SERVICE) as CameraManager
+            val sensorOrientation = cameraManager
+                .getCameraCharacteristics(cameraId)
+                .get(CameraCharacteristics.SENSOR_ORIENTATION)!!
+            rotationCompensation = (rotationCompensation + sensorOrientation + 270) % 360
+
+            // Return the corresponding FirebaseVisionImageMetadata rotation value.
+            val result: Int
+            when (rotationCompensation) {
+                0 -> result = FirebaseVisionImageMetadata.ROTATION_0
+                90 -> result = FirebaseVisionImageMetadata.ROTATION_90
+                180 -> result = FirebaseVisionImageMetadata.ROTATION_180
+                270 -> result = FirebaseVisionImageMetadata.ROTATION_270
+                else -> throw IllegalArgumentException("Unsupported rotation value! Expected [0|90|180|270] but got: $deviceRotation") // this should be impossible, given that we would have already thrown an exception
+            }
+            return result
+        }
     }
 
     private inner class CallbackBridge internal constructor() : CameraViewImpl.Callback {
@@ -465,14 +550,14 @@ open class CameraView(context: Context, attrs: AttributeSet?, defStyleAttr: Int)
          *
          * @param cameraView The associated [CameraView].
          */
-        fun onCameraOpened(cameraView: CameraView) {}
+        open fun onCameraOpened(cameraView: CameraView) {}
 
         /**
          * Called when camera is closed.
          *
          * @param cameraView The associated [CameraView].
          */
-        fun onCameraClosed(cameraView: CameraView) {}
+        open fun onCameraClosed(cameraView: CameraView) {}
 
         /**
          * Called when a picture is taken.
@@ -480,7 +565,7 @@ open class CameraView(context: Context, attrs: AttributeSet?, defStyleAttr: Int)
          * @param cameraView The associated [CameraView].
          * @param data       JPEG data.
          */
-        fun onPictureTaken(cameraView: CameraView, data: ByteArray) {}
+        open fun onPictureTaken(cameraView: CameraView, data: ByteArray) {}
     }
 
     companion object {
