@@ -7,3 +7,7 @@ internal inline fun tryIgnore(block: () -> Unit) {
 internal inline fun <T> tryNull(block: () -> T): T? {
     return try { block() } catch(ignored: Throwable) { null }
 }
+
+internal inline fun String.truncate(): String {
+    return "${substring(0..4)}...${substring(length-5, length)}"
+}

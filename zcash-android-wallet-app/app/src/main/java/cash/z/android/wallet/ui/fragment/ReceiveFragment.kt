@@ -43,11 +43,6 @@ class ReceiveFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        (activity as MainActivity).let { mainActivity ->
-            mainActivity.setSupportActionBar(view.findViewById(R.id.toolbar))
-            mainActivity.supportActionBar?.setDisplayHomeAsUpEnabled(true)
-            mainActivity.supportActionBar?.setTitle(R.string.destination_title_receive)
-        }
         addressParts = arrayOf(
             text_address_part_1,
             text_address_part_2,

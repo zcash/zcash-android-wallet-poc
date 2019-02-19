@@ -4,6 +4,7 @@ import android.util.Log
 import cash.z.android.wallet.sample.SampleProperties
 import cash.z.android.wallet.ui.presenter.Presenter.PresenterView
 import cash.z.wallet.sdk.data.Synchronizer
+import cash.z.wallet.sdk.data.twig
 import cash.z.wallet.sdk.ext.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
@@ -18,7 +19,7 @@ class SendPresenter(
 ) : Presenter {
 
     interface SendView : PresenterView {
-        fun updateBalance(old: Long, new: Long)
+        fun updateBalance(new: Long)
         fun setHeaders(isUsdSelected: Boolean, headerString: String, subheaderString: String)
         fun setHeaderValue(usdString: String)
         fun setSubheaderValue(usdString: String, isUsdSelected: Boolean)
@@ -148,10 +149,8 @@ class SendPresenter(
 
     fun bind(newZecBalance: Long) {
         if (newZecBalance >= 0) {
-            Log.e("@TWIG-v", "binding balance of $newZecBalance")
-            val old = sendUiModel.zecValue
-            sendUiModel = sendUiModel.copy(zecValue = newZecBalance)
-            view.updateBalance(old ?: 0L, newZecBalance)
+            twig("binding balance of $newZecBalance")
+            view.updateBalance(newZecBalance)
         }
     }
 

@@ -26,6 +26,7 @@ import cash.z.android.wallet.sample.SampleProperties
 import cash.z.android.wallet.ui.adapter.TransactionAdapter
 import cash.z.android.wallet.ui.presenter.HomePresenter
 import cash.z.android.wallet.ui.util.AlternatingRowColorDecoration
+import cash.z.android.wallet.ui.util.AnimatorCompleteListener
 import cash.z.android.wallet.ui.util.LottieLooper
 import cash.z.android.wallet.ui.util.TopAlignedSpan
 import cash.z.wallet.sdk.dao.WalletTransaction
@@ -93,11 +94,8 @@ class HomeFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, HomeP
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        with(mainActivity) {
-            setSupportActionBar(binding.includeHeader.homeToolbar)
-            setupNavigation()
-            supportActionBar?.setTitle(R.string.destination_title_home)
-        }
+        mainActivity.setToolbarShown(false)
+        mainActivity.setDrawerLocked(false)
         initFab()
 
         homePresenter = HomePresenter(this, mainActivity.synchronizer)
@@ -162,9 +160,6 @@ class HomeFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, HomeP
 
 
 
-
-
-
     //TODO: pull some of this logic into the presenter, particularly the part that deals with ZEC <-> USD price conversion
     override fun updateBalance(old: Long, new: Long) {
         val zecValue = new.convertZatoshiToZec()
@@ -176,7 +171,9 @@ class HomeFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, HomeP
 
     override fun setTransactions(transactions: List<WalletTransaction>) {
         with (binding.includeContent.recyclerTransactions) {
-            (adapter as TransactionAdapter).submitList(transactions)
+            (adapter as TransactionAdapter).submitList(transactions.sortedByDescending {
+                it.timeInSeconds
+            })
             postDelayed({
                 smoothScrollToPosition(0)
             }, 100L)
@@ -242,23 +239,27 @@ class HomeFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, HomeP
     }
 
     private fun updatePrimaryTransaction(transaction: ActiveTransaction, transactionState: TransactionState) {
-        setActiveTransactionsShown(true)
+
         Log.e("TWIG", "setting transaction state to ${transactionState::class.simpleName}")
         var title = binding.includeContent.textActiveTransactionTitle.text?.toString()  ?: ""
         var subtitle = binding.includeContent.textActiveTransactionSubtitle.text?.toString() ?: ""
+        var isShown = binding.includeContent.textActiveTransactionHeader.visibility == View.VISIBLE
         when (transactionState) {
             TransactionState.Creating -> {
                 binding.includeContent.headerActiveTransaction.visibility = View.VISIBLE
                 title = "Preparing ${transaction.value.convertZatoshiToZecString(3)} ZEC"
-                subtitle = "to ${(transaction as ActiveSendTransaction).toAddress}"
+                subtitle = "to ${(transaction as ActiveSendTransaction).toAddress.truncate()}"
                 setTransactionActive(transaction, true)
+                isShown = true
             }
             TransactionState.SendingToNetwork -> {
                 title = "Sending Transaction"
-                subtitle = "to ${(transaction as ActiveSendTransaction).toAddress}"
-                binding.includeContent.textActiveTransactionValue.text = "${transaction.value/1000L}"
+                subtitle = "to ${(transaction as ActiveSendTransaction).toAddress.truncate()}"
+                binding.includeContent.textActiveTransactionValue.text = "${transaction.value.convertZatoshiToZecString(3)}"
                 binding.includeContent.textActiveTransactionValue.visibility = View.VISIBLE
                 binding.includeContent.buttonActiveTransactionCancel.visibility = View.GONE
+                setTransactionActive(transaction, true)
+                isShown = true
             }
             is TransactionState.Failure -> {
                 binding.includeContent.lottieActiveTransaction.setAnimation(R.raw.lottie_send_failure)
@@ -283,21 +284,25 @@ class HomeFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, HomeP
                     binding.includeContent.textActiveTransactionValue.text = transaction.value.convertZatoshiToZecString(3)
                     binding.includeContent.textActiveTransactionValue.visibility = View.VISIBLE
                     binding.includeContent.buttonActiveTransactionCancel.visibility = View.GONE
+                } else if (transactionState.confirmationCount > 1) {
+                    isShown = false
                 } else {
                     title = "Confirmation Received"
                     subtitle = "Today at 2:12pm"
                     // take it out of the list in a bit and skip counting confirmation animation for now (i.e. one is enough)
-                    setActiveTransactionsShown(false, 3000L)
+                    setActiveTransactionsShown(false, 5000L)
                 }
             }
             is TransactionState.Cancelled -> {
                 title = binding.includeContent.textActiveTransactionTitle.text.toString()
                 subtitle = binding.includeContent.textActiveTransactionSubtitle.text.toString()
                 setTransactionActive(transaction, false)
+                setActiveTransactionsShown(false, 10000L)
             }
         }
         binding.includeContent.textActiveTransactionTitle.text = title
         binding.includeContent.textActiveTransactionSubtitle.text = subtitle
+        setActiveTransactionsShown(isShown)
     }
 
 
@@ -306,9 +311,10 @@ class HomeFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, HomeP
     //
 
     private fun setActiveTransactionsShown(isShown: Boolean, delay: Long = 0L) {
-        Log.e("TWIG-a", "setActiveTransactionsShown: $isShown")
         binding.includeContent.headerActiveTransaction.postDelayed({
-            binding.includeContent.groupActiveTransactionItems.visibility = if (isShown) View.VISIBLE else View.GONE
+            binding.includeContent.headerActiveTransaction.animate().alpha(if(isShown) 1f else 0f).setDuration(250).setListener(
+                AnimatorCompleteListener{ binding.includeContent.groupActiveTransactionItems.visibility = if (isShown) View.VISIBLE else View.GONE }
+            )
         }, delay)
     }
 
@@ -377,17 +383,7 @@ class HomeFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, HomeP
         }
 
         speedDial.setOnActionSelectedListener { item ->
-            if (item.id == R.id.fab_request) {
-                Toaster.short("off!")
-                setActiveTransactionsShown(false)
-//                setRefreshAnimationPlaying(false)
-            } else if (item.id == R.id.fab_receive) {
-                Toaster.short("on!")
-                setActiveTransactionsShown(true)
-//                setRefreshAnimationPlaying(true)
-            } else {
-                HomeFab.fromId(item.id)?.destination?.apply { nav.navigate(this) }
-            }
+            HomeFab.fromId(item.id)?.destination?.apply { nav.navigate(this) }
             false
         }
     }
@@ -404,8 +400,9 @@ class HomeFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, HomeP
             .create()
     }
 
-    private fun setUsdValue(valueString: String) {
-        val hairSpace = "\u200A"
+    private fun setUsdValue(value: String) {
+        val valueString = String.format("$ $value")
+//        val hairSpace = "\u200A"
 //        val adjustedValue = "$$hairSpace$valueString"
         val textSpan = SpannableString(valueString)
         textSpan.setSpan(TopAlignedSpan(), 0, 2, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)

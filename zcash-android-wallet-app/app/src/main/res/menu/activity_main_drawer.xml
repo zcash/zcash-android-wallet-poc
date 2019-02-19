@@ -6,10 +6,6 @@
     <group
         android:id="@+id/fab_actions"
         android:checkableBehavior="single">
-        <!--<item-->
-        <!--android:id="@+id/nav_home_fragment"-->
-        <!--android:icon="@drawable/ic_home_black_24dp"-->
-        <!--android:title="@string/destination_menu_label_home"/>-->
         <item
             android:id="@+id/nav_send_fragment"
             android:icon="@drawable/ic_menu_send"
@@ -35,26 +31,11 @@
             android:id="@+id/nav_about_fragment"
             android:icon="@drawable/ic_chat_24dp"
             android:title="@string/destination_menu_label_about" />
-        <item
-            android:id="@+id/nav_import_fragment"
-            android:icon="@drawable/ic_import"
-            android:title="@string/destination_menu_label_import" />
+
         <item
             android:id="@+id/nav_settings_fragment"
             android:icon="@drawable/ic_settings_24dp"
             android:title="@string/destination_menu_label_settings" />
     </group>
-    <!--<item android:title="Communicate" >-->
-    <!--<menu>-->
-    <!--<item-->
-    <!--android:id="@+id/nav_share"-->
-    <!--android:icon="@drawable/ic_menu_share"-->
-    <!--android:title="Share"/>-->
-    <!--<item-->
-    <!--android:id="@+id/nav_send"-->
-    <!--android:icon="@drawable/ic_menu_send"-->
-    <!--android:title="Send"/>-->
-    <!--</menu>-->
-    <!--</item>-->
 
 </menu>

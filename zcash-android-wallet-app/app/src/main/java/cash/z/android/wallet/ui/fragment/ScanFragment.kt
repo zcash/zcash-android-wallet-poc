@@ -93,11 +93,7 @@ class ScanFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        (activity as MainActivity).let { mainActivity ->
-            mainActivity.setSupportActionBar(view.findViewById(R.id.toolbar))
-            mainActivity.supportActionBar?.setDisplayHomeAsUpEnabled(true)
-            mainActivity.supportActionBar?.setTitle(R.string.destination_title_send)
-        }
+
 //        binding.previewCameraSource.doOnLayout {
 //            if (allPermissionsGranted()) {
 //                createCameraSource(it.width, it.height)

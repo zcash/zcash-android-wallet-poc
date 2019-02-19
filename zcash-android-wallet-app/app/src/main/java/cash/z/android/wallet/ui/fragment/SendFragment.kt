@@ -69,11 +69,6 @@ class SendFragment : BaseFragment(), SendPresenter.SendView, ScanFragment.Barcod
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        (activity as MainActivity).let { mainActivity ->
-            mainActivity.setSupportActionBar(view.findViewById(R.id.toolbar))
-            mainActivity.supportActionBar?.setDisplayHomeAsUpEnabled(true)
-            mainActivity.supportActionBar?.setTitle(R.string.destination_title_send)
-        }
         init()
     }
 
@@ -128,7 +123,7 @@ class SendFragment : BaseFragment(), SendPresenter.SendView, ScanFragment.Barcod
         binding.groupDialogSend.visibility = View.VISIBLE
     }
 
-    override fun updateBalance(old: Long, new: Long) {
+    override fun updateBalance(new: Long) {
         // TODO: use a formatted string resource here
         val availableTextSpan = "${new.convertZatoshiToZecString(8)} $zec Available".toSpannable()
         availableTextSpan.setSpan(ForegroundColorSpan(R.color.colorPrimary.toAppColor()), availableTextSpan.length - "Available".length, availableTextSpan.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)

@@ -49,12 +49,6 @@ class RequestFragment : BaseFragment() {
         return inflater.inflate(R.layout.fragment_request, container, false)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        (activity as MainActivity).setSupportActionBar(view.findViewById(R.id.toolbar))
-        (activity as MainActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
-    }
-
     // TODO: Rename method, update argument and hook method into UI event
     fun onButtonPressed(uri: Uri) {
         listener?.onFragmentInteraction(uri)

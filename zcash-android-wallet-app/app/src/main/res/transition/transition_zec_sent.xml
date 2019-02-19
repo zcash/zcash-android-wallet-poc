@@ -3,16 +3,20 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:transitionOrdering="together">
 
-    <changeBounds>
-        <arcMotion/>
-    </changeBounds>
-    <changeTransform/>
-    <changeClipBounds/>
-    <changeImageTransform/>
-    <slide
-        android:slideEdge="left"
-        android:duration="200"
-        android:interpolator="@android:interpolator/linear_out_slow_in"/>
+    <autoTransition/>
+    <!--<changeBounds>-->
+        <!--&lt;!&ndash;<arcMotion/>&ndash;&gt;-->
+    <!--</changeBounds>-->
+    <!--<changeTransform/>-->
+    <!--<changeClipBounds/>-->
+    <!--<changeImageTransform/>-->
+    <!--<slide-->
+        <!--android:slideEdge="bottom"-->
+        <!--android:duration="200"-->
+        <!--android:interpolator="@android:interpolator/linear_out_slow_in"/>-->
+
+
+
     <!--<changeBounds android:interpolator="@android:interpolator/fast_out_slow_in">-->
         <!--<targets>-->
             <!--<target android:targetName="@string/transition_active_transaction" />-->

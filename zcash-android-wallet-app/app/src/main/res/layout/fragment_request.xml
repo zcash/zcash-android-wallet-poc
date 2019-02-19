@@ -8,9 +8,6 @@
     android:background="@color/fragment_request_background"
     tools:context=".ui.fragment.RequestFragment">
 
-    <include layout="@layout/include_app_bar"
-        tools:ignore="MissingConstraints" />
-
     <!-- TODO: Update blank fragment layout -->
     <TextView
         android:id="@+id/textView4"

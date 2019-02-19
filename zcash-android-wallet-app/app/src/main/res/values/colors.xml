@@ -21,6 +21,7 @@
 
     <color name="zcashBlue">#2196F3</color>
     <color name="zcashBlueGray">#0D364C66</color>
+    <color name="zcashBlueGray_dark">#2A4E5D</color>
     <color name="zcashWhite">#FFFFFF</color>
     <color name="zcashWhite_12">#1FFFFFFF</color>
     <color name="zcashWhite_40">#66FFFFFF</color>
@@ -28,6 +29,7 @@
     <color name="zcashWhite_87">#BFFFFFFF</color>
     <color name="zcashWhite_light">#EDEDED</color>
     <color name="zcashGray_light">#CACACA</color>
+    <color name="zcashGray_dark">#4A4A4A</color>
     <color name="zcashGray">#9B9B9B</color>
     <color name="zcashBlack_light">#2B2B2B</color>
     <color name="zcashBlack_12">#1F000000</color>
@@ -74,6 +76,12 @@
     <color name="receive_title_background">@color/zcashBlack_12</color>
     <color name="home_transaction_item_background">@color/zcashBlueGray</color>
     <color name="divider_background">@color/zcashBlack_12</color>
+
+    <!-- content -->
+    <color name="walkthrough_text_header">@color/zcashBlueGray_dark</color>
+    <color name="walkthrough_text_body">@color/zcashGray_dark</color>
+    <color name="walkthrough_button_text">@color/text_light</color>
+
 
     <!-- controls -->
     <color name="progress_bar_active">@color/zcashBlack_12</color>

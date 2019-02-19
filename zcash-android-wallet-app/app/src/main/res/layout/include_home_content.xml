@@ -54,6 +54,7 @@
                     android:paddingRight="8dp"
                     android:paddingBottom="16dp"
                     android:transitionName="@string/transition_active_transaction_card"
+                    android:visibility="gone"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/text_active_transaction_header"
                     tools:visibility="visible">

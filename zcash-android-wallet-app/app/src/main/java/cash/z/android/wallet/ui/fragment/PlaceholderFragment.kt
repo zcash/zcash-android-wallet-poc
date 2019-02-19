@@ -23,15 +23,4 @@ open class PlaceholderFragment : BaseFragment() {
         return inflater.inflate(R.layout.fragment_placeholder, container, false)
     }
 
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        (activity as MainActivity).let { mainActivity ->
-            mainActivity.setSupportActionBar(view.findViewById(R.id.toolbar))
-            mainActivity.supportActionBar?.setDisplayHomeAsUpEnabled(true)
-            mainActivity.supportActionBar?.setTitle(R.string.destination_title_placeholder)
-        }
-    }
-
-
 }

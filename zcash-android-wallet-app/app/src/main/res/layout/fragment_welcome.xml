@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/container_welcome"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/logo_welcome"
+            android:layout_width="168dp"
+            android:layout_height="168dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.333333"
+            app:srcCompat="@drawable/ic_zcashlogo" />
+
+        <TextView
+            android:id="@+id/text_welcome_zcash"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-light"
+            android:includeFontPadding="false"
+            android:text="Zcash"
+            android:textColor="@color/zcashBlack_87"
+            android:textSize="84dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/logo_welcome" />
+
+        <TextView
+            android:id="@+id/text_welcome_product_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-light"
+            android:text="Reference Wallet Alpha"
+            android:textColor="@color/text_dark_dimmed"
+            android:textSize="@dimen/text_size_h5"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/text_welcome_zcash" />
+
+        <TextView
+            android:id="@+id/text_welcome_build_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="PoC v1.2.3 Testnet 2.0.0\nZcash Company - For demo purposes only"
+            android:textColor="@color/text_dark_dimmed"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.501"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/text_welcome_product_name"
+            app:layout_constraintVertical_bias="0.20" />
+
+        <ProgressBar
+            android:id="@+id/progress_welcome"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:min="0"
+            android:max="100"
+            android:transitionName="@string/transition_walkthrough_progress_bar"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/text_welcome_product_name"
+            app:layout_constraintStart_toStartOf="@id/text_welcome_product_name"
+            app:layout_constraintTop_toBottomOf="@+id/text_welcome_build_info" />
+
+        <!-- not animating properly so hide this for now -->
+        <TextView
+            android:id="@+id/text_progress_welcome"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:singleLine="true"
+            android:text="4% reticulating splines"
+            android:textAlignment="center"
+            android:transitionName="@string/transition_walkthrough_progress_text"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/progress_welcome"
+            app:layout_constraintTop_toBottomOf="@+id/progress_welcome" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
