@@ -89,4 +89,16 @@
     <string name="about_licensing">Licensing:</string>
     <string name="about_zcash_blog">Zcash Blog:</string>
 
+    <!-- Settings -->
+    <string name="settings_alert_reset_app">Delete all data and reset like a new installation?</string>
+
+    <string-array name="demo_user_names">
+        <item>Alice</item>
+        <item>Bob</item>
+    </string-array>
+    <string-array name="server_names">
+        <item>Localhost</item>
+        <item>Zcash Testnet</item>
+        <item>Bolt Labs Testnet</item>
+    </string-array>
 </resources>

@@ -9,6 +9,8 @@ import cash.z.android.wallet.R
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 import cash.z.android.wallet.databinding.FragmentSettingsBinding
+import cash.z.android.wallet.extention.Toaster
+import cash.z.android.wallet.extention.alert
 
 
 class SettingsFragment : BaseFragment() {
@@ -24,6 +26,16 @@ class SettingsFragment : BaseFragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         mainActivity.setToolbarShown(true)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding.buttonResetApp.setOnClickListener {
+            view.context.alert(R.string.settings_alert_reset_app) {
+                Toaster.short("Boom")
+                mainActivity.navController.navigateUp()
+            }
+        }
     }
 
 }

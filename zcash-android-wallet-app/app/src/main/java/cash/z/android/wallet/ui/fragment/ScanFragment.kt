@@ -248,6 +248,7 @@ class ScanFragment : BaseFragment() {
 
     private var pendingSuccess = false
     private fun onScanSuccess(value: String) {
+        binding.cameraView.stop()
         if (!pendingSuccess) {
             pendingSuccess = true
             with(binding.cameraView) {
