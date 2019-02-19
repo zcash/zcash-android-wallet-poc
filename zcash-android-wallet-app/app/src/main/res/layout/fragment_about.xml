@@ -156,7 +156,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="32dp"
-            android:text="0.3.5-alpha"
+            android:text="0.4.2-alpha"
             android:textColor="@color/zcashGray_dark"
             android:textSize="@dimen/text_size_body_2"
             app:layout_constraintBottom_toTopOf="@id/text_about_updated_value"
