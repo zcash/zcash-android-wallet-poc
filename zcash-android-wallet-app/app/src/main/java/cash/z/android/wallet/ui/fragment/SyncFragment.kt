@@ -35,12 +35,20 @@ class SyncFragment : ProgressFragment(R.id.progress_sync) {
         binding.buttonNext.setOnClickListener {
             mainActivity.navController.navigate(R.id.nav_home_fragment)
         }
+        binding.progressSync.visibility = View.INVISIBLE
+        binding.textProgressSync.visibility = View.INVISIBLE
     }
 
     override fun onResume() {
         super.onResume()
         mainActivity.setDrawerLocked(true)
         mainActivity.setToolbarShown(true)
+    }
+
+    override fun showProgress(progress: Int) {
+        binding.textProgressSync.text = getProgressText(progress)
+        binding.textProgressSync.visibility = View.VISIBLE
+        super.showProgress(progress)
     }
 
     override fun onProgressComplete() {

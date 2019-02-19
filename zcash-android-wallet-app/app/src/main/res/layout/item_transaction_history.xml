@@ -4,46 +4,56 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container_transaction"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@color/home_transaction_item_background"
-    android:paddingEnd="8dp"
-    android:paddingRight="8dp"
+    android:layout_height="60dp"
+    android:background="@color/history_transaction_item_background"
     android:elevation="1dp"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp"
+    android:layout_marginTop="8dp"
     tools:ignore="RtlSymmetry">
 
-    <View
-        android:id="@+id/view_transaction_status"
-        android:layout_width="6dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="1dp"
-        android:layout_marginBottom="1dp"
-        android:background="@color/colorPrimary"
+    <ImageView
+        android:id="@+id/image_transaction_type"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        app:srcCompat="@drawable/ic_sent_transaction"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/text_transaction_timestamp"
-        app:layout_constraintBottom_toBottomOf="@id/text_transaction_timestamp"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/text_transaction_timestamp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:paddingBottom="8dp"
-        android:paddingTop="8dp"
-        tools:text="8/23 3:24pm"
+        android:textColor="@color/text_dark"
         android:textSize="@dimen/text_size_body_2"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@id/text_transaction_address"
+        app:layout_constraintStart_toEndOf="@id/image_transaction_type"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed"
+        tools:text="8/23 3:24pm" />
+
+    <TextView
+        android:id="@+id/text_transaction_address"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:textColor="@color/text_dark_dimmed"
+        android:textSize="@dimen/text_size_body_2"
+
+        app:layout_constraintStart_toStartOf="@id/text_transaction_timestamp"
+        app:layout_constraintTop_toBottomOf="@id/text_transaction_timestamp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@id/view_transaction_status"
-        app:layout_constraintTop_toTopOf="parent" />
+        tools:text="8/23 3:24pm" />
 
     <TextView
         android:id="@+id/text_transaction_amount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="+ 4.244"
+        tools:text="+ 4.244"
         android:textColor="@color/colorPrimary"
-        android:textSize="@dimen/text_size_body_2"
+        android:textSize="@dimen/text_size_h5"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

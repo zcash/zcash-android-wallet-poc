@@ -7,6 +7,7 @@ import cash.z.wallet.sdk.data.ActiveSendTransaction
 import cash.z.wallet.sdk.data.ActiveTransaction
 import cash.z.wallet.sdk.data.Synchronizer
 import cash.z.wallet.sdk.data.TransactionState
+import cash.z.wallet.sdk.data.twig
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.channels.ReceiveChannel
@@ -49,8 +50,8 @@ class HistoryPresenter(
     //
 
     private fun bind(transactions: List<WalletTransaction>) {
-        Log.e("@TWIG", "binding ${transactions.size} walletTransactions")
-        view.setTransactions(transactions)
+        twig("binding ${transactions.size} walletTransactions")
+        view.setTransactions(transactions.sortedByDescending { it.timeInSeconds })
     }
 
 }

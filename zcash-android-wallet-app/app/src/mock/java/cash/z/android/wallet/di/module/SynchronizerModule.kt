@@ -15,8 +15,9 @@ import javax.inject.Singleton
 @Module
 internal object SynchronizerModule {
 
-    const val MOCK_TX_INTERVAL = 30_000L
-    const val MOCK_LOAD_DURATION = 5_000L
+    const val MOCK_LOAD_DURATION = 3_000L
+//    const val MOCK_LOAD_DURATION = 30_000L
+    const val MOCK_TX_INTERVAL = 5_000L
     const val MOCK_ACTIVE_TX_STATE_CHANGE_INTERVAL = 5_000L
 
 

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/container_welcome"
@@ -36,7 +37,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif-light"
-            android:text="Reference Wallet Alpha"
+            android:text="@string/product_name"
             android:textColor="@color/text_dark_dimmed"
             android:textSize="@dimen/text_size_h5"
             app:layout_constraintEnd_toEndOf="parent"
@@ -48,7 +49,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="PoC v1.2.3 Testnet 2.0.0\nZcash Company - For demo purposes only"
+            tools:text="PoC v1.2.3 Testnet 2.0.0\nZcash Company - For demo purposes only"
             android:textColor="@color/text_dark_dimmed"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

@@ -23,6 +23,7 @@ import android.graphics.Matrix
 import android.util.Log
 import androidx.core.app.SharedElementCallback
 import androidx.transition.TransitionInflater
+import cash.z.android.wallet.BuildConfig
 import cash.z.android.wallet.ui.presenter.ProgressPresenter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -50,13 +51,20 @@ class WelcomeFragment : ProgressFragment(R.id.progress_welcome) {
         }
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val network = if (resources.getBoolean(R.bool.is_testnet)) "Testnet 2.0.1" else "Mainnet 2.0.1"
+        var buildInfo = "PoC v${BuildConfig.VERSION_NAME} $network\nZcash Company - For demo purposes only"
+        binding.textWelcomeBuildInfo.text = buildInfo
+    }
+
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         view!!.postDelayed({
             launch {
                 onNext()
             }
-        }, 2000L)
+        }, 5000L)
 
 //        this.setExitSharedElementCallback(object : SharedElementCallback() {
 //            override fun onCaptureSharedElementSnapshot(

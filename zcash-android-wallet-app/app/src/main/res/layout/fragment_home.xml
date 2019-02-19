@@ -56,8 +56,5 @@
             app:lottie_loop="false"
             app:lottie_rawRes="@raw/lottie_zcash_badge_refresh_whitebg" />
 
-        <include
-            android:id="@+id/include_first_run"
-            layout="@layout/activity_main_first_run" />
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

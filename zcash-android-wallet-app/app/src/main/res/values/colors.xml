@@ -71,10 +71,12 @@
     <color name="fragment_receive_background">@color/zcashBlack_light</color>
     <color name="fragment_request_background">@color/colorPrimary</color>
     <color name="fragment_send_background">@color/zcashWhite_light</color>
+    <color name="fragment_history_background">@color/zcashWhite_light</color>
     <color name="fragment_home_background">@color/zcashWhite_light</color>
     <color name="launcher_icon_background">@color/zcashPrimaryMedium</color>
     <color name="receive_title_background">@color/zcashBlack_12</color>
     <color name="home_transaction_item_background">@color/zcashBlueGray</color>
+    <color name="history_transaction_item_background">@color/zcashWhite</color>
     <color name="divider_background">@color/zcashBlack_12</color>
 
     <!-- content -->

@@ -66,6 +66,11 @@ class FirstrunFragment : ProgressFragment(R.id.progress_firstrun), Transition.Tr
         }
     }
 
+    override fun showProgress(progress: Int) {
+        super.showProgress(progress)
+        binding.textProgressFirstrun.text = getProgressText(progress)
+    }
+
     override fun onProgressComplete() {
         super.onProgressComplete()
         binding.textProgressFirstrun.visibility = View.GONE

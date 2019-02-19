@@ -83,13 +83,6 @@ class HomeFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, HomeP
         super.onViewCreated(view, savedInstanceState)
         initTemp()
         init()
-//        launch {
-//            Log.e("TWIG", "deciding whether to show first run")
-//            val extraDelay = measureTimeMillis {
-//                setFirstRunShown(mainActivity.synchronizer.isFirstRun() || mainActivity.synchronizer.isOutOfSync())
-//            }
-//            Log.e("TWIG", "done deciding whether to show first run in $extraDelay ms. Was that worth it? Or should we toggle a boolean in the application class?")
-//        }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -104,6 +97,9 @@ class HomeFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, HomeP
             layoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
             adapter = TransactionAdapter()
             addItemDecoration(AlternatingRowColorDecoration())
+        }
+        binding.includeContent.textTransactionHeaderSeeAll.setOnClickListener {
+            mainActivity.navController.navigate(R.id.nav_history_fragment)
         }
     }
 
@@ -170,44 +166,16 @@ class HomeFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, HomeP
     }
 
     override fun setTransactions(transactions: List<WalletTransaction>) {
+        val recent = if(transactions.size > 12) transactions.subList(0, 12) else transactions
         with (binding.includeContent.recyclerTransactions) {
-            (adapter as TransactionAdapter).submitList(transactions.sortedByDescending {
-                it.timeInSeconds
-            })
+            (adapter as TransactionAdapter).submitList(recent)
             postDelayed({
                 smoothScrollToPosition(0)
             }, 100L)
-            if (binding.includeFirstRun.visibility == View.VISIBLE) setFirstRunShown(false)
         }
-    }
-
-    override fun showProgress(progress: Int) {
-        if(progress >= 100) {
-            view?.postDelayed({
-                onInitialLoadComplete()
-            }, 3000L)
-        } else {
-            setRefreshAnimationPlaying(true).also { Log.e("TWIG-a", "refresh true from showProgress") }
-            binding.includeContent.textEmptyWalletMessage.setText(R.string.home_empty_wallet_updating)
+        if (recent.size != transactions.size) {
+            binding.includeContent.textTransactionHeaderSeeAll.visibility = View.VISIBLE
         }
-//        snackbar.showOk(view!!, "progress: $progress")
-        // TODO: improve this with Lottie animation. but for now just use the empty view for downloading...
-//        var hasEmptyViews = group_empty_view_items.visibility == View.VISIBLE
-//        if(!viewsInitialized) toggleViews(true)
-//
-//        val message = if(progress >=  100) "Download complete! Processing blocks..." else "Downloading remaining blocks ($progress%)"
-////        text_wallet_message.text = message
-//
-//        if (snackbar == null && progress <= 50) {
-//            snackbar = Snackbar.make(view!!, "$message", Snackbar.LENGTH_INDEFINITE)
-//                .setAction("OK") {
-//                    snackbar?.dismiss()
-//                }
-//            snackbar?.show()
-//        } else {
-//            snackbar?.setText(message)
-//            if(snackbar?.isShownOrQueued != true) snackbar?.show()
-//        }
     }
 
     private fun onInitialLoadComplete() {
@@ -316,13 +284,6 @@ class HomeFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, HomeP
                 AnimatorCompleteListener{ binding.includeContent.groupActiveTransactionItems.visibility = if (isShown) View.VISIBLE else View.GONE }
             )
         }, delay)
-    }
-
-    private fun setFirstRunShown(isShown: Boolean) {
-        binding.includeFirstRun.visibility = if (isShown) View.VISIBLE else View.GONE
-        mainActivity.setDrawerLocked(isShown)
-        binding.sdFab.visibility = if (!isShown) View.VISIBLE else View.GONE
-        binding.lottieZcashBadge.visibility = if(!isShown) View.VISIBLE else View.GONE
     }
 
     /**
@@ -437,7 +398,6 @@ class HomeFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, HomeP
         if (situationHasChanged) {
             Log.e("TWIG-t", "The situation has changed! toggling views!")
             setContentViewShown(!isEmpty)
-            if (!isEmpty) setFirstRunShown(false)
         }
 
         setRefreshAnimationPlaying(false).also { Log.e("TWIG-a", "refresh false from onContentRefreshComplete") }

@@ -23,7 +23,6 @@ class HomePresenter(
     interface HomeView : PresenterView {
         fun setTransactions(transactions: List<WalletTransaction>)
         fun updateBalance(old: Long, new: Long)
-        fun showProgress(progress: Int)
         fun setActiveTransactions(activeTransactionMap: Map<ActiveTransaction, TransactionState>)
         fun onCancelledTooLate()
     }
@@ -32,7 +31,6 @@ class HomePresenter(
         Log.e("@TWIG-t", "homePresenter starting!")
         launchBalanceBinder(synchronizer.balance())
         launchTransactionBinder(synchronizer.allTransactions())
-        launchProgressMonitor(synchronizer.progress())
         launchActiveTransactionMonitor(synchronizer.activeTransactions())
     }
 
@@ -60,14 +58,6 @@ class HomePresenter(
         Log.e("@TWIG", "transaction binder exiting!")
     }
 
-    private fun CoroutineScope.launchProgressMonitor(channel: ReceiveChannel<Int>) = launch {
-        Log.e("@TWIG", "progress monitor starting on thread ${Thread.currentThread().name}!")
-        for (i in channel) {
-            bind(i)
-        }
-        Log.e("@TWIG", "progress monitor exiting!")
-    }
-
     private fun CoroutineScope.launchActiveTransactionMonitor(channel: ReceiveChannel<Map<ActiveTransaction, TransactionState>>) = launch {
         Log.e("@TWIG-v", "active transaction monitor starting!")
         for (i in channel) {
@@ -89,12 +79,9 @@ class HomePresenter(
 
     private fun bind(transactions: List<WalletTransaction>) = onMain {
         Log.e("@TWIG-b", "binding ${transactions.size} walletTransactions")
-        view.setTransactions(transactions)
-    }
-
-    private fun bind(progress: Int) = onMain {
-        Log.e("@TWIG-b", "binding progress of $progress")
-        view.showProgress(progress)
+        view.setTransactions(transactions.sortedByDescending {
+            it.timeInSeconds
+        })
     }
 
     private fun bind(activeTransactionMap: Map<ActiveTransaction, TransactionState>) = onMain {

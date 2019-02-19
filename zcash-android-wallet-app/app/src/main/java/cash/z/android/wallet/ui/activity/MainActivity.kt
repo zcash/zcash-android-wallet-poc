@@ -42,6 +42,8 @@ import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
+import kotlin.random.Random
+import kotlin.random.nextInt
 
 class MainActivity : BaseActivity() {
 
@@ -49,6 +51,7 @@ class MainActivity : BaseActivity() {
     lateinit var synchronizer: Synchronizer
 
     lateinit var binding: ActivityMainBinding
+    lateinit var loadMessages: List<String>
 
     // used to  manage the drawer and drawerToggle interactions
     private lateinit var appBarConfiguration: AppBarConfiguration
@@ -62,7 +65,7 @@ class MainActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView<ActivityMainBinding>(this, R.layout.activity_main)
         initAppBar()
-
+        loadMessages = generateFunLoadMessages().shuffled()
         synchronizer.start(this)
     }
 
@@ -70,7 +73,6 @@ class MainActivity : BaseActivity() {
         setSupportActionBar(findViewById(R.id.main_toolbar))
 //        supportActionBar?.setDisplayHomeAsUpEnabled(false)
         setupNavigation()
-        supportActionBar?.setTitle("main title")
     }
 
     override fun onDestroy() {
@@ -128,11 +130,36 @@ class MainActivity : BaseActivity() {
         }
     }
 
+    fun nextLoadMessage(index: Int = -1): String {
+        return if (index < 0) loadMessages.random() else loadMessages[index]
+    }
 
     companion object {
         init {
             // Enable vector drawable magic
             AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
+        }
+
+        // TODO: move these lists, once approved
+        fun generateSeriousLoadMessages(): List<String> {
+            return listOf(
+                "Initializing your shielded address",
+                "Connecting to testnet",
+                "Downloading historical blocks",
+                "Synchronizing to current blockchain",
+                "Searching for past transactions",
+                "Validating your balance"
+            )
+        }
+        fun generateFunLoadMessages(): List<String> {
+            return listOf(
+                "Reticulating splines",
+                "Making the sausage",
+                "Drinking the kool-aid",
+                "Learning to spell Lamborghini",
+                "Asking Zooko, \"when moon?!\"",
+                "Pretending to look busy"
+            )
         }
     }
 }

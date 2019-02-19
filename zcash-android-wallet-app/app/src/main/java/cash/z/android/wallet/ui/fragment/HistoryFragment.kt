@@ -32,10 +32,11 @@ class HistoryFragment : BaseFragment(), HistoryPresenter.HistoryView {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        mainActivity.setToolbarShown(true)
         historyPresenter = HistoryPresenter(this, mainActivity.synchronizer)
         binding.recyclerTransactionsHistory.apply {
             layoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
-            adapter = TransactionAdapter()
+            adapter = TransactionAdapter(R.layout.item_transaction_history)
             addItemDecoration(AlternatingRowColorDecoration())
         }
     }
@@ -53,7 +54,13 @@ class HistoryFragment : BaseFragment(), HistoryPresenter.HistoryView {
     }
 
     override fun setTransactions(transactions: List<WalletTransaction>) {
-        (binding.recyclerTransactionsHistory.adapter as TransactionAdapter).submitList(transactions)
+        mainActivity.supportActionBar?.setTitle(resources.getQuantityString(R.plurals.history_transaction_count_title, transactions.size, transactions.size))
+        with (binding.recyclerTransactionsHistory) {
+            (adapter as TransactionAdapter).submitList(transactions)
+            postDelayed({
+                smoothScrollToPosition(0)
+            }, 100L)
+        }
      }
 }
 
