@@ -17,7 +17,6 @@ import cash.z.android.cameraview.CameraView
 import cash.z.android.wallet.R
 import cash.z.android.wallet.databinding.FragmentScanBinding
 import cash.z.android.wallet.extention.Toaster
-import cash.z.android.wallet.ui.activity.MainActivity
 import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcodeDetectorOptions
@@ -193,7 +192,9 @@ class ScanFragment : BaseFragment() {
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (allPermissionsGranted()) {
-            onStartCamera()
+            view!!.postDelayed({
+                onStartCamera()
+            },2000L) // TODO: remove this temp hack to sidestep crash when permissions were not available
         }
     }
 
@@ -234,8 +235,6 @@ class ScanFragment : BaseFragment() {
                     if (results.isNotEmpty()) {
                         val barcode = results[0]
                         val value = barcode.rawValue
-                        val message = "found: $value"
-                        Toaster.short(message)
                         onScanSuccess(value!!)
                         // TODO: highlight the barcode
                         var bounds = barcode.boundingBox
@@ -251,10 +250,8 @@ class ScanFragment : BaseFragment() {
         binding.cameraView.stop()
         if (!pendingSuccess) {
             pendingSuccess = true
-            with(binding.cameraView) {
-                postDelayed({
-                    barcodeCallback?.onBarcodeScanned(value)
-                }, 3000L)
+            binding.cameraView.post {
+                barcodeCallback?.onBarcodeScanned(value)
             }
         }
     }

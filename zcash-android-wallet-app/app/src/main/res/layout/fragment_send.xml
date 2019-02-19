@@ -462,6 +462,7 @@
                 transition_active_transaction_bg,
                 text_value_subheader,
                 text_dollar_symbol_subheader,
+                image_zec_symbol_subheader,
                 image_zec_symbol_header,
                 text_dollar_symbol_header,
                 text_amount_background,
