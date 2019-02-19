@@ -43,7 +43,8 @@
             app:layout_constraintHeight_default="percent"
             app:layout_constraintHeight_percent="@dimen/ratio_golden_small"
             app:layout_constraintStart_toStartOf="@id/guideline_content_start"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="@dimen/ratio_golden_large" />
 
         <ImageView
             android:id="@+id/logo_welcome"
