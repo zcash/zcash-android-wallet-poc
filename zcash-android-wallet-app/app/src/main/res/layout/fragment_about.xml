@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/fragment_history_background">
+
+        <include
+            android:id="@+id/main_app_bar"
+            layout="@layout/include_main_app_bar"
+            android:visibility="invisible"
+            tools:ignore="MissingConstraints" />
+
+        <!--            -->
+        <!-- Guidelines -->
+        <!--            -->
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_content_start"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.1" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_content_end"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.9" />
+
+        <View
+            android:id="@+id/background_about_info"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@drawable/background_rounded_corners_opaque"
+            android:backgroundTint="@color/zcashWhite"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/guideline_content_end"
+            app:layout_constraintHeight_default="percent"
+            app:layout_constraintHeight_percent="@dimen/ratio_golden_small"
+            app:layout_constraintStart_toStartOf="@id/guideline_content_start"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/logo_welcome"
+            android:layout_width="115dp"
+            android:layout_height="115dp"
+            android:layout_marginBottom="32dp"
+            app:layout_constraintBottom_toTopOf="@id/background_about_info"
+            app:layout_constraintEnd_toStartOf="@id/text_welcome_zcash"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:srcCompat="@drawable/ic_zcashlogo" />
+
+        <TextView
+            android:id="@+id/text_welcome_zcash"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:fontFamily="sans-serif-light"
+            android:text="Zcash"
+            android:textColor="@color/zcashBlack_87"
+            android:textSize="64dp"
+            app:layout_constraintBottom_toBottomOf="@id/logo_welcome"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/logo_welcome"
+            app:layout_constraintTop_toTopOf="@id/logo_welcome" />
+
+        <!--                       -->
+        <!-- Info Section : Labels -->
+        <!--                       -->
+
+        <TextView
+            android:id="@+id/text_about_version"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:text="@string/about_version"
+            android:textColor="@color/zcashGray_dark"
+            android:textSize="@dimen/text_size_body_2"
+            app:layout_constraintBottom_toTopOf="@id/text_about_updated"
+            app:layout_constraintStart_toStartOf="@id/background_about_info"
+            app:layout_constraintTop_toTopOf="@id/background_about_info"
+            app:layout_constraintVertical_chainStyle="spread" />
+
+        <TextView
+            android:id="@+id/text_about_updated"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:text="@string/about_updated"
+            android:textColor="@color/zcashGray_dark"
+            android:textSize="@dimen/text_size_body_2"
+            app:layout_constraintBottom_toTopOf="@id/text_about_network"
+            app:layout_constraintStart_toStartOf="@id/background_about_info"
+            app:layout_constraintTop_toBottomOf="@id/text_about_version" />
+
+        <TextView
+            android:id="@+id/text_about_network"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:text="@string/about_network"
+            android:textColor="@color/zcashGray_dark"
+            android:textSize="@dimen/text_size_body_2"
+            app:layout_constraintBottom_toTopOf="@id/text_about_whats_new"
+            app:layout_constraintStart_toStartOf="@id/background_about_info"
+            app:layout_constraintTop_toBottomOf="@id/text_about_updated" />
+
+        <TextView
+            android:id="@+id/text_about_whats_new"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:text="@string/about_whats_new"
+            android:textColor="@color/zcashGray_dark"
+            android:textSize="@dimen/text_size_body_2"
+            app:layout_constraintBottom_toTopOf="@id/text_about_licensing"
+            app:layout_constraintStart_toStartOf="@id/background_about_info"
+            app:layout_constraintTop_toBottomOf="@id/text_about_network" />
+
+        <TextView
+            android:id="@+id/text_about_licensing"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:text="@string/about_licensing"
+            android:textColor="@color/zcashGray_dark"
+            android:textSize="@dimen/text_size_body_2"
+            app:layout_constraintBottom_toTopOf="@id/text_about_zcash_blog"
+            app:layout_constraintStart_toStartOf="@id/background_about_info"
+            app:layout_constraintTop_toBottomOf="@id/text_about_whats_new" />
+
+        <TextView
+            android:id="@+id/text_about_zcash_blog"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:text="@string/about_zcash_blog"
+            android:textColor="@color/zcashGray_dark"
+            android:textSize="@dimen/text_size_body_2"
+            app:layout_constraintBottom_toBottomOf="@id/background_about_info"
+            app:layout_constraintStart_toStartOf="@id/background_about_info"
+            app:layout_constraintTop_toBottomOf="@id/text_about_licensing" />
+
+        <!--                       -->
+        <!-- Info Section : Values -->
+        <!--                       -->
+
+        <TextView
+            android:id="@+id/text_about_version_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="32dp"
+            android:text="0.3.5-alpha"
+            android:textColor="@color/zcashGray_dark"
+            android:textSize="@dimen/text_size_body_2"
+            app:layout_constraintBottom_toTopOf="@id/text_about_updated_value"
+            app:layout_constraintEnd_toEndOf="@id/background_about_info"
+            app:layout_constraintTop_toTopOf="@id/background_about_info"
+            app:layout_constraintVertical_chainStyle="spread" />
+
+        <TextView
+            android:id="@+id/text_about_updated_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="32dp"
+            android:text="Feb 19 2019"
+            android:textColor="@color/zcashGray_dark"
+            android:textSize="@dimen/text_size_body_2"
+            app:layout_constraintBottom_toTopOf="@id/text_about_network_value"
+            app:layout_constraintEnd_toEndOf="@id/background_about_info"
+            app:layout_constraintTop_toBottomOf="@id/text_about_version_value" />
+
+        <TextView
+            android:id="@+id/text_about_network_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="32dp"
+            android:text="Testnet 2.0.1"
+            android:textColor="@color/zcashGray_dark"
+            android:textSize="@dimen/text_size_body_2"
+            app:layout_constraintBottom_toTopOf="@id/text_about_whats_new_value"
+            app:layout_constraintEnd_toEndOf="@id/background_about_info"
+            app:layout_constraintTop_toBottomOf="@id/text_about_updated_value" />
+
+        <TextView
+            android:id="@+id/text_about_whats_new_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="32dp"
+            android:text="changelog"
+            android:textColor="@color/zcashBlue"
+            android:textSize="@dimen/text_size_body_2"
+            app:layout_constraintBottom_toTopOf="@id/text_about_licensing_value"
+            app:layout_constraintEnd_toEndOf="@id/background_about_info"
+            app:layout_constraintTop_toBottomOf="@id/text_about_network_value" />
+
+        <TextView
+            android:id="@+id/text_about_licensing_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="32dp"
+            android:text="z.cash"
+            android:textColor="@color/zcashBlue"
+            android:textSize="@dimen/text_size_body_2"
+            app:layout_constraintBottom_toTopOf="@id/text_about_zcash_blog_value"
+            app:layout_constraintEnd_toEndOf="@id/background_about_info"
+            app:layout_constraintTop_toBottomOf="@id/text_about_whats_new_value" />
+
+        <TextView
+            android:id="@+id/text_about_zcash_blog_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="32dp"
+            android:text="z.cash/blog"
+            android:textColor="@color/zcashBlue"
+            android:textSize="@dimen/text_size_body_2"
+            app:layout_constraintBottom_toBottomOf="@id/background_about_info"
+            app:layout_constraintEnd_toEndOf="@id/background_about_info"
+            app:layout_constraintTop_toBottomOf="@id/text_about_licensing_value" />
+
+        <!-- Disclaimer -->
+
+        <TextView
+            android:id="@+id/text_about_disclaimer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="This is a demo application by Electric Coin Company.\nThis application is not for personal use."
+            android:gravity="center"
+            android:textColor="@color/zcashGray_dark"
+            android:textSize="@dimen/text_size_body_2"
+            app:layout_constraintTop_toBottomOf="@id/background_about_info"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

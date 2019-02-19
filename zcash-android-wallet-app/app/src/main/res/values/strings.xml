@@ -81,4 +81,12 @@
     <string name="send_error_address_too_short">Address is too short.</string>
     <string name="send_error_address_invalid_char">Address contains invalid characters.</string>
 
+    <!-- About -->
+    <string name="about_version">Version:</string>
+    <string name="about_updated">Updated:</string>
+    <string name="about_network">Network:</string>
+    <string name="about_whats_new">What\'s new:</string>
+    <string name="about_licensing">Licensing:</string>
+    <string name="about_zcash_blog">Zcash Blog:</string>
+
 </resources>

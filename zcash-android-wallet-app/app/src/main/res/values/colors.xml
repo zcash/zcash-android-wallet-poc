@@ -72,6 +72,8 @@
     <color name="fragment_request_background">@color/colorPrimary</color>
     <color name="fragment_send_background">@color/zcashWhite_light</color>
     <color name="fragment_history_background">@color/zcashWhite_light</color>
+    <color name="fragment_about_background">@color/zcashWhite_light</color>
+    <color name="fragment_settings_background">@color/zcashGray_light</color>
     <color name="fragment_home_background">@color/zcashWhite_light</color>
     <color name="launcher_icon_background">@color/zcashPrimaryMedium</color>
     <color name="receive_title_background">@color/zcashBlack_12</color>
