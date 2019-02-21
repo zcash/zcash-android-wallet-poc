@@ -40,6 +40,8 @@ class ProgressPresenter(
         for (i in channel) {
             bind(i)
         }
+        // TODO: remove this temp fix:
+        bind(100)
         twig("progress monitor exiting!")
     }
 

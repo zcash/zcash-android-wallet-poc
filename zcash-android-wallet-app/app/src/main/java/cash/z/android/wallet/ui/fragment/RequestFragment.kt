@@ -63,6 +63,11 @@ class RequestFragment : BaseFragment() {
         }
     }
 
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        mainActivity.setToolbarShown(true)
+    }
+
     override fun onDetach() {
         super.onDetach()
         listener = null

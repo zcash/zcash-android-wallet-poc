@@ -47,14 +47,15 @@ class TransactionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
         val transactionColor = if (tx.isSend) R.color.send_associated else R.color.receive_associated
         val transactionIcon = if (tx.isSend) R.drawable.ic_sent_transaction else R.drawable.ic_received_transaction
         val zecAbsoluteValue = tx.value.absoluteValue.convertZatoshiToZec(3)
-        val senderAddress = if (tx.address != null) "to ${tx.address}" else "from shielded mystery person"
+        val toOrFrom = if (tx.isSend) "to" else "from"
+        val srcOrDestination = address ?: "from shielded mystery person"
         timestamp.text = if (!tx.isMined || tx.timeInSeconds == 0L) "Pending" else formatter.format(tx.timeInSeconds * 1000)
         amount.text = "$sign$zecAbsoluteValue"
         amount.setTextColor(amountColor.toAppColor())
 
         // maybes - and if this gets to be too much, then pass in a custom holder when constructing the adapter, instead
         status?.setBackgroundColor(transactionColor.toAppColor())
-        address?.text = senderAddress
+        address?.text = "$toOrFrom $srcOrDestination"
         icon?.setImageResource(transactionIcon)
     }
 }

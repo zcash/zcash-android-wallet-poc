@@ -48,8 +48,8 @@ internal object SynchronizerModule {
     @JvmStatic
     @Provides
     @Singleton
-    fun provideWallet(application: ZcashWalletApplication, converter: JniConverter, twigger: Twig): Wallet {
-        return Wallet(converter, application.getDatabasePath(SampleProperties.wallet.dataDbName).absolutePath, "${application.cacheDir.absolutePath}/params", seedProvider = SampleProperties.wallet.seedProvider, spendingKeyProvider = SampleProperties.wallet.spendingKeyProvider, logger = twigger)
+    fun provideWallet(application: ZcashWalletApplication, converter: JniConverter): Wallet {
+        return Wallet(converter, application.getDatabasePath(SampleProperties.wallet.dataDbName).absolutePath, "${application.cacheDir.absolutePath}/params", seedProvider = SampleProperties.wallet.seedProvider, spendingKeyProvider = SampleProperties.wallet.spendingKeyProvider)
     }
 
     @JvmStatic
@@ -76,10 +76,9 @@ internal object SynchronizerModule {
         processor: CompactBlockProcessor,
         repository: TransactionRepository,
         manager: ActiveTransactionManager,
-        wallet: Wallet,
-        twigger: Twig
+        wallet: Wallet
     ): Synchronizer {
-        return SdkSynchronizer(downloader, processor, repository, manager, wallet, blockPollFrequency = 500_000L, logger = twigger)
+        return SdkSynchronizer(downloader, processor, repository, manager, wallet, blockPollFrequency = 500_000L)
     }
 
 }
