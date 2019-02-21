@@ -227,21 +227,26 @@ class ScanFragment : BaseFragment() {
         }
 
         override fun onImageAvailable(image: Image) {
-            System.err.println("camoorah : onImageAvailable: $image  width: ${image.width}  height: ${image.height}")
-            var firebaseImage = FirebaseVisionImage.fromMediaImage(image, getRotationCompensation(cameraId, mainActivity))
-            barcodeDetector
-                .detectInImage(firebaseImage)
-                .addOnSuccessListener { results ->
-                    if (results.isNotEmpty()) {
-                        val barcode = results[0]
-                        val value = barcode.rawValue
-                        onScanSuccess(value!!)
-                        // TODO: highlight the barcode
-                        var bounds = barcode.boundingBox
-                        var corners = barcode.cornerPoints
-                        binding.cameraView.setBarcode(barcode)
+            try {
+                System.err.println("camoorah : onImageAvailable: $image  width: ${image.width}  height: ${image.height}")
+                var firebaseImage =
+                    FirebaseVisionImage.fromMediaImage(image, getRotationCompensation(cameraId, mainActivity))
+                barcodeDetector
+                    .detectInImage(firebaseImage)
+                    .addOnSuccessListener { results ->
+                        if (results.isNotEmpty()) {
+                            val barcode = results[0]
+                            val value = barcode.rawValue
+                            onScanSuccess(value!!)
+                            // TODO: highlight the barcode
+                            var bounds = barcode.boundingBox
+                            var corners = barcode.cornerPoints
+                            binding.cameraView.setBarcode(barcode)
+                        }
                     }
-                }
+            } catch (t: Throwable) {
+                System.err.println("camoorah : error while processing onImageAvailable: $t\n\tcaused by: ${t.cause}")
+            }
         }
     }
 

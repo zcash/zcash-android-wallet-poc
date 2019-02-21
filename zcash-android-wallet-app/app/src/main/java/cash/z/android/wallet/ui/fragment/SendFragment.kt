@@ -23,15 +23,12 @@ import cash.z.android.wallet.R
 import cash.z.android.wallet.databinding.FragmentSendBinding
 import cash.z.android.wallet.extention.*
 import cash.z.android.wallet.sample.SampleProperties
-import cash.z.android.wallet.ui.activity.MainActivity
 import cash.z.android.wallet.ui.presenter.SendPresenter
 import cash.z.wallet.sdk.ext.convertZatoshiToZecString
 import cash.z.wallet.sdk.ext.safelyConvertToBigDecimal
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 import kotlinx.coroutines.launch
-import java.text.DecimalFormat
-import kotlin.math.absoluteValue
 
 /**
  * Fragment for sending Zcash.
@@ -39,11 +36,11 @@ import kotlin.math.absoluteValue
  */
 class SendFragment : BaseFragment(), SendPresenter.SendView, ScanFragment.BarcodeCallback {
 
-    lateinit var sendPresenter: SendPresenter
-    lateinit var binding: FragmentSendBinding
-
     private val zec = R.string.zec_abbreviation.toAppString()
     private val usd = R.string.usd_abbreviation.toAppString()
+
+    lateinit var sendPresenter: SendPresenter
+    lateinit var binding: FragmentSendBinding
 
 
     //
@@ -74,6 +71,7 @@ class SendFragment : BaseFragment(), SendPresenter.SendView, ScanFragment.Barcod
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        mainActivity.setToolbarShown(true)
         sendPresenter = SendPresenter(this, mainActivity.synchronizer)
     }
 
@@ -94,7 +92,7 @@ class SendFragment : BaseFragment(), SendPresenter.SendView, ScanFragment.Barcod
     // SendView Implementation
     //
 
-    override fun submit() {
+    override fun exit() {
         mainActivity.navController.navigate(R.id.nav_home_fragment)
     }
 
@@ -131,6 +129,10 @@ class SendFragment : BaseFragment(), SendPresenter.SendView, ScanFragment.Barcod
         binding.textZecValueAvailable.text = availableTextSpan
     }
 
+    override fun setSendEnabled(isEnabled: Boolean) {
+        binding.buttonSendZec.isEnabled = isEnabled
+    }
+
 
     //
     // ScanFragment.BarcodeCallback implemenation
@@ -139,7 +141,7 @@ class SendFragment : BaseFragment(), SendPresenter.SendView, ScanFragment.Barcod
     override fun onBarcodeScanned(value: String) {
         exitScanMode()
         binding.inputZcashAddress.setText(value)
-        validateAddressInput()
+        sendPresenter.inputAddressUpdated(value)
     }
 
 
@@ -151,28 +153,47 @@ class SendFragment : BaseFragment(), SendPresenter.SendView, ScanFragment.Barcod
      * Initialize view logic only. Click listeners, text change handlers and tooltips.
      */
     private fun init() {
-        /* Presenter calls */
 
-        binding.imageSwapCurrency.setOnClickListener {
-            sendPresenter.toggleCurrency()
-        }
+        /* Init - Text Input */
 
         binding.textValueHeader.apply {
-            afterTextChanged {
-                sendPresenter.headerUpdating(it)
-            }
+            setSelectAllOnFocus(true)
+            afterTextChanged { if (it.isNotEmpty()) sendPresenter.inputHeaderUpdating(it) }
+            doOnDoneOrFocusLost { sendPresenter.inputHeaderUpdated(it) }
         }
 
-        binding.buttonSendZec.setOnClickListener {
-            sendPresenter.sendPressed()
+        binding.inputZcashAddress.apply {
+            afterTextChanged { if (it.isNotEmpty()) sendPresenter.inputAddressUpdating(it) }
+            doOnDoneOrFocusLost { sendPresenter.inputAddressUpdated(it) }
+        }
+
+        binding.textAreaMemo.apply {
+            afterTextChanged {
+                if (it.isNotEmpty()) sendPresenter.inputMemoUpdating(it)
+                binding.textMemoCharCount.text = "${text.length} / ${resources.getInteger(R.integer.memo_max_length)}"
+            }
+            doOnDoneOrFocusLost { sendPresenter.inputMemoUpdated(it) }
+        }
+
+        /* Init - Taps */
+
+        binding.imageSwapCurrency.setOnClickListener {
+            // validate the amount before we toggle (or else we lose their uncommitted change)
+            sendPresenter.inputHeaderUpdated(binding.textValueHeader.text.toString())
+            sendPresenter.inputToggleCurrency()
+        }
+        binding.buttonSendZec.setOnClickListener{
+            exitScanMode()
+            sendPresenter.inputSendPressed()
+        }
+
+        // allow background taps to dismiss the keyboard and clear focus
+        binding.contentFragmentSend.setOnClickListener {
+            sendPresenter.invalidate()
+            hideKeyboard()
         }
 
         /* Non-Presenter calls (UI-only logic) */
-
-        binding.textAreaMemo.afterTextChanged {
-            binding.textMemoCharCount.text =
-                    "${binding.textAreaMemo.text.length} / ${resources.getInteger(R.integer.memo_max_length)}"
-        }
 
         binding.imageScanQr.apply {
             TooltipCompat.setTooltipText(this, context.getString(R.string.send_tooltip_scan_qr))
@@ -187,23 +208,9 @@ class SendFragment : BaseFragment(), SendPresenter.SendView, ScanFragment.Barcod
                 visibility = View.GONE
             }
         }
-
-        binding.dialogSendBackground.setOnClickListener {
-            hideSendDialog()
-        }
-        binding.dialogSubmitButton.setOnClickListener {
-            onSendZec()
-        }
-
+        binding.dialogSendBackground.setOnClickListener { hideSendDialog() }
+        binding.dialogSubmitButton.setOnClickListener { onSendZec() }
         binding.imageScanQr.setOnClickListener(::onScanQrCode)
-
-        // allow background taps to dismiss the keyboard and clear focus
-        binding.contentFragmentSend.setOnClickListener {
-            it?.findFocus()?.clearFocus()
-            validateUserInput()
-            hideKeyboard()
-        }
-
         binding.buttonSendZec.text = getString(R.string.send_button_label, zec)
         setSendEnabled(false)
     }
@@ -243,15 +250,19 @@ class SendFragment : BaseFragment(), SendPresenter.SendView, ScanFragment.Barcod
         }
     }
 
-    // TODO: possibly move this behavior to only live in the debug build. Perhaps with a viewholder that I just delegate to. Then inject the holder here.
+    // TODO: possibly move this behavior to only live in the debug build. Perhaps with a viewholder that I just delegate to. Then inject the holder in this class with production verstion getting an empty implementation that just hides the icon.
     private fun onPasteShortcutAddress(view: View) {
         view.context.alert(R.string.send_alert_shortcut_clicked) {
-            binding.inputZcashAddress.setText(SampleProperties.wallet.defaultSendAddress)
-            validateAddressInput()
+            val address = SampleProperties.wallet.defaultSendAddress
+            binding.inputZcashAddress.setText(address)
+            sendPresenter.inputAddressUpdated(address)
             hideKeyboard()
         }
     }
 
+    /**
+     * Called after confirmation dialog is affirmed. Begins the process of actually sending ZEC.
+     */
     private fun onSendZec() {
         setSendEnabled(false)
         sendPresenter.sendFunds()
@@ -271,6 +282,7 @@ class SendFragment : BaseFragment(), SendPresenter.SendView, ScanFragment.Barcod
     private fun hideKeyboard() {
         mainActivity.getSystemService<InputMethodManager>()
             ?.hideSoftInputFromWindow(view?.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
+        checkAllInput()
     }
 
     private fun hideSendDialog() {
@@ -278,12 +290,28 @@ class SendFragment : BaseFragment(), SendPresenter.SendView, ScanFragment.Barcod
         binding.groupDialogSend.visibility = View.GONE
     }
 
-    // note: be careful calling this with `true` that should only happen when all conditions have been validated
-    private fun setSendEnabled(isEnabled: Boolean) {
-        binding.buttonSendZec.isEnabled = isEnabled
+    private fun setAddressLineColor(@ColorRes colorRes: Int = R.color.zcashBlack_12) {
+        DrawableCompat.setTint(
+            binding.inputZcashAddress.background,
+            ContextCompat.getColor(mainActivity, colorRes)
+        )
     }
 
-    private fun setAddressError(message: String?) {
+
+    /* Error handling */
+
+    override fun setAmountError(message: String?) {
+        if (message == null) {
+            binding.textValueError.visibility = View.GONE
+            binding.textValueError.text = null
+        } else {
+            binding.textValueError.text = message
+            binding.textValueError.visibility = View.VISIBLE
+            setSendEnabled(false)
+        }
+    }
+
+    override fun setAddressError(message: String?) {
         if (message == null) {
             setAddressLineColor()
             binding.textAddressError.text = null
@@ -296,74 +324,36 @@ class SendFragment : BaseFragment(), SendPresenter.SendView, ScanFragment.Barcod
         }
     }
 
-    private fun setAddressLineColor(@ColorRes colorRes: Int = R.color.zcashBlack_12) {
-        DrawableCompat.setTint(
-            binding.inputZcashAddress.background,
-            ContextCompat.getColor(mainActivity, colorRes)
-        )
-    }
-
-    private fun setAmountError(isError: Boolean) {
-        val color = if (isError) R.color.zcashRed else R.color.text_dark
-        binding.textAmountBackground.setTextColor(color.toAppColor())
-    }
-
-
-    //
-    // Validation
-    //
-
-    override fun validateUserInput(): Boolean {
-        val allValid = validateAddressInput() && validateAmountInput() && validateMemo()
-        setSendEnabled(allValid)
-        return  allValid
-    }
-
-    /**
-     * Validate the memo input and update presenter when valid.
-     *
-     * @return true when the memo is valid
-     */
-    private fun validateMemo(): Boolean {
-        val memo = binding.textAreaMemo.text.toString()
-        return memo.all { it.isLetterOrDigit() }.also { if (it) sendPresenter.memoValidated(memo) }
-    }
-
-    /**
-     * Validate the address input and update presenter when valid.
-     *
-     * @return true when the address is valid
-     */
-    private fun validateAddressInput(): Boolean {
-        var isValid = false
-        val address = binding.inputZcashAddress.text.toString()
-        if (address.isNotEmpty() && address.length < R.integer.z_address_min_length.toAppInt()) setAddressError(R.string.send_error_address_too_short.toAppString())
-        else if (address.any { !it.isLetterOrDigit() }) setAddressError(R.string.send_error_address_invalid_char.toAppString())
-        else setAddressError(null).also { isValid = true; sendPresenter.addressValidated(address) }
-        return isValid
-    }
-
-    /**
-     * Validate the amount input and update the presenter when valid.
-     *
-     * @return true when the amount is valid
-     */
-    private fun validateAmountInput(): Boolean {
-        return try {
-            val amount = binding.textValueHeader.text.toString().safelyConvertToBigDecimal()!!
-            sendPresenter.headerValidated(amount)
-            setAmountError(false)
-            true
-        } catch (t: Throwable) {
-            Toaster.short("Invalid ZEC or USD value")
+    override fun setMemoError(message: String?) {
+        val validColor = R.color.zcashBlack_12.toAppColor()
+        val errorColor = R.color.zcashRed.toAppColor()
+        if (message == null) {
+            binding.dividerMemo.setBackgroundColor(validColor)
+            binding.textMemoCharCount.setTextColor(validColor)
+            binding.textAreaMemo.setTextColor(R.color.text_dark.toAppColor())
+        } else {
+            binding.dividerMemo.setBackgroundColor(errorColor)
+            binding.textMemoCharCount.setTextColor(errorColor)
+            binding.textAreaMemo.setTextColor(errorColor)
             setSendEnabled(false)
-            setAmountError(true)
-            false
         }
     }
 
-
-
+    /**
+     * Validate all input. This is essentially the same as extracting a model out of the view and validating it with the
+     * presenter. Basically, this needs to happen anytime something is edited, in order to try and enable Send. Right
+     * now this method is called 1) any time the model is updated with valid input, 2) anytime the keyboard is hidden,
+     * and 3) anytime send is pressed. It also triggers the only logic that can set "requiresValidation" to false.
+     */
+    override fun checkAllInput(): Boolean {
+        with(binding) {
+            return sendPresenter.validateAll(
+                headerValue = textValueHeader.text.toString(),
+                toAddress = inputZcashAddress.text.toString(),
+                memo = textAreaMemo.text.toString()
+            )
+        }
+    }
 
 
 // TODO: come back to this test code later and fix the shared element transitions

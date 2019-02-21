@@ -13,6 +13,12 @@
         android:background="@color/fragment_receive_background"
         tools:context=".ui.fragment.ReceiveFragment">
 
+        <include
+            android:id="@+id/main_app_bar"
+            layout="@layout/include_main_app_bar"
+            android:visibility="invisible"
+            tools:ignore="MissingConstraints" />
+
         <!-- Shield Background -->
         <ImageView
             android:id="@+id/image_shield"
@@ -23,7 +29,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/main_toolbar"
+            app:layout_constraintTop_toBottomOf="@+id/main_app_bar"
             app:layout_constraintDimensionRatio="H,1:1.1676"
             app:layout_constraintVertical_bias="0.062"
             app:layout_constraintWidth_default="percent"

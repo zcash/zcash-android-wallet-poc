@@ -10,11 +10,8 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
-import java.math.BigDecimal
-import java.math.RoundingMode
 
 @ExtendWith(MockitoExtension::class)
 internal class SendPresenterTest {
@@ -74,12 +71,12 @@ internal class SendPresenterTest {
         presenter.toggleCurrency()
         assertTrue(!presenter.sendUiModel.isUsdSelected, "zec should be selected to avoid testing conversions")
         presenter.headerValidated("1.1234535".safelyConvertToBigDecimal()!!)
-        assertEquals(112345350, presenter.sendUiModel.zecValue)
-        assertEquals("1.123454", presenter.sendUiModel.zecValue.convertZatoshiToZecString(), "5 is odd, we should round up")
+        assertEquals(112345350, presenter.sendUiModel.zatoshiValue)
+        assertEquals("1.123454", presenter.sendUiModel.zatoshiValue.convertZatoshiToZecString(), "5 is odd, we should round up")
 
         presenter.headerValidated("1.1234565".safelyConvertToBigDecimal()!!)
-        assertEquals(112345650, presenter.sendUiModel.zecValue)
-        assertEquals("1.123456", presenter.sendUiModel.zecValue.convertZatoshiToZecString(), "6 is even, we should round down")
+        assertEquals(112345650, presenter.sendUiModel.zatoshiValue)
+        assertEquals("1.123456", presenter.sendUiModel.zatoshiValue.convertZatoshiToZecString(), "6 is even, we should round down")
     }
 
     @Test

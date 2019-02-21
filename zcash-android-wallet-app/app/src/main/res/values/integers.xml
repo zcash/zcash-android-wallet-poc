@@ -3,5 +3,4 @@
     <integer name="nav_default_slow_transition_duration">400</integer>
     <integer name="nav_default_quick_transition_duration">100</integer>
     <integer name="memo_max_length">512</integer>
-    <integer name="z_address_min_length">78</integer>
 </resources>

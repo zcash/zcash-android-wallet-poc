@@ -79,6 +79,7 @@
     <string name="send_dialog_title">Send %1$s %2$s ($%3$s)?</string>
     <string name="send_alert_shortcut_clicked">Paste a valid sample address for testing?</string>
     <string name="send_error_address_too_short">Address is too short.</string>
+    <string name="send_error_address_invalid_contents">Address appears to be invalid.</string>
     <string name="send_error_address_invalid_char">Address contains invalid characters.</string>
 
     <!-- About -->

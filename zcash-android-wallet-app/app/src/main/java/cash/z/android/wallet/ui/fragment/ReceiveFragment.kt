@@ -53,6 +53,11 @@ class ReceiveFragment : BaseFragment() {
             text_address_part_8
         )
     }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        mainActivity.setToolbarShown(true)
+    }
     
     override fun onResume() {
         super.onResume()

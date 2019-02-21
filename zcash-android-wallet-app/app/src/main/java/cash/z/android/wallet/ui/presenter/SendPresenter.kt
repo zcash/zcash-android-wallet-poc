@@ -1,10 +1,13 @@
 package cash.z.android.wallet.ui.presenter
 
-import android.util.Log
+import cash.z.android.wallet.R
+import cash.z.android.wallet.extention.toAppInt
+import cash.z.android.wallet.extention.toAppString
 import cash.z.android.wallet.sample.SampleProperties
 import cash.z.android.wallet.ui.presenter.Presenter.PresenterView
 import cash.z.wallet.sdk.data.Synchronizer
 import cash.z.wallet.sdk.data.twig
+import cash.z.wallet.sdk.data.Twig
 import cash.z.wallet.sdk.ext.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
@@ -24,38 +27,57 @@ class SendPresenter(
         fun setHeaderValue(usdString: String)
         fun setSubheaderValue(usdString: String, isUsdSelected: Boolean)
         fun showSendDialog(zecString: String, usdString: String, toAddress: String, hasMemo: Boolean)
-        fun validateUserInput(): Boolean
-        fun submit()
+        fun exit()
+
+        // error handling
+        fun setAmountError(message: String?)
+        fun setAddressError(message: String?)
+        fun setMemoError(message: String?)
+        fun setSendEnabled(isEnabled: Boolean)
+        fun checkAllInput(): Boolean
     }
 
+    /**
+     * We require the user to send more than this amount. Right now, we just use the miner's fee as a minimum but other
+     * lower bounds may also be useful for validation.
+     */
+    private val minimumZatoshiAllowed = 10_000L
     private var balanceJob: Job? = null
+    private var requiresValidation = true
     var sendUiModel = SendUiModel()
+
+    // TODO: find the best set of characters here. Possibly add something to the rust layer to help with this.
+    private val validMemoChars = " \t\n\r.?!,\"':;-_=+@#%*"
+
+
 
     //
     // LifeCycle
     //
 
     override suspend fun start() {
-        Log.e("@TWIG-v", "sendPresenter starting!")
-        // set the currency to zec and update the view, intializing everything to zero
-        toggleCurrency()
+        Twig.sprout("SendPresenter")
+        twig("sendPresenter starting!")
+        // set the currency to zec and update the view, initializing everything to zero
+        inputToggleCurrency()
         with(view) {
             balanceJob = launchBalanceBinder(synchronizer.balance())
         }
     }
 
     override fun stop() {
-        Log.e("@TWIG-v", "sendPresenter stopping!")
+        twig("sendPresenter stopping!")
+        Twig.clip("SendPresenter")
         balanceJob?.cancel()?.also { balanceJob = null }
     }
 
     fun CoroutineScope.launchBalanceBinder(channel: ReceiveChannel<Long>) = launch {
-        Log.e("@TWIG-v", "send balance binder starting!")
+        twig("send balance binder starting!")
         for (new in channel) {
-            Log.e("@TWIG-v", "send polled a balance item")
+            twig("send polled a balance item")
             bind(new)
         }
-        Log.e("@TWIG-v", "send balance binder exiting!")
+        twig("send balance binder exiting!")
     }
 
 
@@ -67,31 +89,38 @@ class SendPresenter(
         //TODO: prehaps grab the activity scope or let the sycnchronizer have scope and make that function not suspend
         // also, we need to handle cancellations. So yeah, definitely do this differently
         GlobalScope.launch {
-            synchronizer.sendToAddress(sendUiModel.zecValue!!, sendUiModel.toAddress)
+            synchronizer.sendToAddress(sendUiModel.zatoshiValue!!, sendUiModel.toAddress)
         }
-        view.submit()
+        view.exit()
     }
+
+
+    //
+    // User Input
+    //
 
     /**
      * Called when the user has tapped on the button for toggling currency, swapping zec for usd
      */
-    fun toggleCurrency() {
-        view.validateUserInput()
+    fun inputToggleCurrency() {
+        // tricky: this is not really a model update, instead it is a byproduct of using `isUsdSelected` for the
+        // currency instead of strong types. There are several todo's to fix that. if we update the model here then
+        // the UI will think the user took action and display errors prematurely.
         sendUiModel = sendUiModel.copy(isUsdSelected = !sendUiModel.isUsdSelected)
         with(sendUiModel) {
             view.setHeaders(
                 isUsdSelected = isUsdSelected,
-                headerString = if (isUsdSelected) usdValue.toUsdString() else zecValue.convertZatoshiToZecString(),
-                subheaderString = if (isUsdSelected) zecValue.convertZatoshiToZecString() else usdValue.toUsdString()
+                headerString = if (isUsdSelected) usdValue.toUsdString() else zatoshiValue.convertZatoshiToZecString(),
+                subheaderString = if (isUsdSelected) zatoshiValue.convertZatoshiToZecString() else usdValue.toUsdString()
             )
         }
     }
 
     /**
      * As the user is typing the header string, update the subheader string. Do not modify our own internal model yet.
-     * Internal model is only updated after [headerValidated] is called.
+     * Internal model is only modified after [headerUpdated] is called (with valid data).
      */
-    fun headerUpdating(headerValue: String) {
+    fun inputHeaderUpdating(headerValue: String) {
         headerValue.safelyConvertToBigDecimal()?.let { headerValueAsDecimal ->
             val subheaderValue = headerValueAsDecimal.convertCurrency(SampleProperties.USD_PER_ZEC, sendUiModel.isUsdSelected)
 
@@ -102,49 +131,77 @@ class SendPresenter(
         }
     }
 
-    fun sendPressed() {
-        with(sendUiModel) {
-            view.showSendDialog(
-                zecString = zecValue.convertZatoshiToZecString(),
-                usdString = usdValue.toUsdString(),
-                toAddress = toAddress,
-                hasMemo = !memo.isBlank()
-            )
+    /**
+     * As the user updates the address, update the error that gets displayed in real-time
+     *
+     * @param addressValue the address that the user has typed, so far
+     */
+    fun inputAddressUpdating(addressValue: String) {
+        validateAddress(addressValue, true)
+    }
+
+    /**
+     * As the user updates the memo, update the error that gets displayed in real-time
+     *
+     * @param memoValue the memo that the user has typed, so far
+     */
+    fun inputMemoUpdating(memoValue: String) {
+        // treat the memo a little differently because it is more likely for the user to go back and edit invalid chars
+        // and we want the send button to be active the moment that happens
+        if(validateMemo(memoValue)) {
+            updateModel(sendUiModel.copy(memo = memoValue))
         }
     }
 
-    fun headerValidated(amount: BigDecimal) {
+    /**
+     * Called when the user has completed their update to the header value, typically on focus change.
+     */
+    fun inputHeaderUpdated(amountString: String) {
+        if (!validateAmount(amountString)) return
+
+        // either USD or ZEC -- TODO: use strong typing (and polymorphism) instead of isUsdSelected checks
+        val amount = amountString.safelyConvertToBigDecimal()!! // we've already validated this as not null and it's immutable
         with(sendUiModel) {
             if (isUsdSelected) {
+                // amount represents USD
                 val headerString = amount.toUsdString()
-                val usdValue = amount
-                val zecValue = amount.convertUsdToZec(SampleProperties.USD_PER_ZEC)
-                val subheaderString = zecValue.toZecString()
-                sendUiModel = sendUiModel.copy(zecValue = zecValue.convertZecToZatoshi(), usdValue = usdValue)
+                val zatoshiValue = amount.convertUsdToZec(SampleProperties.USD_PER_ZEC).convertZecToZatoshi()
+                val subheaderString = amount.convertUsdToZec(SampleProperties.USD_PER_ZEC).toUsdString()
+                updateModel(sendUiModel.copy(zatoshiValue = zatoshiValue, usdValue = amount))
                 view.setHeaders(sendUiModel.isUsdSelected, headerString, subheaderString)
             } else {
+                // amount represents ZEC
                 val headerString = amount.toZecString()
-                val zecValue = amount
                 val usdValue = amount.convertZecToUsd(SampleProperties.USD_PER_ZEC)
                 val subheaderString = usdValue.toUsdString()
-                sendUiModel = sendUiModel.copy(zecValue = zecValue.convertZecToZatoshi(), usdValue = usdValue)
-                println("calling setHeaders with $headerString  $subheaderString")
+                updateModel(sendUiModel.copy(zatoshiValue = amount.convertZecToZatoshi(), usdValue = usdValue))
+                twig("calling setHeaders with $headerString  $subheaderString")
                 view.setHeaders(sendUiModel.isUsdSelected, headerString, subheaderString)
             }
         }
     }
 
-    fun addressValidated(address: String) {
-        sendUiModel = sendUiModel.copy(toAddress = address)
+    fun inputAddressUpdated(newAddress: String) {
+        if (!validateAddress(newAddress)) return
+        updateModel(sendUiModel.copy(toAddress = newAddress))
     }
 
-    /**
-     * After the user has typed a memo, validated by the UI, then update the model.
-     *
-     * assert: this method is only called after the memo input has been validated by the UI
-     */
-    fun memoValidated(sanitizedValue: String) {
-        sendUiModel = sendUiModel.copy(memo = sanitizedValue)
+    fun inputMemoUpdated(newMemo: String) {
+        if (!validateMemo(newMemo)) return
+        updateModel(sendUiModel.copy(memo = newMemo))
+    }
+
+    fun inputSendPressed() {
+        if (requiresValidation && !view.checkAllInput()) return
+
+        with(sendUiModel) {
+            view.showSendDialog(
+                zecString = zatoshiValue.convertZatoshiToZecString(),
+                usdString = usdValue.toUsdString(),
+                toAddress = toAddress,
+                hasMemo = !memo.isBlank()
+            )
+        }
     }
 
     fun bind(newZecBalance: Long) {
@@ -154,9 +211,119 @@ class SendPresenter(
         }
     }
 
+    fun updateModel(newModel: SendUiModel) {
+        sendUiModel = newModel.apply { hasBeenUpdated = true }
+        // now that we have new data, check and see if we can clear errors and re-enable the send button
+        if (requiresValidation) view.checkAllInput()
+    }
+
+    //
+    // Validation
+    //
+
+    /**
+     * Called after any user interaction. This is a potential time that errors should be shown, but only if data has
+     * already been entered. The view should call this method on focus change.
+     */
+    fun invalidate() {
+        requiresValidation = true
+    }
+
+    /**
+     * Validates the given memo, ensuring that it does not contain unsupported characters. For now, we're very
+     * restrictive until we define more clear requirements for the values that can safely be entered in this field
+     * without introducing security risks.
+     *
+     * @param memo the memo to consider for validation
+     *
+     * @return true when the memo contains valid characters, which includes being blank
+     */
+    private fun validateMemo(memo: String): Boolean {
+        return if (memo.all { it.isLetterOrDigit() || it in validMemoChars }) {
+            view.setMemoError(null)
+            true
+        } else {
+            view.setMemoError("Only letters and numbers are allowed in memo at this time")
+            requiresValidation = true
+            false
+        }
+    }
+
+    /**
+     * Validates the given address
+     *
+     * @param toAddress the address to consider for validation
+     * @param ignoreLength whether to ignore the length while validating, this is helpful when the user is still
+     * actively typing the address
+     */
+    private fun validateAddress(toAddress: String, ignoreLength: Boolean = false): Boolean {
+        // TODO: later expose a method in the synchronizer for validating addresses.
+        //  Right now it's not available so we do it ourselves
+        return if (!ignoreLength && sendUiModel.hasBeenUpdated && toAddress.length < 20) {// arbitrary length for now
+            view.setAddressError(R.string.send_error_address_too_short.toAppString())
+            requiresValidation = true
+            false
+        } else if (!toAddress.startsWith("zt") && !toAddress.startsWith("zs")) {
+            view.setAddressError(R.string.send_error_address_invalid_contents.toAppString())
+            requiresValidation = true
+            false
+        } else if (toAddress.any { !it.isLetterOrDigit() }) {
+            view.setAddressError(R.string.send_error_address_invalid_char.toAppString())
+            requiresValidation = true
+            false
+        } else {
+            view.setAddressError(null)
+            true
+        }
+    }
+
+    /**
+     * Validates the given amount, calling the related `showError` methods on the view, when appropriate
+     *
+     * @param amount the amount to consider for validation, for now this can be either USD or ZEC. In the future we will
+     * will separate those into types.
+     *
+     * @return true when the given amount is valid and all errors have been cleared on the view
+     */
+    private fun validateAmount(amountString: String): Boolean {
+        if (!sendUiModel.hasBeenUpdated) return true // don't mark zero as bad until the model has been updated
+
+        var amount = amountString.safelyConvertToBigDecimal()
+        // no need to convert when we know it's null
+        return if (amount == null ) {
+            validateZatoshiAmount(null)
+        } else {
+            val zecAmount =
+                if (sendUiModel.isUsdSelected) amount.convertUsdToZec(SampleProperties.USD_PER_ZEC) else amount
+            validateZatoshiAmount(zecAmount.convertZecToZatoshi())
+        }
+    }
+
+    private fun validateZatoshiAmount(zatoshiValue: Long?): Boolean {
+        return if (zatoshiValue == null || zatoshiValue <= minimumZatoshiAllowed) {
+            view.setAmountError("Please specify a larger amount")
+            requiresValidation = true
+            false
+        } else {
+            view.setAmountError(null)
+            true
+        }
+    }
+
+    fun validateAll(headerValue: String, toAddress: String, memo: String): Boolean {
+        val isValid = validateAmount(headerValue)
+                && validateAddress(toAddress)
+                && validateMemo(memo)
+        requiresValidation = !isValid
+        view.setSendEnabled(isValid)
+        return isValid
+    }
+
+
     data class SendUiModel(
+        var hasBeenUpdated: Boolean = false,
         val isUsdSelected: Boolean = true,
-        val zecValue: Long? = null,
+        val zatoshiValue: Long? = null,
         val usdValue: BigDecimal = BigDecimal.ZERO,
         val toAddress: String = "",
         val memo: String = ""
