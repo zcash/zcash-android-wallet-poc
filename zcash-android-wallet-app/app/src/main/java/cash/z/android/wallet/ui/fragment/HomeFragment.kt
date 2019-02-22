@@ -1,6 +1,7 @@
 package cash.z.android.wallet.ui.fragment
 
 import android.os.Bundle
+import android.os.Handler
 import android.text.SpannableString
 import android.text.Spanned
 import android.util.Log
@@ -23,22 +24,22 @@ import cash.z.android.wallet.R
 import cash.z.android.wallet.databinding.FragmentHomeBinding
 import cash.z.android.wallet.extention.*
 import cash.z.android.wallet.sample.SampleProperties
-import cash.z.android.wallet.ui.activity.MainActivity
 import cash.z.android.wallet.ui.adapter.TransactionAdapter
 import cash.z.android.wallet.ui.presenter.HomePresenter
 import cash.z.android.wallet.ui.presenter.Presenter
 import cash.z.android.wallet.ui.util.AlternatingRowColorDecoration
-import cash.z.android.wallet.ui.util.AnimatorCompleteListener
 import cash.z.android.wallet.ui.util.LottieLooper
 import cash.z.android.wallet.ui.util.TopAlignedSpan
 import cash.z.wallet.sdk.dao.WalletTransaction
-import cash.z.wallet.sdk.data.*
+import cash.z.wallet.sdk.data.ActiveSendTransaction
+import cash.z.wallet.sdk.data.ActiveTransaction
+import cash.z.wallet.sdk.data.TransactionState
+import cash.z.wallet.sdk.data.twig
 import cash.z.wallet.sdk.ext.*
 import com.google.android.material.snackbar.Snackbar
 import com.leinardi.android.speeddial.SpeedDialActionItem
 import dagger.Binds
 import dagger.Module
-import dagger.Provides
 import dagger.android.ContributesAndroidInjector
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -60,6 +61,10 @@ class HomeFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, HomeP
     private lateinit var zcashLogoAnimation: LottieLooper
     private var snackbar: Snackbar? = null
     private var viewsInitialized = false
+
+    //testing this
+    private var clock: Handler = Handler()
+    private val tickIfNeeded = Ticker()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -112,10 +117,12 @@ class HomeFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, HomeP
         launch {
             homePresenter.start()
         }
+        clock.postDelayed(tickIfNeeded, 1000L)
     }
 
     override fun onPause() {
         super.onPause()
+        clock.removeCallbacks(tickIfNeeded)
         homePresenter.stop()
         binding.lottieZcashBadge.cancelAnimation()
     }
@@ -192,6 +199,7 @@ class HomeFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, HomeP
 
     override fun setActiveTransactions(activeTransactionMap: Map<ActiveTransaction, TransactionState>) {
         if (activeTransactionMap.isEmpty()) {
+            twig("A.T.: setActiveTransactionsShown(false) because map is empty")
             setActiveTransactionsShown(false)
             return
         }
@@ -211,7 +219,7 @@ class HomeFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, HomeP
 
         twig("setting transaction state to ${transactionState::class.simpleName}")
         var title = binding.includeContent.textActiveTransactionTitle.text?.toString()  ?: ""
-        var subtitle = binding.includeContent.textActiveTransactionSubtitle.text?.toString() ?: ""
+        var subtitle: CharSequence = binding.includeContent.textActiveTransactionSubtitle.text?.toString() ?: ""
         var isShown = binding.includeContent.textActiveTransactionHeader.visibility == View.VISIBLE
         var isShownDelay = 10L
         when (transactionState) {
@@ -251,7 +259,7 @@ class HomeFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, HomeP
                     binding.includeContent.lottieActiveTransaction.setAnimation(R.raw.lottie_send_success)
                     binding.includeContent.lottieActiveTransaction.playAnimation()
                     title = "ZEC Sent"
-                    subtitle = "Today at 2:11pm"
+                    subtitle = transactionState.timestamp.toRelativeTimeString()
                     binding.includeContent.textActiveTransactionValue.text = transaction.value.convertZatoshiToZecString(3)
                     binding.includeContent.textActiveTransactionValue.visibility = View.VISIBLE
                     binding.includeContent.buttonActiveTransactionCancel.visibility = View.GONE
@@ -260,7 +268,7 @@ class HomeFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, HomeP
                     isShown = false
                 } else {
                     title = "Confirmation Received"
-                    subtitle = "Today at 2:12pm"
+                    subtitle = transactionState.timestamp.toRelativeTimeString()
                     isShown = false;
                     isShownDelay = 5_000L
                     // take it out of the list in a bit and skip counting confirmation animation for now (i.e. one is enough)
@@ -280,6 +288,7 @@ class HomeFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, HomeP
         }
         binding.includeContent.textActiveTransactionTitle.text = title
         binding.includeContent.textActiveTransactionSubtitle.text = subtitle
+        twig("A.T.: setActiveTransactionsShown($isShown, $isShownDelay) because ${transactionState}")
         setActiveTransactionsShown(isShown, isShownDelay)
     }
 
@@ -290,9 +299,10 @@ class HomeFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, HomeP
 
     private fun setActiveTransactionsShown(isShown: Boolean, delay: Long = 0L) {
         binding.includeContent.headerActiveTransaction.postDelayed({
+            binding.includeContent.groupActiveTransactionItems.visibility = if (isShown) View.VISIBLE else View.GONE
             // do not animate if visibility is already in the right state
 //            binding.includeContent.headerActiveTransaction.animate().alpha(if(isShown) 1f else 0f).setDuration(250).setListener(
-                AnimatorCompleteListener{ binding.includeContent.groupActiveTransactionItems.visibility = if (isShown) View.VISIBLE else View.GONE }
+//                AnimatorCompleteListener{ }
 //            )
         }, delay)
     }
@@ -452,6 +462,16 @@ class HomeFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, HomeP
         }
     }
 
+    private inner class Ticker : Runnable {
+        override fun run() {
+            binding.includeContent.recyclerTransactions.apply {
+                if ((adapter?.itemCount ?: 0) > 0) {
+                    adapter?.notifyDataSetChanged()
+                }
+                clock.postDelayed(this@Ticker, 1000L)
+            }
+        }
+    }
 
     /**
      * Defines the basic properties of each FAB button for use while initializing the FAB

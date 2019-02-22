@@ -1,7 +1,6 @@
 package cash.z.android.wallet.ui.presenter
 
 import cash.z.android.wallet.R
-import cash.z.android.wallet.extention.toAppInt
 import cash.z.android.wallet.extention.toAppString
 import cash.z.android.wallet.sample.SampleProperties
 import cash.z.android.wallet.ui.fragment.SendFragment
@@ -43,7 +42,7 @@ class SendPresenter @Inject constructor(
      * We require the user to send more than this amount. Right now, we just use the miner's fee as a minimum but other
      * lower bounds may also be useful for validation.
      */
-    private val minimumZatoshiAllowed = 10_000L
+    private val minersFee = 10_000L
     private var balanceJob: Job? = null
     private var requiresValidation = true
     var sendUiModel = SendUiModel()
@@ -213,10 +212,12 @@ class SendPresenter @Inject constructor(
         return true
     }
 
-    fun bind(newZecBalance: Long) {
-        if (newZecBalance >= 0) {
-            twig("binding balance of $newZecBalance")
-            view.updateBalance(newZecBalance)
+    fun bind(newZatoshiBalance: Long) {
+        val available = newZatoshiBalance// - minersFee
+        if (available >= 0) {
+            twig("binding balance of $available")
+            view.updateBalance(available)
+//            updateModel(sendUiModel.copy(availableBalance = available))
         }
     }
 
@@ -309,10 +310,16 @@ class SendPresenter @Inject constructor(
     }
 
     private fun validateZatoshiAmount(zatoshiValue: Long?): Boolean {
-        return if (zatoshiValue == null || zatoshiValue <= minimumZatoshiAllowed) {
+        return if (zatoshiValue == null || zatoshiValue <= minersFee) {
             view.setAmountError("Please specify a larger amount")
             requiresValidation = true
             false
+//        } else if (sendUiModel.availableBalance != null
+//            && zatoshiValue >= sendUiModel.availableBalance!!) {
+//            view.setAmountError("Exceeds available balance of " +
+//                    "${sendUiModel.availableBalance.convertZatoshiToZecString(3)}")
+//            requiresValidation = true
+//            false
         } else {
             view.setAmountError(null)
             true
@@ -332,6 +339,7 @@ class SendPresenter @Inject constructor(
 
 
     data class SendUiModel(
+        val availableBalance: Long? = null,
         var hasBeenUpdated: Boolean = false,
         val isUsdSelected: Boolean = true,
         val zatoshiValue: Long? = null,

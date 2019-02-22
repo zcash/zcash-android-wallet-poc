@@ -24,6 +24,7 @@
                 android:paddingTop="30dp"
                 android:paddingEnd="16dp"
                 android:paddingBottom="16dp"
+                android:animateLayoutChanges="true"
                 android:transitionName="@string/transition_active_transaction_background">
 
                 <!-- Label: Current Activity -->

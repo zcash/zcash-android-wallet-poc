@@ -15,10 +15,10 @@ import javax.inject.Singleton
 @Module
 internal object SynchronizerModule {
 
-    const val MOCK_LOAD_DURATION = 3_000L
-//    const val MOCK_LOAD_DURATION = 12_000L
+//    const val MOCK_LOAD_DURATION = 3_000L
+    const val MOCK_LOAD_DURATION = 12_000L
     const val MOCK_TX_INTERVAL = 20_000L
-    const val MOCK_ACTIVE_TX_STATE_CHANGE_INTERVAL = 4_000L
+    const val MOCK_ACTIVE_TX_STATE_CHANGE_INTERVAL = 7_000L
     const val MOCK_IS_FIRST_RUN: Boolean = true
 
 

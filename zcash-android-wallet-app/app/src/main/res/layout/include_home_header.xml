@@ -107,7 +107,7 @@
 
         <TextView
             android:id="@+id/text_balance_usd"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif-light"
             tools:text="$5,459.32"

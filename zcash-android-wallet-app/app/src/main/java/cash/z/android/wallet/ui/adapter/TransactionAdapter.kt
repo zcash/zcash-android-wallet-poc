@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import cash.z.android.wallet.R
 import cash.z.android.wallet.extention.toAppColor
+import cash.z.android.wallet.extention.toRelativeTimeString
 import cash.z.wallet.sdk.ext.convertZatoshiToZec
 import cash.z.wallet.sdk.ext.toZec
 import java.text.SimpleDateFormat
@@ -49,7 +50,7 @@ class TransactionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
         val zecAbsoluteValue = tx.value.absoluteValue.convertZatoshiToZec(3)
         val toOrFrom = if (tx.isSend) "to" else "from"
         val srcOrDestination = address ?: "from shielded mystery person"
-        timestamp.text = if (!tx.isMined || tx.timeInSeconds == 0L) "Pending" else formatter.format(tx.timeInSeconds * 1000)
+        timestamp.text = if (!tx.isMined || tx.timeInSeconds == 0L) "Pending" else (tx.timeInSeconds * 1000L).toRelativeTimeString() //formatter.format(tx.timeInSeconds * 1000)
         amount.text = "$sign$zecAbsoluteValue"
         amount.setTextColor(amountColor.toAppColor())
 
