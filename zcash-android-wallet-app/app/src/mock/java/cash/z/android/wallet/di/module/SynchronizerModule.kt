@@ -16,9 +16,10 @@ import javax.inject.Singleton
 internal object SynchronizerModule {
 
     const val MOCK_LOAD_DURATION = 3_000L
-//    const val MOCK_LOAD_DURATION = 30_000L
+//    const val MOCK_LOAD_DURATION = 12_000L
     const val MOCK_TX_INTERVAL = 20_000L
-    const val MOCK_ACTIVE_TX_STATE_CHANGE_INTERVAL = 5_000L
+    const val MOCK_ACTIVE_TX_STATE_CHANGE_INTERVAL = 4_000L
+    const val MOCK_IS_FIRST_RUN: Boolean = true
 
 
     @JvmStatic
@@ -29,6 +30,7 @@ internal object SynchronizerModule {
         return SampleQrScanner()
     }
 
+
     @JvmStatic
     @Provides
     @Singleton
@@ -37,7 +39,7 @@ internal object SynchronizerModule {
             transactionInterval = MOCK_TX_INTERVAL,
             initialLoadDuration = MOCK_LOAD_DURATION,
             activeTransactionUpdateFrequency = MOCK_ACTIVE_TX_STATE_CHANGE_INTERVAL,
-            isFirstRun = true
+            isFirstRun = MOCK_IS_FIRST_RUN
         )
     }
 }

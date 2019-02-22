@@ -1,6 +1,8 @@
 package cash.z.android.wallet.ui.presenter
 
 import android.util.Log
+import cash.z.android.wallet.ZcashWalletApplication
+import cash.z.android.wallet.ui.fragment.HomeFragment
 import cash.z.android.wallet.ui.presenter.Presenter.PresenterView
 import cash.z.wallet.sdk.dao.WalletTransaction
 import cash.z.wallet.sdk.data.ActiveSendTransaction
@@ -10,10 +12,11 @@ import cash.z.wallet.sdk.data.TransactionState
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.channels.ReceiveChannel
+import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
-class HomePresenter(
-    private val view: HomeView,
+class HomePresenter @Inject constructor(
+    private val view: HomeFragment,
     private val synchronizer: Synchronizer
 ) : Presenter, CoroutineScope {
 

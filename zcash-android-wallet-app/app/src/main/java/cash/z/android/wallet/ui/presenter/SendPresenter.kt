@@ -4,6 +4,7 @@ import cash.z.android.wallet.R
 import cash.z.android.wallet.extention.toAppInt
 import cash.z.android.wallet.extention.toAppString
 import cash.z.android.wallet.sample.SampleProperties
+import cash.z.android.wallet.ui.fragment.SendFragment
 import cash.z.android.wallet.ui.presenter.Presenter.PresenterView
 import cash.z.wallet.sdk.data.Synchronizer
 import cash.z.wallet.sdk.data.twig
@@ -15,9 +16,10 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
+import javax.inject.Inject
 
-class SendPresenter(
-    private val view: SendView,
+class SendPresenter @Inject constructor(
+    private val view: SendFragment,
     private val synchronizer: Synchronizer
 ) : Presenter {
 
@@ -89,6 +91,8 @@ class SendPresenter(
         //TODO: prehaps grab the activity scope or let the sycnchronizer have scope and make that function not suspend
         // also, we need to handle cancellations. So yeah, definitely do this differently
         GlobalScope.launch {
+            twig("Process: cash.z.android.wallet. checking....")
+            twig("Process: cash.z.android.wallet. is it null??? $sendUiModel")
             synchronizer.sendToAddress(sendUiModel.zatoshiValue!!, sendUiModel.toAddress)
         }
         view.exit()
@@ -156,8 +160,8 @@ class SendPresenter(
     /**
      * Called when the user has completed their update to the header value, typically on focus change.
      */
-    fun inputHeaderUpdated(amountString: String) {
-        if (!validateAmount(amountString)) return
+    fun inputHeaderUpdated(amountString: String): Boolean {
+        if (!validateAmount(amountString)) return false
 
         // either USD or ZEC -- TODO: use strong typing (and polymorphism) instead of isUsdSelected checks
         val amount = amountString.safelyConvertToBigDecimal()!! // we've already validated this as not null and it's immutable
@@ -179,20 +183,24 @@ class SendPresenter(
                 view.setHeaders(sendUiModel.isUsdSelected, headerString, subheaderString)
             }
         }
+        return true
     }
 
-    fun inputAddressUpdated(newAddress: String) {
-        if (!validateAddress(newAddress)) return
+    fun inputAddressUpdated(newAddress: String): Boolean {
+        if (!validateAddress(newAddress)) return false
         updateModel(sendUiModel.copy(toAddress = newAddress))
+        return true
     }
 
-    fun inputMemoUpdated(newMemo: String) {
-        if (!validateMemo(newMemo)) return
+    fun inputMemoUpdated(newMemo: String): Boolean {
+        if (!validateMemo(newMemo)) return false
         updateModel(sendUiModel.copy(memo = newMemo))
+        return true
     }
 
-    fun inputSendPressed() {
-        if (requiresValidation && !view.checkAllInput()) return
+    fun inputSendPressed(): Boolean {
+        // double sanity check. Make sure view and model agree and are each valid and if not, highlight the error.
+        if (!view.checkAllInput() || !validateAll()) return false
 
         with(sendUiModel) {
             view.showSendDialog(
@@ -202,6 +210,7 @@ class SendPresenter(
                 hasMemo = !memo.isBlank()
             )
         }
+        return true
     }
 
     fun bind(newZecBalance: Long) {
@@ -214,7 +223,7 @@ class SendPresenter(
     fun updateModel(newModel: SendUiModel) {
         sendUiModel = newModel.apply { hasBeenUpdated = true }
         // now that we have new data, check and see if we can clear errors and re-enable the send button
-        if (requiresValidation) view.checkAllInput()
+        if (requiresValidation) validateAll()
     }
 
     //
@@ -310,13 +319,15 @@ class SendPresenter(
         }
     }
 
-    fun validateAll(headerValue: String, toAddress: String, memo: String): Boolean {
-        val isValid = validateAmount(headerValue)
-                && validateAddress(toAddress)
-                && validateMemo(memo)
-        requiresValidation = !isValid
-        view.setSendEnabled(isValid)
-        return isValid
+    fun validateAll(): Boolean {
+        with(sendUiModel) {
+            val isValid = validateZatoshiAmount(zatoshiValue)
+                    && validateAddress(toAddress)
+                    && validateMemo(memo)
+            requiresValidation = !isValid
+            view.setSendEnabled(isValid)
+            return isValid
+        }
     }
 
 

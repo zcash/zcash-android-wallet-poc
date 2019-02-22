@@ -23,22 +23,26 @@ import cash.z.android.wallet.R
 import cash.z.android.wallet.databinding.FragmentHomeBinding
 import cash.z.android.wallet.extention.*
 import cash.z.android.wallet.sample.SampleProperties
+import cash.z.android.wallet.ui.activity.MainActivity
 import cash.z.android.wallet.ui.adapter.TransactionAdapter
 import cash.z.android.wallet.ui.presenter.HomePresenter
+import cash.z.android.wallet.ui.presenter.Presenter
 import cash.z.android.wallet.ui.util.AlternatingRowColorDecoration
 import cash.z.android.wallet.ui.util.AnimatorCompleteListener
 import cash.z.android.wallet.ui.util.LottieLooper
 import cash.z.android.wallet.ui.util.TopAlignedSpan
 import cash.z.wallet.sdk.dao.WalletTransaction
-import cash.z.wallet.sdk.data.ActiveSendTransaction
-import cash.z.wallet.sdk.data.ActiveTransaction
-import cash.z.wallet.sdk.data.TransactionState
+import cash.z.wallet.sdk.data.*
 import cash.z.wallet.sdk.ext.*
 import com.google.android.material.snackbar.Snackbar
 import com.leinardi.android.speeddial.SpeedDialActionItem
+import dagger.Binds
 import dagger.Module
+import dagger.Provides
 import dagger.android.ContributesAndroidInjector
 import kotlinx.coroutines.launch
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlin.random.Random
 import kotlin.random.nextLong
 
@@ -49,7 +53,9 @@ import kotlin.random.nextLong
  */
 class HomeFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, HomePresenter.HomeView {
 
-    private lateinit var homePresenter: HomePresenter
+    @Inject
+    lateinit var homePresenter: HomePresenter
+
     private lateinit var binding: FragmentHomeBinding
     private lateinit var zcashLogoAnimation: LottieLooper
     private var snackbar: Snackbar? = null
@@ -87,11 +93,9 @@ class HomeFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, HomeP
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        mainActivity.setToolbarShown(false)
-        mainActivity.setDrawerLocked(false)
+        mainActivity?.setToolbarShown(false)
+        mainActivity?.setDrawerLocked(false)
         initFab()
-
-        homePresenter = HomePresenter(this, mainActivity.synchronizer)
 
         binding.includeContent.recyclerTransactions.apply {
             layoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
@@ -99,7 +103,7 @@ class HomeFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, HomeP
             addItemDecoration(AlternatingRowColorDecoration())
         }
         binding.includeContent.textTransactionHeaderSeeAll.setOnClickListener {
-            mainActivity.navController.navigate(R.id.nav_history_fragment)
+            mainActivity?.navController?.navigate(R.id.nav_history_fragment)
         }
     }
 
@@ -130,27 +134,24 @@ class HomeFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, HomeP
     }
 
     override fun onRefresh() {
-        setRefreshAnimationPlaying(true).also { Log.e("TWIG-a", "refresh true from onRefresh") }
+        setRefreshAnimationPlaying(true).also { twig("refresh true from onRefresh") }
 
         with(binding.includeContent.refreshLayout) {
             isRefreshing = false
             val fauxRefresh = Random.nextLong(750L..3000L)
             postDelayed({
-                setRefreshAnimationPlaying(false).also { Log.e("TWIG-a", "refresh false from onRefresh") }
+                setRefreshAnimationPlaying(false).also { twig("refresh false from onRefresh") }
             }, fauxRefresh)
         }
     }
 
 
     fun setRefreshAnimationPlaying(isPlaying: Boolean) {
-        Log.e("TWIG-a", "set refresh to: $isPlaying for $zcashLogoAnimation")
+        twig("set refresh to: $isPlaying for $zcashLogoAnimation")
         if (isPlaying) {
             zcashLogoAnimation.start()
         } else {
             zcashLogoAnimation.stop()
-            view?.postDelayed({
-                zcashLogoAnimation.stop()
-            }, 500L)
         }
     }
 
@@ -180,12 +181,12 @@ class HomeFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, HomeP
 
     private fun onInitialLoadComplete() {
         val isEmpty = (binding.includeContent.recyclerTransactions?.adapter?.itemCount ?: 0).let { it == 0 }
-        Log.e("TWIG-t", "onInitialLoadComplete and isEmpty == $isEmpty")
+        twig("onInitialLoadComplete and isEmpty == $isEmpty")
         setContentViewShown(!isEmpty)
         if (isEmpty) {
             binding.includeContent.textEmptyWalletMessage.setText(R.string.home_empty_wallet)
         }
-        setRefreshAnimationPlaying(false).also { Log.e("TWIG-a", "refresh false from onInitialLoadComplete") }
+        setRefreshAnimationPlaying(false).also { twig("refresh false from onInitialLoadComplete") }
     }
 
 
@@ -208,10 +209,11 @@ class HomeFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, HomeP
 
     private fun updatePrimaryTransaction(transaction: ActiveTransaction, transactionState: TransactionState) {
 
-        Log.e("TWIG", "setting transaction state to ${transactionState::class.simpleName}")
+        twig("setting transaction state to ${transactionState::class.simpleName}")
         var title = binding.includeContent.textActiveTransactionTitle.text?.toString()  ?: ""
         var subtitle = binding.includeContent.textActiveTransactionSubtitle.text?.toString() ?: ""
         var isShown = binding.includeContent.textActiveTransactionHeader.visibility == View.VISIBLE
+        var isShownDelay = 10L
         when (transactionState) {
             TransactionState.Creating -> {
                 binding.includeContent.headerActiveTransaction.visibility = View.VISIBLE
@@ -241,7 +243,8 @@ class HomeFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, HomeP
                 binding.includeContent.buttonActiveTransactionCancel.visibility = View.GONE
                 binding.includeContent.textActiveTransactionValue.visibility = View.GONE
                 setTransactionActive(transaction, false)
-                setActiveTransactionsShown(false, 10000L)
+                isShown = false
+                isShownDelay = 10_000L
             }
             is TransactionState.AwaitingConfirmations -> {
                 if (transactionState.confirmationCount < 1) {
@@ -252,25 +255,32 @@ class HomeFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, HomeP
                     binding.includeContent.textActiveTransactionValue.text = transaction.value.convertZatoshiToZecString(3)
                     binding.includeContent.textActiveTransactionValue.visibility = View.VISIBLE
                     binding.includeContent.buttonActiveTransactionCancel.visibility = View.GONE
+                    isShown = true
                 } else if (transactionState.confirmationCount > 1) {
                     isShown = false
                 } else {
                     title = "Confirmation Received"
                     subtitle = "Today at 2:12pm"
+                    isShown = false;
+                    isShownDelay = 5_000L
                     // take it out of the list in a bit and skip counting confirmation animation for now (i.e. one is enough)
-                    setActiveTransactionsShown(false, 5000L)
                 }
             }
             is TransactionState.Cancelled -> {
                 title = binding.includeContent.textActiveTransactionTitle.text.toString()
                 subtitle = binding.includeContent.textActiveTransactionSubtitle.text.toString()
                 setTransactionActive(transaction, false)
-                setActiveTransactionsShown(false, 10000L)
+                isShown = false
+                isShownDelay = 10_000L
+            }
+            else -> {
+                Log.e(javaClass.simpleName, "Warning: unrecognized transaction state $transactionState is being ignored")
+                return
             }
         }
         binding.includeContent.textActiveTransactionTitle.text = title
         binding.includeContent.textActiveTransactionSubtitle.text = subtitle
-        setActiveTransactionsShown(isShown)
+        setActiveTransactionsShown(isShown, isShownDelay)
     }
 
 
@@ -280,9 +290,10 @@ class HomeFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, HomeP
 
     private fun setActiveTransactionsShown(isShown: Boolean, delay: Long = 0L) {
         binding.includeContent.headerActiveTransaction.postDelayed({
-            binding.includeContent.headerActiveTransaction.animate().alpha(if(isShown) 1f else 0f).setDuration(250).setListener(
+            // do not animate if visibility is already in the right state
+//            binding.includeContent.headerActiveTransaction.animate().alpha(if(isShown) 1f else 0f).setDuration(250).setListener(
                 AnimatorCompleteListener{ binding.includeContent.groupActiveTransactionItems.visibility = if (isShown) View.VISIBLE else View.GONE }
-            )
+//            )
         }, delay)
     }
 
@@ -310,10 +321,9 @@ class HomeFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, HomeP
         }
 
         // hide content
-        setActiveTransactionsShown(false)
         setContentViewShown(false)
         binding.includeContent.textEmptyWalletMessage.setText(R.string.home_empty_wallet_updating)
-        setRefreshAnimationPlaying(true).also { Log.e("TWIG-a", "refresh true from init") }
+        setRefreshAnimationPlaying(true).also { twig("refresh true from init") }
     }
 
     // initialize the stuff that is temporary and needs to go ASAP
@@ -337,14 +347,14 @@ class HomeFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, HomeP
      */
     private fun initFab() {
         val speedDial = binding.sdFab
-        val nav = mainActivity.navController
+        val nav = mainActivity?.navController
 
         HomeFab.values().forEach {
             speedDial.addActionItem(it.createItem())
         }
 
         speedDial.setOnActionSelectedListener { item ->
-            HomeFab.fromId(item.id)?.destination?.apply { nav.navigate(this) }
+            HomeFab.fromId(item.id)?.destination?.apply { nav?.navigate(this) }
             false
         }
     }
@@ -394,13 +404,13 @@ class HomeFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, HomeP
         // situation has changed when we weren't initialized but now we have a balance or emptiness has changed
         val situationHasChanged = !viewsInitialized || (isEmpty != wasEmpty)
 
-        Log.e("TWIG-t", "updateEmptyViews called with value: $value  initialized: $viewsInitialized  isEmpty: $isEmpty  wasEmpty: $wasEmpty")
+        twig("updateEmptyViews called with value: $value  initialized: $viewsInitialized  isEmpty: $isEmpty  wasEmpty: $wasEmpty")
         if (situationHasChanged) {
-            Log.e("TWIG-t", "The situation has changed! toggling views!")
+            twig("The situation has changed! toggling views!")
             setContentViewShown(!isEmpty)
         }
 
-        setRefreshAnimationPlaying(false).also { Log.e("TWIG-a", "refresh false from onContentRefreshComplete") }
+        setRefreshAnimationPlaying(false).also { twig("refresh false from onContentRefreshComplete") }
         binding.includeHeader.containerHomeHeader.visibility = View.VISIBLE
     }
 
@@ -503,7 +513,7 @@ class HomeFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, HomeP
 //    }
 
     internal fun toggleViews(isEmpty: Boolean) {
-        Log.e("TWIG-t", "toggling views to isEmpty == $isEmpty")
+        twig("toggling views to isEmpty == $isEmpty")
         var action: () -> Unit
         if (isEmpty) {
             action = {
@@ -598,6 +608,10 @@ class HomeFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, HomeP
 abstract class HomeFragmentModule {
     @ContributesAndroidInjector
     abstract fun contributeHomeFragment(): HomeFragment
+
+    @Binds
+    @Singleton
+    abstract fun providePresenter(homePresenter: HomePresenter): Presenter
 }
 
 

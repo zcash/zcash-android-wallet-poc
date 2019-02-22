@@ -1,21 +1,22 @@
 package cash.z.android.wallet.ui.presenter
 
 import android.util.Log
+import cash.z.android.wallet.ui.fragment.HistoryFragment
 import cash.z.android.wallet.ui.presenter.Presenter.PresenterView
 import cash.z.wallet.sdk.dao.WalletTransaction
-import cash.z.wallet.sdk.data.ActiveSendTransaction
-import cash.z.wallet.sdk.data.ActiveTransaction
 import cash.z.wallet.sdk.data.Synchronizer
-import cash.z.wallet.sdk.data.TransactionState
 import cash.z.wallet.sdk.data.twig
-import kotlinx.coroutines.*
-import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.ReceiveChannel
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
-class HistoryPresenter(
-    private val view: HistoryView,
-    private val synchronizer: Synchronizer
+class HistoryPresenter @Inject constructor(
+    private val view: HistoryFragment,
+    private var synchronizer: Synchronizer
 ) : Presenter, CoroutineScope {
 
     private val job = Job()

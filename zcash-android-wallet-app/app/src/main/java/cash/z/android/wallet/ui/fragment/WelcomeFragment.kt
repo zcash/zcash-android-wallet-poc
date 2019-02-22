@@ -24,15 +24,20 @@ import android.util.Log
 import androidx.core.app.SharedElementCallback
 import androidx.transition.TransitionInflater
 import cash.z.android.wallet.BuildConfig
+import cash.z.android.wallet.ui.presenter.Presenter
 import cash.z.android.wallet.ui.presenter.ProgressPresenter
+import dagger.Binds
+import dagger.BindsInstance
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
+import javax.inject.Named
+import javax.inject.Singleton
 
 
 class WelcomeFragment : ProgressFragment(R.id.progress_welcome) {
 
     private lateinit var binding: FragmentWelcomeBinding
-    private lateinit var progressPresenter: ProgressPresenter
 
     //
     // Lifecycle
@@ -91,8 +96,8 @@ class WelcomeFragment : ProgressFragment(R.id.progress_welcome) {
 
     override fun onResume() {
         super.onResume()
-        mainActivity.setDrawerLocked(true)
-        mainActivity.setToolbarShown(false)
+        mainActivity?.setDrawerLocked(true)
+        mainActivity?.setToolbarShown(false)
     }
 
     private fun setupSharedElementTransitions() {
@@ -102,23 +107,25 @@ class WelcomeFragment : ProgressFragment(R.id.progress_welcome) {
         }
     }
     private suspend fun onNext() = coroutineScope {
-        val isFirstRun = mainActivity.synchronizer.isFirstRun()
-        val destination = if (isFirstRun) R.id.nav_firstrun_fragment else R.id.nav_sync_fragment
+        if (mainActivity != null) {
+            val isFirstRun = mainActivity!!.synchronizer.isFirstRun()
+            val destination = if (isFirstRun) R.id.nav_firstrun_fragment else R.id.nav_sync_fragment
 
-//        var extras = with(binding) {
-//            listOf(progressWelcome, textProgressWelcome)
-//                .map { it to it.transitionName }
-//                .let { FragmentNavigatorExtras(*it.toTypedArray()) }
-//        }
-        val extras = FragmentNavigatorExtras(
-            binding.progressWelcome to binding.progressWelcome.transitionName
-        )
-        mainActivity.navController.navigate(
-            destination,
-            null,
-            null,
-            extras
-        )
+            //        var extras = with(binding) {
+            //            listOf(progressWelcome, textProgressWelcome)
+            //                .map { it to it.transitionName }
+            //                .let { FragmentNavigatorExtras(*it.toTypedArray()) }
+            //        }
+            val extras = FragmentNavigatorExtras(
+                binding.progressWelcome to binding.progressWelcome.transitionName
+            )
+            mainActivity?.navController?.navigate(
+                destination,
+                null,
+                null,
+                extras
+            )
+        }
     }
 
 }
@@ -128,4 +135,5 @@ abstract class WelcomeFragmentModule {
 
     @ContributesAndroidInjector
     abstract fun contributeWelcomeFragment(): WelcomeFragment
+
 }

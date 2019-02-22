@@ -11,17 +11,22 @@ import cash.z.android.wallet.R
 import cash.z.android.wallet.databinding.FragmentHistoryBinding
 import cash.z.android.wallet.ui.adapter.TransactionAdapter
 import cash.z.android.wallet.ui.presenter.HistoryPresenter
+import cash.z.android.wallet.ui.presenter.Presenter
 import cash.z.android.wallet.ui.util.AlternatingRowColorDecoration
 import cash.z.wallet.sdk.dao.WalletTransaction
+import dagger.Binds
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 import kotlinx.coroutines.launch
+import javax.inject.Inject
+import javax.inject.Singleton
 
 
 class HistoryFragment : BaseFragment(), HistoryPresenter.HistoryView {
 
+    @Inject
     lateinit var historyPresenter: HistoryPresenter
-    lateinit var binding: FragmentHistoryBinding
+    private lateinit var binding: FragmentHistoryBinding
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return DataBindingUtil
@@ -32,12 +37,13 @@ class HistoryFragment : BaseFragment(), HistoryPresenter.HistoryView {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        mainActivity.setToolbarShown(true)
-        historyPresenter = HistoryPresenter(this, mainActivity.synchronizer)
-        binding.recyclerTransactionsHistory.apply {
-            layoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
-            adapter = TransactionAdapter(R.layout.item_transaction_history)
-            addItemDecoration(AlternatingRowColorDecoration())
+        if (mainActivity != null) {
+            mainActivity?.setToolbarShown(true)
+            binding.recyclerTransactionsHistory.apply {
+                layoutManager = LinearLayoutManager(mainActivity, RecyclerView.VERTICAL, false)
+                adapter = TransactionAdapter(R.layout.item_transaction_history)
+                addItemDecoration(AlternatingRowColorDecoration())
+            }
         }
     }
 
@@ -54,7 +60,8 @@ class HistoryFragment : BaseFragment(), HistoryPresenter.HistoryView {
     }
 
     override fun setTransactions(transactions: List<WalletTransaction>) {
-        mainActivity.supportActionBar?.setTitle(resources.getQuantityString(R.plurals.history_transaction_count_title, transactions.size, transactions.size))
+        mainActivity?.supportActionBar?.title = resources.getQuantityString(R.plurals.history_transaction_count_title,
+            transactions.size, transactions.size)
         with (binding.recyclerTransactionsHistory) {
             (adapter as TransactionAdapter).submitList(transactions)
             postDelayed({
@@ -68,4 +75,8 @@ class HistoryFragment : BaseFragment(), HistoryPresenter.HistoryView {
 abstract class HistoryFragmentModule {
     @ContributesAndroidInjector
     abstract fun contributeHistoryFragment(): HistoryFragment
+
+    @Binds
+    @Singleton
+    abstract fun providePresenter(historyPresenter: HistoryPresenter): Presenter
 }

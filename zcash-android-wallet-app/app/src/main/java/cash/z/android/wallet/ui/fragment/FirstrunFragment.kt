@@ -38,10 +38,10 @@ class FirstrunFragment : ProgressFragment(R.id.progress_firstrun), Transition.Tr
         super.onViewCreated(view, savedInstanceState)
         postponeEnterTransition()
         binding.buttonNext.setOnClickListener {
-            mainActivity.navController.navigate(R.id.nav_sync_fragment)
+            mainActivity?.navController?.navigate(R.id.nav_sync_fragment)
         }
-        binding.buttonNext.alpha = 0f
-        binding.textProgressFirstrun.alpha = 0f
+//        binding.buttonNext.alpha = 0f
+//        binding.textProgressFirstrun.alpha = 0f
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -53,8 +53,8 @@ class FirstrunFragment : ProgressFragment(R.id.progress_firstrun), Transition.Tr
 
     override fun onResume() {
         super.onResume()
-        mainActivity.setDrawerLocked(true)
-        mainActivity.setToolbarShown(false)
+        mainActivity?.setDrawerLocked(true)
+        mainActivity?.setToolbarShown(false)
     }
 
     private fun setupSharedElementTransitions() {
@@ -69,11 +69,16 @@ class FirstrunFragment : ProgressFragment(R.id.progress_firstrun), Transition.Tr
     override fun showProgress(progress: Int) {
         super.showProgress(progress)
         binding.textProgressFirstrun.text = getProgressText(progress)
+
     }
 
     override fun onProgressComplete() {
         super.onProgressComplete()
         binding.textProgressFirstrun.visibility = View.GONE
+    }
+
+    override fun onTransitionStart(transition: Transition) {
+        binding.buttonNext.alpha = 0f
     }
 
     override fun onTransitionEnd(transition: Transition) {
@@ -88,7 +93,6 @@ class FirstrunFragment : ProgressFragment(R.id.progress_firstrun), Transition.Tr
     override fun onTransitionResume(transition: Transition) {}
     override fun onTransitionPause(transition: Transition) {}
     override fun onTransitionCancel(transition: Transition) {}
-    override fun onTransitionStart(transition: Transition) {}
 }
 
 @Module

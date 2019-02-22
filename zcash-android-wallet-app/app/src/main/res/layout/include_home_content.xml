@@ -54,7 +54,6 @@
                     android:paddingRight="8dp"
                     android:paddingBottom="16dp"
                     android:transitionName="@string/transition_active_transaction_card"
-                    android:visibility="gone"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/text_active_transaction_header"
                     tools:visibility="visible">
@@ -206,6 +205,7 @@
                     android:id="@+id/group_active_transaction_items"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:visibility="gone"
                     app:constraint_referenced_ids="text_active_transaction_header,header_active_transaction" />
 
                 <androidx.constraintlayout.widget.Group

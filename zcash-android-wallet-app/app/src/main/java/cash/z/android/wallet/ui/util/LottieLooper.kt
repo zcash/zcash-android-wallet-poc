@@ -19,6 +19,7 @@ class LottieLooper(private val lottie: LottieAnimationView, private val loopRang
         if (isPlaying) return
         with(lottie) {
             setMinAndMaxFrame(1, loopRange.last)
+            progress = 0f
             repeatCount = 0
             addAnimatorListener(this@LottieLooper)
             playAnimation()
@@ -78,7 +79,7 @@ class LottieLooper(private val lottie: LottieAnimationView, private val loopRang
             lottie.pauseAnimation()
             lottie.setMinAndMaxFrame(lastFrame, lastFrame)
             lottie.progress = 1.0f
-            // wait around a bit to see if there's any movement, then quietly make my getaway
+            // wait around a bit to see if my listeners detect any movement, then quietly make my getaway
             lottie.postDelayed({
                 lottie.removeAnimatorListener(this)
                 lottie.setMinAndMaxFrame(1, lastFrame)

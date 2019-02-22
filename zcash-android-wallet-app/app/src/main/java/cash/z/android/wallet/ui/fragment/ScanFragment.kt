@@ -65,9 +65,9 @@ class ScanFragment : BaseFragment() {
     private val requiredPermissions: Array<String?>
         get() {
             return try {
-                val info = mainActivity.packageManager
-                    .getPackageInfo(mainActivity.packageName, PackageManager.GET_PERMISSIONS)
-                val ps = info.requestedPermissions
+                val info = mainActivity?.packageManager
+                    ?.getPackageInfo(mainActivity?.packageName, PackageManager.GET_PERMISSIONS)
+                val ps = info?.requestedPermissions
                 if (ps != null && ps.isNotEmpty()) {
                     ps
                 } else {
@@ -107,7 +107,7 @@ class ScanFragment : BaseFragment() {
         if(!allPermissionsGranted()) getRuntimePermissions()
 
 
-//        sendPresenter = SendPresenter(this, mainActivity.synchronizer)
+//        sendPresenter = SendPresenter(this, mainActivity?.synchronizer)
     }
 
     override fun onResume() {
@@ -169,7 +169,7 @@ class ScanFragment : BaseFragment() {
 
     private fun allPermissionsGranted(): Boolean {
         for (permission in requiredPermissions) {
-            if (!isPermissionGranted(mainActivity, permission!!)) {
+            if (!isPermissionGranted(mainActivity!!, permission!!)) {
                 return false
             }
         }
@@ -179,7 +179,7 @@ class ScanFragment : BaseFragment() {
     private fun getRuntimePermissions() {
         val allNeededPermissions = arrayListOf<String>()
         for (permission in requiredPermissions) {
-            if (!isPermissionGranted(mainActivity, permission!!)) {
+            if (!isPermissionGranted(mainActivity!!, permission!!)) {
                 allNeededPermissions.add(permission)
             }
         }
@@ -216,7 +216,7 @@ class ScanFragment : BaseFragment() {
         var cameraId = getBackCameraId()
 
         private fun getBackCameraId(): String {
-            val manager = mainActivity.getSystemService(Context.CAMERA_SERVICE) as CameraManager
+            val manager = mainActivity?.getSystemService(Context.CAMERA_SERVICE) as CameraManager
 
             for (cameraId in manager.cameraIdList) {
                 val characteristics = manager.getCameraCharacteristics(cameraId)
@@ -227,10 +227,12 @@ class ScanFragment : BaseFragment() {
         }
 
         override fun onImageAvailable(image: Image) {
+            if(mainActivity == null) return
+
             try {
                 System.err.println("camoorah : onImageAvailable: $image  width: ${image.width}  height: ${image.height}")
                 var firebaseImage =
-                    FirebaseVisionImage.fromMediaImage(image, getRotationCompensation(cameraId, mainActivity))
+                    FirebaseVisionImage.fromMediaImage(image, getRotationCompensation(cameraId, mainActivity!!))
                 barcodeDetector
                     .detectInImage(firebaseImage)
                     .addOnSuccessListener { results ->

@@ -5,13 +5,19 @@ import android.view.View
 import android.widget.ProgressBar
 import androidx.annotation.IdRes
 import cash.z.android.wallet.ui.presenter.ProgressPresenter
-import cash.z.android.wallet.ui.util.AnimatorCompleteListener
+import cash.z.wallet.sdk.data.Synchronizer
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-abstract class ProgressFragment(@IdRes private val progressBarId: Int) : BaseFragment(),
+abstract class ProgressFragment(
+    @IdRes private val progressBarId: Int
+) : BaseFragment(),
     ProgressPresenter.ProgressView {
 
-    private lateinit var progressPresenter: ProgressPresenter
+    @Inject
+    protected lateinit var synchronizer: Synchronizer
+
+    protected lateinit var progressPresenter: ProgressPresenter
     private lateinit var progressBar: ProgressBar
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -22,7 +28,7 @@ abstract class ProgressFragment(@IdRes private val progressBarId: Int) : BaseFra
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        progressPresenter = ProgressPresenter(this, mainActivity.synchronizer)
+        progressPresenter = ProgressPresenter(this, synchronizer)
     }
 
     override fun onResume() {
@@ -40,12 +46,12 @@ abstract class ProgressFragment(@IdRes private val progressBarId: Int) : BaseFra
     override fun showProgress(progress: Int) {
         if (progress >= 100) {
             onProgressComplete()
-            progressBar.animate().alpha(0.0f).apply {
-                duration = 250L
-                setListener(AnimatorCompleteListener {
+//            progressBar.animate().(0.0f).apply {
+//                duration = 250L
+//                setListener(AnimatorCompleteListener {
                     progressBar.visibility = View.GONE
-                })
-            }
+//                })
+//            }
         } else if (progress > 0 && progressBar.visibility != View.VISIBLE) {
             progressBar.visibility = View.VISIBLE
         }
@@ -57,9 +63,9 @@ abstract class ProgressFragment(@IdRes private val progressBarId: Int) : BaseFra
     open fun getProgressText(progress: Int): String {
         if (mainActivity == null) return ""
         // cycle twice
-        val factor = 100 / (mainActivity.loadMessages.size * 2)
-        val index = (progress/factor).rem(mainActivity.loadMessages.size)
-        var message = "$progress% ${mainActivity.nextLoadMessage(index)}"
+        val factor = 100 / (mainActivity!!.loadMessages.size * 2)
+        val index = (progress/factor).rem(mainActivity!!.loadMessages.size)
+        var message = "$progress% ${mainActivity?.nextLoadMessage(index)}"
         if (progress > 98) message = "Done!"
         if (progress >= 50) message = message.replace("Zooko", "Zooko AGAIN", true).replace("Learning to spell", "Double-checking the spelling of").replace("the kool", "MORE kool", true).replace("Making the sausage", "Getting a little hangry by now!", true)
         return message

@@ -25,15 +25,15 @@ class SettingsFragment : BaseFragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        mainActivity.setToolbarShown(true)
+        mainActivity?.setToolbarShown(true)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.buttonResetApp.setOnClickListener {
             view.context.alert(R.string.settings_alert_reset_app) {
-                Toaster.short("Boom")
-                mainActivity.navController.navigateUp()
+                Toaster.short("Not Yet Implemented!")
+                mainActivity?.navController?.navigateUp()
             }
         }
     }

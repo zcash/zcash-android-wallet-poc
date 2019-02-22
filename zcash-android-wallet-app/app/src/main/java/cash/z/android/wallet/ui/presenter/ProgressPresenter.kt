@@ -6,11 +6,12 @@ import cash.z.wallet.sdk.data.Twig
 import cash.z.wallet.sdk.data.twig
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.ReceiveChannel
+import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
-class ProgressPresenter(
+class ProgressPresenter @Inject constructor(
     private val view: ProgressView,
-    private val synchronizer: Synchronizer
+    private var synchronizer: Synchronizer
 ) : Presenter, CoroutineScope {
 
     private val job = Job()
@@ -40,7 +41,7 @@ class ProgressPresenter(
         for (i in channel) {
             bind(i)
         }
-        // TODO: remove this temp fix:
+        // "receive" and send 100, whenever the channel is closed for send
         bind(100)
         twig("progress monitor exiting!")
     }

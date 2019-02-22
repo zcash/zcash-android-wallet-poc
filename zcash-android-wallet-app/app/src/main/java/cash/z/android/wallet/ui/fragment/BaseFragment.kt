@@ -6,13 +6,15 @@ import dagger.android.support.DaggerFragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.contract
 import kotlin.coroutines.CoroutineContext
 
 abstract class BaseFragment : DaggerFragment(), CoroutineScope {
 
     private lateinit var job: Job
 
-    val mainActivity get() = activity as MainActivity
+    val mainActivity: MainActivity? get() = activity as MainActivity?
 
     override val coroutineContext: CoroutineContext
         get() = job + Dispatchers.Main

@@ -23,12 +23,15 @@ import cash.z.android.wallet.R
 import cash.z.android.wallet.databinding.FragmentSendBinding
 import cash.z.android.wallet.extention.*
 import cash.z.android.wallet.sample.SampleProperties
+import cash.z.android.wallet.ui.presenter.Presenter
 import cash.z.android.wallet.ui.presenter.SendPresenter
 import cash.z.wallet.sdk.ext.convertZatoshiToZecString
-import cash.z.wallet.sdk.ext.safelyConvertToBigDecimal
+import dagger.Binds
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 import kotlinx.coroutines.launch
+import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * Fragment for sending Zcash.
@@ -39,8 +42,9 @@ class SendFragment : BaseFragment(), SendPresenter.SendView, ScanFragment.Barcod
     private val zec = R.string.zec_abbreviation.toAppString()
     private val usd = R.string.usd_abbreviation.toAppString()
 
+    @Inject
     lateinit var sendPresenter: SendPresenter
-    lateinit var binding: FragmentSendBinding
+    private lateinit var binding: FragmentSendBinding
 
 
     //
@@ -71,8 +75,7 @@ class SendFragment : BaseFragment(), SendPresenter.SendView, ScanFragment.Barcod
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        mainActivity.setToolbarShown(true)
-        sendPresenter = SendPresenter(this, mainActivity.synchronizer)
+        mainActivity?.setToolbarShown(true)
     }
 
     override fun onResume() {
@@ -93,7 +96,7 @@ class SendFragment : BaseFragment(), SendPresenter.SendView, ScanFragment.Barcod
     //
 
     override fun exit() {
-        mainActivity.navController.navigate(R.id.nav_home_fragment)
+        mainActivity?.navController?.navigate(R.id.nav_home_fragment)
     }
 
     override fun setHeaders(isUsdSelected: Boolean, headerString: String, subheaderString: String) {
@@ -280,7 +283,7 @@ class SendFragment : BaseFragment(), SendPresenter.SendView, ScanFragment.Barcod
     }
 
     private fun hideKeyboard() {
-        mainActivity.getSystemService<InputMethodManager>()
+        mainActivity?.getSystemService<InputMethodManager>()
             ?.hideSoftInputFromWindow(view?.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
         checkAllInput()
     }
@@ -291,10 +294,12 @@ class SendFragment : BaseFragment(), SendPresenter.SendView, ScanFragment.Barcod
     }
 
     private fun setAddressLineColor(@ColorRes colorRes: Int = R.color.zcashBlack_12) {
-        DrawableCompat.setTint(
-            binding.inputZcashAddress.background,
-            ContextCompat.getColor(mainActivity, colorRes)
-        )
+        if (mainActivity != null) {
+            DrawableCompat.setTint(
+                binding.inputZcashAddress.background,
+                ContextCompat.getColor(mainActivity!!, colorRes)
+            )
+        }
     }
 
 
@@ -347,11 +352,9 @@ class SendFragment : BaseFragment(), SendPresenter.SendView, ScanFragment.Barcod
      */
     override fun checkAllInput(): Boolean {
         with(binding) {
-            return sendPresenter.validateAll(
-                headerValue = textValueHeader.text.toString(),
-                toAddress = inputZcashAddress.text.toString(),
-                memo = textAreaMemo.text.toString()
-            )
+            return sendPresenter.inputHeaderUpdated(textValueHeader.text.toString())
+                    && sendPresenter.inputAddressUpdated(inputZcashAddress.text.toString())
+                    && sendPresenter.inputMemoUpdated(textAreaMemo.text.toString())
         }
     }
 
@@ -371,7 +374,7 @@ class SendFragment : BaseFragment(), SendPresenter.SendView, ScanFragment.Barcod
 //            binding.dialogSendBackground to getString(R.string.transition_active_transaction_background)
 //        )
 //
-//        mainActivity.navController.navigate(R.id.nav_home_fragment,
+//        mainActivity?.navController.navigate(R.id.nav_home_fragment,
 //            null,
 //            null,
 //            extras)
@@ -385,4 +388,8 @@ class SendFragment : BaseFragment(), SendPresenter.SendView, ScanFragment.Barcod
 abstract class SendFragmentModule {
     @ContributesAndroidInjector
     abstract fun contributeSendFragment(): SendFragment
+
+    @Binds
+    @Singleton
+    abstract fun providePresenter(sendPresenter: SendPresenter): Presenter
 }
