@@ -1,6 +1,7 @@
 package cash.z.android.wallet.ui.presenter
 
 import cash.z.android.wallet.R
+import cash.z.android.wallet.di.annotation.FragmentScope
 import cash.z.android.wallet.extention.toAppString
 import cash.z.android.wallet.sample.SampleProperties
 import cash.z.android.wallet.ui.fragment.SendFragment
@@ -9,6 +10,8 @@ import cash.z.wallet.sdk.data.Synchronizer
 import cash.z.wallet.sdk.data.twig
 import cash.z.wallet.sdk.data.Twig
 import cash.z.wallet.sdk.ext.*
+import dagger.Binds
+import dagger.Module
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
@@ -61,9 +64,9 @@ class SendPresenter @Inject constructor(
         twig("sendPresenter starting!")
         // set the currency to zec and update the view, initializing everything to zero
         inputToggleCurrency()
-        with(view) {
-            balanceJob = launchBalanceBinder(synchronizer.balance())
-        }
+        balanceJob?.cancel()
+        balanceJob = Job()
+        balanceJob = view.launchBalanceBinder(synchronizer.balance())
     }
 
     override fun stop() {
@@ -347,4 +350,12 @@ class SendPresenter @Inject constructor(
         val toAddress: String = "",
         val memo: String = ""
     )
+}
+
+
+@Module
+abstract class SendPresenterModule {
+    @Binds
+    @FragmentScope
+    abstract fun providePresenter(sendPresenter: SendPresenter): Presenter
 }

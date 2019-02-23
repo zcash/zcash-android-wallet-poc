@@ -11,15 +11,13 @@ import cash.z.android.wallet.R
 import cash.z.android.wallet.databinding.FragmentHistoryBinding
 import cash.z.android.wallet.ui.adapter.TransactionAdapter
 import cash.z.android.wallet.ui.presenter.HistoryPresenter
-import cash.z.android.wallet.ui.presenter.Presenter
+import cash.z.android.wallet.ui.presenter.HistoryPresenterModule
 import cash.z.android.wallet.ui.util.AlternatingRowColorDecoration
 import cash.z.wallet.sdk.dao.WalletTransaction
-import dagger.Binds
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import javax.inject.Singleton
 
 
 class HistoryFragment : BaseFragment(), HistoryPresenter.HistoryView {
@@ -73,10 +71,6 @@ class HistoryFragment : BaseFragment(), HistoryPresenter.HistoryView {
 
 @Module
 abstract class HistoryFragmentModule {
-    @ContributesAndroidInjector
+    @ContributesAndroidInjector(modules = [HistoryPresenterModule::class])
     abstract fun contributeHistoryFragment(): HistoryFragment
-
-    @Binds
-    @Singleton
-    abstract fun providePresenter(historyPresenter: HistoryPresenter): Presenter
 }

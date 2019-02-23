@@ -1,10 +1,13 @@
 package cash.z.android.wallet.ui.presenter
 
+import cash.z.android.wallet.di.annotation.FragmentScope
 import cash.z.android.wallet.ui.fragment.HistoryFragment
 import cash.z.android.wallet.ui.presenter.Presenter.PresenterView
 import cash.z.wallet.sdk.dao.WalletTransaction
 import cash.z.wallet.sdk.data.Synchronizer
 import cash.z.wallet.sdk.data.twig
+import dagger.Binds
+import dagger.Module
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -16,23 +19,24 @@ import kotlin.coroutines.CoroutineContext
 class HistoryPresenter @Inject constructor(
     private val view: HistoryFragment,
     private var synchronizer: Synchronizer
-) : Presenter, CoroutineScope {
+) : Presenter {
 
-    private val job = Job()
-    override val coroutineContext: CoroutineContext get() = Dispatchers.Main + job
+    private var job: Job? = null
 
     interface HistoryView : PresenterView {
         fun setTransactions(transactions: List<WalletTransaction>)
     }
 
     override suspend fun start() {
+        job?.cancel()
+        job = Job()
         twig("historyPresenter starting!")
-        launchTransactionBinder(synchronizer.allTransactions())
+        view.launchTransactionBinder(synchronizer.allTransactions())
     }
 
     override fun stop() {
         twig("historyPresenter stopping!")
-        job.cancel()
+        job?.cancel()?.also { job = null }
     }
 
     private fun CoroutineScope.launchTransactionBinder(channel: ReceiveChannel<List<WalletTransaction>>) = launch {
@@ -58,3 +62,10 @@ class HistoryPresenter @Inject constructor(
 
 }
 
+
+@Module
+abstract class HistoryPresenterModule {
+    @Binds
+    @FragmentScope
+    abstract fun providePresenter(historyPresenter: HistoryPresenter): Presenter
+}

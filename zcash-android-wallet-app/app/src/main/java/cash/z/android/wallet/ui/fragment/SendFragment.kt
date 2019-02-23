@@ -23,15 +23,13 @@ import cash.z.android.wallet.R
 import cash.z.android.wallet.databinding.FragmentSendBinding
 import cash.z.android.wallet.extention.*
 import cash.z.android.wallet.sample.SampleProperties
-import cash.z.android.wallet.ui.presenter.Presenter
 import cash.z.android.wallet.ui.presenter.SendPresenter
+import cash.z.android.wallet.ui.presenter.SendPresenterModule
 import cash.z.wallet.sdk.ext.convertZatoshiToZecString
-import dagger.Binds
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import javax.inject.Singleton
 
 /**
  * Fragment for sending Zcash.
@@ -386,10 +384,6 @@ class SendFragment : BaseFragment(), SendPresenter.SendView, ScanFragment.Barcod
 
 @Module
 abstract class SendFragmentModule {
-    @ContributesAndroidInjector
+    @ContributesAndroidInjector(modules = [SendPresenterModule::class])
     abstract fun contributeSendFragment(): SendFragment
-
-    @Binds
-    @Singleton
-    abstract fun providePresenter(sendPresenter: SendPresenter): Presenter
 }

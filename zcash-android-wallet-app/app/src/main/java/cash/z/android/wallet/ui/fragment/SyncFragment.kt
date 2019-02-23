@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.doOnPreDraw
 import androidx.databinding.DataBindingUtil
+import androidx.navigation.NavOptions
 import androidx.transition.TransitionInflater
 import cash.z.android.wallet.R
 import cash.z.android.wallet.databinding.FragmentSyncBinding
@@ -43,7 +44,11 @@ class SyncFragment : ProgressFragment(R.id.progress_sync) {
         super.onViewCreated(view, savedInstanceState)
         postponeEnterTransition()
         binding.buttonNext.setOnClickListener {
-            mainActivity?.navController?.navigate(R.id.nav_home_fragment)
+            mainActivity?.navController?.navigate(R.id.action_sync_fragment_to_home_fragment,
+                null,
+                NavOptions.Builder().setPopUpTo(R.id.mobile_navigation, true).build(),
+                null
+            )
         }
         binding.progressSync.visibility = View.INVISIBLE
         binding.textProgressSync.visibility = View.INVISIBLE

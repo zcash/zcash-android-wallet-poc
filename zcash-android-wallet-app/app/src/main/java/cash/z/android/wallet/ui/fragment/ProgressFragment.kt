@@ -28,6 +28,8 @@ abstract class ProgressFragment(
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        // construct here rather than inject to make scoping easier
+        // so that we reduce the chances of updating progress on the wrong fragment
         progressPresenter = ProgressPresenter(this, synchronizer)
     }
 

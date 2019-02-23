@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.doOnPreDraw
 import androidx.databinding.DataBindingUtil
+import androidx.navigation.NavOptions
 import androidx.transition.Transition
 import androidx.transition.TransitionInflater
 import cash.z.android.wallet.R
@@ -38,7 +39,12 @@ class FirstrunFragment : ProgressFragment(R.id.progress_firstrun), Transition.Tr
         super.onViewCreated(view, savedInstanceState)
         postponeEnterTransition()
         binding.buttonNext.setOnClickListener {
-            mainActivity?.navController?.navigate(R.id.nav_sync_fragment)
+            mainActivity?.navController?.navigate(
+                R.id.action_firstrun_fragment_to_sync_fragment,
+                null,
+                NavOptions.Builder().setPopUpTo(R.id.mobile_navigation, true).build(),
+                null
+            )
         }
 //        binding.buttonNext.alpha = 0f
 //        binding.textProgressFirstrun.alpha = 0f

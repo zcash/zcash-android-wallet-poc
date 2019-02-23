@@ -22,10 +22,12 @@ import androidx.transition.Transition
 import androidx.transition.TransitionInflater
 import cash.z.android.wallet.R
 import cash.z.android.wallet.databinding.FragmentHomeBinding
+import cash.z.android.wallet.di.annotation.FragmentScope
 import cash.z.android.wallet.extention.*
 import cash.z.android.wallet.sample.SampleProperties
 import cash.z.android.wallet.ui.adapter.TransactionAdapter
 import cash.z.android.wallet.ui.presenter.HomePresenter
+import cash.z.android.wallet.ui.presenter.HomePresenterModule
 import cash.z.android.wallet.ui.presenter.Presenter
 import cash.z.android.wallet.ui.util.AlternatingRowColorDecoration
 import cash.z.android.wallet.ui.util.LottieLooper
@@ -43,7 +45,6 @@ import dagger.Module
 import dagger.android.ContributesAndroidInjector
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import javax.inject.Singleton
 import kotlin.random.Random
 import kotlin.random.nextLong
 
@@ -59,12 +60,18 @@ class HomeFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, HomeP
 
     private lateinit var binding: FragmentHomeBinding
     private lateinit var zcashLogoAnimation: LottieLooper
+    private var maxTransactionsShown: Int = 12
     private var snackbar: Snackbar? = null
     private var viewsInitialized = false
 
     //testing this
     private var clock: Handler = Handler()
     private val tickIfNeeded = Ticker()
+
+
+    //
+    // LifeCycle
+    //
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -88,7 +95,6 @@ class HomeFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, HomeP
             this@HomeFragment.sharedElementReturnTransition = this
         }
     }
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -129,14 +135,63 @@ class HomeFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, HomeP
 
 
     //
+    // SendView Implementation
+    //
+
+    override fun setTransactions(transactions: List<WalletTransaction>) {
+        val recent = if(transactions.size > maxTransactionsShown) transactions.subList(0, maxTransactionsShown) else transactions
+        with (binding.includeContent.recyclerTransactions) {
+            (adapter as TransactionAdapter).submitList(recent)
+            postDelayed({
+                smoothScrollToPosition(0)
+            }, 100L)
+        }
+        // Show "See All" when we have a sublist on screen
+        if (recent.size != transactions.size) {
+            binding.includeContent.textTransactionHeaderSeeAll.visibility = View.VISIBLE
+        }
+
+        onContentRefreshComplete(transactions.isEmpty())
+    }
+
+    //TODO: pull some of this logic into the presenter, particularly the part that deals with ZEC <-> USD price conversion
+    override fun updateBalance(old: Long, new: Long) {
+        val zecValue = new.convertZatoshiToZec()
+        setZecValue(zecValue.toZecString(3))
+        setUsdValue(zecValue.convertZecToUsd(SampleProperties.USD_PER_ZEC).toUsdString())
+
+        onContentRefreshComplete(new <= 0)
+    }
+
+    override fun setActiveTransactions(activeTransactionMap: Map<ActiveTransaction, TransactionState>) {
+        if (activeTransactionMap.isEmpty()) {
+            twig("A.T.: setActiveTransactionsShown(false) because map is empty")
+            setActiveTransactionsShown(false)
+            return
+        }
+
+        val transactions = activeTransactionMap.entries.toTypedArray()
+        // primary is the last one that was inserted
+        val primaryEntry = transactions[transactions.size - 1]
+        updatePrimaryTransaction(primaryEntry.key, primaryEntry.value)
+
+        onContentRefreshComplete(false)
+    }
+
+    override fun onCancelledTooLate() {
+        snackbar = snackbar.showOk(view!!, "Oops! It was too late to cancel!")
+    }
+
+
+    //
     // View API
     //
 
     fun setContentViewShown(isShown: Boolean) {
-        with(binding.includeContent) {
-            groupEmptyViewItems.visibility = if (isShown) View.GONE else View.VISIBLE
-            groupContentViewItems.visibility = if (isShown) View.VISIBLE else View.GONE
-        }
+//        with(binding.includeContent) {
+//            groupEmptyViewItems.visibility = if (isShown) View.GONE else View.VISIBLE
+//            groupContentViewItems.visibility = if (isShown) View.VISIBLE else View.GONE
+//        }
         toggleViews(!isShown)
     }
 
@@ -162,30 +217,6 @@ class HomeFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, HomeP
         }
     }
 
-
-
-    //TODO: pull some of this logic into the presenter, particularly the part that deals with ZEC <-> USD price conversion
-    override fun updateBalance(old: Long, new: Long) {
-        val zecValue = new.convertZatoshiToZec()
-        setZecValue(zecValue.toZecString(3))
-        setUsdValue(zecValue.convertZecToUsd(SampleProperties.USD_PER_ZEC).toUsdString())
-
-        onContentRefreshComplete(new)
-    }
-
-    override fun setTransactions(transactions: List<WalletTransaction>) {
-        val recent = if(transactions.size > 12) transactions.subList(0, 12) else transactions
-        with (binding.includeContent.recyclerTransactions) {
-            (adapter as TransactionAdapter).submitList(recent)
-            postDelayed({
-                smoothScrollToPosition(0)
-            }, 100L)
-        }
-        if (recent.size != transactions.size) {
-            binding.includeContent.textTransactionHeaderSeeAll.visibility = View.VISIBLE
-        }
-    }
-
     private fun onInitialLoadComplete() {
         val isEmpty = (binding.includeContent.recyclerTransactions?.adapter?.itemCount ?: 0).let { it == 0 }
         twig("onInitialLoadComplete and isEmpty == $isEmpty")
@@ -194,25 +225,6 @@ class HomeFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, HomeP
             binding.includeContent.textEmptyWalletMessage.setText(R.string.home_empty_wallet)
         }
         setRefreshAnimationPlaying(false).also { twig("refresh false from onInitialLoadComplete") }
-    }
-
-
-    override fun setActiveTransactions(activeTransactionMap: Map<ActiveTransaction, TransactionState>) {
-        if (activeTransactionMap.isEmpty()) {
-            twig("A.T.: setActiveTransactionsShown(false) because map is empty")
-            setActiveTransactionsShown(false)
-            return
-        }
-
-        val transactions = activeTransactionMap.entries.toTypedArray()
-        // primary is the last one that was inserted
-        val primaryEntry = transactions[transactions.size - 1]
-        updatePrimaryTransaction(primaryEntry.key, primaryEntry.value)
-        // TODO: update remaining transactions
-    }
-
-    override fun onCancelledTooLate() {
-        snackbar = snackbar.showOk(view!!, "Oops! It was too late to cancel!")
     }
 
     private fun updatePrimaryTransaction(transaction: ActiveTransaction, transactionState: TransactionState) {
@@ -294,7 +306,7 @@ class HomeFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, HomeP
 
 
     //
-    // Private View API
+    // Internal View Logic
     //
 
     private fun setActiveTransactionsShown(isShown: Boolean, delay: Long = 0L) {
@@ -329,11 +341,16 @@ class HomeFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, HomeP
             setColorSchemeColors(R.color.zcashBlack.toAppColor())
             setProgressBackgroundColorSchemeColor(R.color.zcashYellow.toAppColor())
         }
+        maxTransactionsShown = calculateMaxTransactions()
 
         // hide content
         setContentViewShown(false)
         binding.includeContent.textEmptyWalletMessage.setText(R.string.home_empty_wallet_updating)
         setRefreshAnimationPlaying(true).also { twig("refresh true from init") }
+    }
+
+    private fun calculateMaxTransactions(): Int {
+        return 12 //TODO: measure the screen and get optimal number for this device
     }
 
     // initialize the stuff that is temporary and needs to go ASAP
@@ -407,14 +424,13 @@ class HomeFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, HomeP
      * If the balance changes from zero, the wallet is no longer empty so hide the empty view.
      * But don't do either of these things if the situation has not changed.
      */
-    private fun onContentRefreshComplete(value: Long) {
-        val isEmpty = value <= 0L
+    private fun onContentRefreshComplete(isEmpty: Boolean) {
         // wasEmpty isn't enough info. it must be considered along with whether these views were ever initialized
         val wasEmpty = binding.includeContent.groupEmptyViewItems.visibility == View.VISIBLE
         // situation has changed when we weren't initialized but now we have a balance or emptiness has changed
         val situationHasChanged = !viewsInitialized || (isEmpty != wasEmpty)
 
-        twig("updateEmptyViews called with value: $value  initialized: $viewsInitialized  isEmpty: $isEmpty  wasEmpty: $wasEmpty")
+        twig("onContentRefreshComplete called  initialized: $viewsInitialized  isEmpty: $isEmpty  wasEmpty: $wasEmpty")
         if (situationHasChanged) {
             twig("The situation has changed! toggling views!")
             setContentViewShown(!isEmpty)
@@ -464,6 +480,7 @@ class HomeFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, HomeP
 
     private inner class Ticker : Runnable {
         override fun run() {
+            if (mainActivity == null) return
             binding.includeContent.recyclerTransactions.apply {
                 if ((adapter?.itemCount ?: 0) > 0) {
                     adapter?.notifyDataSetChanged()
@@ -624,14 +641,11 @@ class HomeFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, HomeP
     }
 }
 
+
 @Module
 abstract class HomeFragmentModule {
-    @ContributesAndroidInjector
+    @FragmentScope
+    @ContributesAndroidInjector(modules = [HomePresenterModule::class])
     abstract fun contributeHomeFragment(): HomeFragment
-
-    @Binds
-    @Singleton
-    abstract fun providePresenter(homePresenter: HomePresenter): Presenter
 }
-
 

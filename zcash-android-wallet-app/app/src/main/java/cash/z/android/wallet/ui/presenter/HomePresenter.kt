@@ -1,24 +1,23 @@
 package cash.z.android.wallet.ui.presenter
 
-import android.util.Log
-import cash.z.android.wallet.ZcashWalletApplication
+import cash.z.android.wallet.di.annotation.FragmentScope
 import cash.z.android.wallet.ui.fragment.HomeFragment
 import cash.z.android.wallet.ui.presenter.Presenter.PresenterView
 import cash.z.wallet.sdk.dao.WalletTransaction
 import cash.z.wallet.sdk.data.*
+import dagger.Binds
+import dagger.Module
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.channels.ReceiveChannel
 import javax.inject.Inject
-import kotlin.coroutines.CoroutineContext
 
 class HomePresenter @Inject constructor(
     private val view: HomeFragment,
     private val synchronizer: Synchronizer
-) : Presenter, CoroutineScope {
+) : Presenter {
 
-    private val job = Job()
-    override val coroutineContext: CoroutineContext get() = Dispatchers.IO + job
+    private var job: Job? = null
 
     interface HomeView : PresenterView {
         fun setTransactions(transactions: List<WalletTransaction>)
@@ -28,15 +27,19 @@ class HomePresenter @Inject constructor(
     }
 
     override suspend fun start() {
-        twig("homePresenter starting!")
-        launchBalanceBinder(synchronizer.balance())
-        launchTransactionBinder(synchronizer.allTransactions())
-        launchActiveTransactionMonitor(synchronizer.activeTransactions())
+        job?.cancel()
+        job = Job()
+        twig("homePresenter starting! from ${this.hashCode()}")
+        with(view) {
+            launchBalanceBinder(synchronizer.balance())
+            launchTransactionBinder(synchronizer.allTransactions())
+            launchActiveTransactionMonitor(synchronizer.activeTransactions())
+        }
     }
 
     override fun stop() {
         twig("homePresenter stopping!")
-        job.cancel()
+        job?.cancel()?.also { job = null }
     }
 
     private fun CoroutineScope.launchBalanceBinder(channel: ReceiveChannel<Long>) = launch {
@@ -71,20 +74,20 @@ class HomePresenter @Inject constructor(
     // View Callbacks on Main Thread
     //
 
-    private fun bind(old: Long?, new: Long) = onMain {
+    private fun bind(old: Long?, new: Long) {
         twig("binding balance of $new")
         view.updateBalance(old ?: 0L, new)
     }
 
 
-    private fun bind(transactions: List<WalletTransaction>) = onMain {
+    private fun bind(transactions: List<WalletTransaction>) {
         twig("binding ${transactions.size} walletTransactions")
         view.setTransactions(transactions.sortedByDescending {
             if (!it.isMined && it.isSend) Long.MAX_VALUE else it.timeInSeconds
         })
     }
 
-    private fun bind(activeTransactionMap: Map<ActiveTransaction, TransactionState>) = onMain {
+    private fun bind(activeTransactionMap: Map<ActiveTransaction, TransactionState>) {
         twig("binding a.t. map of size ${activeTransactionMap.size}")
         if (activeTransactionMap.isNotEmpty()) view.setActiveTransactions(activeTransactionMap)
     }
@@ -97,13 +100,11 @@ class HomePresenter @Inject constructor(
         }
     }
 
-    private fun onMain(block: () -> Unit) = launch {
-        withContext(Main) {
-            twig("running task on main thread - start ${coroutineContext[Job]} | ${coroutineContext[CoroutineName]}")
-            block()
-            twig("running task on main thread - complete")
-        }
-    }
-
 }
 
+@Module
+abstract class HomePresenterModule {
+    @Binds
+    @FragmentScope
+    abstract fun providePresenter(homePresenter: HomePresenter): Presenter
+}

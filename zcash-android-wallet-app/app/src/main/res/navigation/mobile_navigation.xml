@@ -12,12 +12,18 @@
         tools:layout="@layout/fragment_welcome">
         <action
             android:id="@+id/action_welcome_fragment_to_firstrun_fragment"
+            app:popUpTo="@navigation/mobile_navigation"
+            app:popUpToInclusive="true"
             app:destination="@id/nav_firstrun_fragment" />
         <action
             android:id="@+id/action_welcome_fragment_to_sync_fragment"
+            app:popUpTo="@navigation/mobile_navigation"
+            app:popUpToInclusive="true"
             app:destination="@id/nav_sync_fragment" />
         <action
             android:id="@+id/action_welcome_fragment_to_home_fragment"
+            app:popUpTo="@navigation/mobile_navigation"
+            app:popUpToInclusive="true"
             app:destination="@id/nav_home_fragment" />
     </fragment>
     <fragment
@@ -27,6 +33,8 @@
         tools:layout="@layout/fragment_firstrun">
         <action
             android:id="@+id/action_firstrun_fragment_to_sync_fragment"
+            app:popUpTo="@navigation/mobile_navigation"
+            app:popUpToInclusive="true"
             app:destination="@id/nav_sync_fragment" />
     </fragment>
     <fragment
@@ -36,6 +44,8 @@
         tools:layout="@layout/fragment_sync">
         <action
             android:id="@+id/action_sync_fragment_to_home_fragment"
+            app:popUpTo="@navigation/mobile_navigation"
+            app:popUpToInclusive="true"
             app:destination="@id/nav_home_fragment" />
     </fragment>
     <fragment

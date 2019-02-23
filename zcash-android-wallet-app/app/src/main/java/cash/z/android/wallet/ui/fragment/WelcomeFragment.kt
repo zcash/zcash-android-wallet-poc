@@ -5,34 +5,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.FragmentNavigatorExtras
+import androidx.transition.TransitionInflater
+import cash.z.android.wallet.BuildConfig
 import cash.z.android.wallet.R
 import cash.z.android.wallet.databinding.FragmentWelcomeBinding
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
-import android.graphics.Bitmap
-import android.R.attr.top
-import android.R.attr.left
-import android.graphics.RectF
-import android.os.Parcelable
-import androidx.core.app.ActivityCompat.setExitSharedElementCallback
-import android.graphics.Canvas
-import android.graphics.Matrix
-import android.util.Log
-import androidx.core.app.SharedElementCallback
-import androidx.transition.TransitionInflater
-import cash.z.android.wallet.BuildConfig
-import cash.z.android.wallet.ui.presenter.Presenter
-import cash.z.android.wallet.ui.presenter.ProgressPresenter
-import dagger.Binds
-import dagger.BindsInstance
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import javax.inject.Inject
-import javax.inject.Named
-import javax.inject.Singleton
 
 
 class WelcomeFragment : ProgressFragment(R.id.progress_welcome) {
@@ -109,7 +91,9 @@ class WelcomeFragment : ProgressFragment(R.id.progress_welcome) {
     private suspend fun onNext() = coroutineScope {
         if (mainActivity != null) {
             val isFirstRun = mainActivity!!.synchronizer.isFirstRun()
-            val destination = if (isFirstRun) R.id.nav_firstrun_fragment else R.id.nav_sync_fragment
+            val destination =
+                if (isFirstRun) R.id.action_welcome_fragment_to_firstrun_fragment
+                else R.id.action_welcome_fragment_to_sync_fragment
 
             //        var extras = with(binding) {
             //            listOf(progressWelcome, textProgressWelcome)
@@ -119,10 +103,11 @@ class WelcomeFragment : ProgressFragment(R.id.progress_welcome) {
             val extras = FragmentNavigatorExtras(
                 binding.progressWelcome to binding.progressWelcome.transitionName
             )
+
             mainActivity?.navController?.navigate(
                 destination,
                 null,
-                null,
+                NavOptions.Builder().setPopUpTo(R.id.mobile_navigation, true).build(),
                 extras
             )
         }

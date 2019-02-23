@@ -8,7 +8,7 @@ buildscript {
         'dagger': '2.19',
         'kotlin': '1.3.11',
         'coroutines': '1.1.0',
-        'navigation': '1.0.0-alpha07'
+        'navigation': '1.0.0-rc01'
     ]
     ext.deps = [
         'androidx': [

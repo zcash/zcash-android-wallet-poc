@@ -23,9 +23,9 @@ import javax.inject.Singleton
         MainActivityModule::class,
 
         // Injected Fragments
+        HomeFragmentModule::class,
         AboutFragmentModule::class,
         HistoryFragmentModule::class,
-        HomeFragmentModule::class,
         WelcomeFragmentModule::class,
         ReceiveFragmentModule::class,
         RequestFragmentModule::class,

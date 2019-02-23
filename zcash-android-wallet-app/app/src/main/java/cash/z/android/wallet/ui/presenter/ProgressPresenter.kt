@@ -12,28 +12,31 @@ import kotlin.coroutines.CoroutineContext
 class ProgressPresenter @Inject constructor(
     private val view: ProgressView,
     private var synchronizer: Synchronizer
-) : Presenter, CoroutineScope {
+) : Presenter {
 
-    private val job = Job()
-    override val coroutineContext: CoroutineContext get() = Dispatchers.Main + job
+    private var job: Job? = null
 
     interface ProgressView : PresenterView {
         fun showProgress(progress: Int)
     }
+
 
     //
     // LifeCycle
     //
 
     override suspend fun start() {
+        job?.cancel()
+        job = Job()
         Twig.sprout("ProgressPresenter")
         twig("starting")
-        launchProgressMonitor(synchronizer.progress())
+        view.launchProgressMonitor(synchronizer.progress())
     }
 
     override fun stop() {
         Twig.clip("ProgressPresenter")
         twig("stopping")
+        job?.cancel()?.also { job = null }
     }
 
     private fun CoroutineScope.launchProgressMonitor(channel: ReceiveChannel<Int>) = launch {
@@ -46,7 +49,7 @@ class ProgressPresenter @Inject constructor(
         twig("progress monitor exiting!")
     }
 
-    private fun bind(progress: Int) = launch {
+    private fun bind(progress: Int) = view.launch {
         twig("binding progress of $progress on thread ${Thread.currentThread().name}!")
         view.showProgress(progress)
     }
