@@ -52,5 +52,6 @@ class ProgressPresenter @Inject constructor(
     private fun bind(progress: Int) = view.launch {
         twig("binding progress of $progress on thread ${Thread.currentThread().name}!")
         view.showProgress(progress)
+        twig("done binding progress of $progress on thread ${Thread.currentThread().name}!")
     }
 }

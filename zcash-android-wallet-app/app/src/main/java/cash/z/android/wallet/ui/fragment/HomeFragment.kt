@@ -28,7 +28,6 @@ import cash.z.android.wallet.sample.SampleProperties
 import cash.z.android.wallet.ui.adapter.TransactionAdapter
 import cash.z.android.wallet.ui.presenter.HomePresenter
 import cash.z.android.wallet.ui.presenter.HomePresenterModule
-import cash.z.android.wallet.ui.presenter.Presenter
 import cash.z.android.wallet.ui.util.AlternatingRowColorDecoration
 import cash.z.android.wallet.ui.util.LottieLooper
 import cash.z.android.wallet.ui.util.TopAlignedSpan
@@ -40,7 +39,6 @@ import cash.z.wallet.sdk.data.twig
 import cash.z.wallet.sdk.ext.*
 import com.google.android.material.snackbar.Snackbar
 import com.leinardi.android.speeddial.SpeedDialActionItem
-import dagger.Binds
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 import kotlinx.coroutines.launch
@@ -271,7 +269,7 @@ class HomeFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, HomeP
                     binding.includeContent.lottieActiveTransaction.setAnimation(R.raw.lottie_send_success)
                     binding.includeContent.lottieActiveTransaction.playAnimation()
                     title = "ZEC Sent"
-                    subtitle = transactionState.timestamp.toRelativeTimeString()
+                    subtitle = "awaiting network confirmation..."
                     binding.includeContent.textActiveTransactionValue.text = transaction.value.convertZatoshiToZecString(3)
                     binding.includeContent.textActiveTransactionValue.visibility = View.VISIBLE
                     binding.includeContent.buttonActiveTransactionCancel.visibility = View.GONE
@@ -281,7 +279,7 @@ class HomeFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, HomeP
                 } else {
                     title = "Confirmation Received"
                     subtitle = transactionState.timestamp.toRelativeTimeString()
-                    isShown = false;
+                    isShown = false
                     isShownDelay = 5_000L
                     // take it out of the list in a bit and skip counting confirmation animation for now (i.e. one is enough)
                 }
@@ -425,15 +423,20 @@ class HomeFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, HomeP
      * But don't do either of these things if the situation has not changed.
      */
     private fun onContentRefreshComplete(isEmpty: Boolean) {
+        val isAdapterEmpty = (binding.includeContent.recyclerTransactions.adapter?.itemCount ?: 0) == 0
+        val isBalanceZero = binding.includeHeader.textBalanceZec.text.toString() == "0"
+        val isActiveHidden = binding.includeContent.groupActiveTransactionItems.visibility != View.VISIBLE
+        val isActuallyEmpty = isEmpty && isAdapterEmpty && isBalanceZero && isActiveHidden
+
         // wasEmpty isn't enough info. it must be considered along with whether these views were ever initialized
         val wasEmpty = binding.includeContent.groupEmptyViewItems.visibility == View.VISIBLE
         // situation has changed when we weren't initialized but now we have a balance or emptiness has changed
-        val situationHasChanged = !viewsInitialized || (isEmpty != wasEmpty)
+        val situationHasChanged = !viewsInitialized || (isActuallyEmpty != wasEmpty)
 
-        twig("onContentRefreshComplete called  initialized: $viewsInitialized  isEmpty: $isEmpty  wasEmpty: $wasEmpty")
+        twig("onContentRefreshComplete called  initialized: $viewsInitialized  isEmpty: $isActuallyEmpty  wasEmpty: $wasEmpty")
         if (situationHasChanged) {
             twig("The situation has changed! toggling views!")
-            setContentViewShown(!isEmpty)
+            setContentViewShown(!isActuallyEmpty)
         }
 
         setRefreshAnimationPlaying(false).also { twig("refresh false from onContentRefreshComplete") }

@@ -49,7 +49,14 @@ internal object SynchronizerModule {
     @Provides
     @Singleton
     fun provideWallet(application: ZcashWalletApplication, converter: JniConverter): Wallet {
-        return Wallet(converter, application.getDatabasePath(SampleProperties.wallet.dataDbName).absolutePath, "${application.cacheDir.absolutePath}/params", seedProvider = SampleProperties.wallet.seedProvider, spendingKeyProvider = SampleProperties.wallet.spendingKeyProvider)
+        return Wallet(
+            context = application,
+            converter = converter,
+            dbDataPath = application.getDatabasePath(SampleProperties.wallet.dataDbName).absolutePath,
+            paramDestinationDir =  "${application.cacheDir.absolutePath}/params",
+            seedProvider = SampleProperties.wallet.seedProvider,
+            spendingKeyProvider = SampleProperties.wallet.spendingKeyProvider
+        )
     }
 
     @JvmStatic
@@ -78,7 +85,15 @@ internal object SynchronizerModule {
         manager: ActiveTransactionManager,
         wallet: Wallet
     ): Synchronizer {
-        return SdkSynchronizer(downloader, processor, repository, manager, wallet, blockPollFrequency = 500_000L)
+        return SdkSynchronizer(
+            downloader,
+            processor,
+            repository,
+            manager,
+            wallet,
+            batchSize = 100,
+            blockPollFrequency = 50_000L
+        )
     }
 
 }

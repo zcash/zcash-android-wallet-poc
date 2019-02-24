@@ -8,8 +8,8 @@ object AliceWallet {
     const val name = "test.reference.alice"
     val seedProvider = SampleSeedProvider(name)
     val spendingKeyProvider = SampleSpendingKeySharedPref(name)
-    const val cacheDbName = "testalice_cache_perfection.db"
-    const val dataDbName = "testalice_data_perfection.db"
+    const val cacheDbName = "testalice_cache_emulator4.db"
+    const val dataDbName = "testalice_data_emulator3.db"
     const val defaultSendAddress = "ztestsapling1wcp9fu5d3q945nwwyqxtf0dtn6pv22hmjxa39z0034ap734mvxkqz8kug4r2u2df2keekcne322" // bob's address
 }
 
@@ -18,8 +18,8 @@ object BobWallet {
     val seedProvider =
         SampleSeedProvider(name)
     val spendingKeyProvider = SampleSpendingKeySharedPref(name)
-    const val cacheDbName = "testbob_cache9.db"
-    const val dataDbName = "testbob_data.db"
+    const val cacheDbName = "testbob_cache_pixel.db"
+    const val dataDbName = "testbob_data_pixel.db"
     const val defaultSendAddress = "ztestsapling1yv696xtjn3jykdej2pqx0999eydvvyfphnw97ddk2h5luyedpqzud3r87aq0d7qna3jzjqqdcvw" // alice's address
 }
 
@@ -43,7 +43,7 @@ enum class Servers(val host: String) {
 
 // TODO: load most of these properties in later, perhaps from settings
 object SampleProperties {
-    val COMPACT_BLOCK_SERVER = Servers.EMULATOR.host
+    val COMPACT_BLOCK_SERVER = Servers.WLAN.host
     const val COMPACT_BLOCK_PORT = 9067
     val wallet = AliceWallet
     // TODO: placeholder until we have a network service for this
