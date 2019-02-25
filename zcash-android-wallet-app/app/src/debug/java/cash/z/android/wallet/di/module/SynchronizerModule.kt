@@ -41,8 +41,8 @@ internal object SynchronizerModule {
     @JvmStatic
     @Provides
     @Singleton
-    fun provideRepository(application: ZcashWalletApplication, converter: JniConverter, twigger: Twig): TransactionRepository {
-        return PollingTransactionRepository(application, SampleProperties.wallet.dataDbName, 10_000L, converter, twigger)
+    fun provideRepository(application: ZcashWalletApplication, converter: JniConverter): TransactionRepository {
+        return PollingTransactionRepository(application, SampleProperties.wallet.dataDbName, 10_000L)
     }
 
     @JvmStatic
@@ -52,7 +52,7 @@ internal object SynchronizerModule {
         return Wallet(
             context = application,
             converter = converter,
-            dbDataPath = application.getDatabasePath(SampleProperties.wallet.dataDbName).absolutePath,
+            dataDbPath = application.getDatabasePath(SampleProperties.wallet.dataDbName).absolutePath,
             paramDestinationDir =  "${application.cacheDir.absolutePath}/params",
             seedProvider = SampleProperties.wallet.seedProvider,
             spendingKeyProvider = SampleProperties.wallet.spendingKeyProvider

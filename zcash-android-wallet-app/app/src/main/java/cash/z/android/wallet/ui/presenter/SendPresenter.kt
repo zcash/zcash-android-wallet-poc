@@ -7,9 +7,10 @@ import cash.z.android.wallet.sample.SampleProperties
 import cash.z.android.wallet.ui.fragment.SendFragment
 import cash.z.android.wallet.ui.presenter.Presenter.PresenterView
 import cash.z.wallet.sdk.data.Synchronizer
-import cash.z.wallet.sdk.data.twig
 import cash.z.wallet.sdk.data.Twig
+import cash.z.wallet.sdk.data.twig
 import cash.z.wallet.sdk.ext.*
+import cash.z.wallet.sdk.secure.Wallet
 import dagger.Binds
 import dagger.Module
 import kotlinx.coroutines.CoroutineScope
@@ -26,7 +27,7 @@ class SendPresenter @Inject constructor(
 ) : Presenter {
 
     interface SendView : PresenterView {
-        fun updateBalance(new: Long)
+        fun updateAvailableBalance(new: Long)
         fun setHeaders(isUsdSelected: Boolean, headerString: String, subheaderString: String)
         fun setHeaderValue(usdString: String)
         fun setSubheaderValue(usdString: String, isUsdSelected: Boolean)
@@ -75,7 +76,7 @@ class SendPresenter @Inject constructor(
         balanceJob?.cancel()?.also { balanceJob = null }
     }
 
-    fun CoroutineScope.launchBalanceBinder(channel: ReceiveChannel<Long>) = launch {
+    fun CoroutineScope.launchBalanceBinder(channel: ReceiveChannel<Wallet.WalletBalance>) = launch {
         twig("send balance binder starting!")
         for (new in channel) {
             twig("send polled a balance item")
@@ -161,6 +162,8 @@ class SendPresenter @Inject constructor(
 
     /**
      * Called when the user has completed their update to the header value, typically on focus change.
+     *
+     * @return true when the given amount is parsable, positive and less than the available amount.
      */
     fun inputHeaderUpdated(amountString: String): Boolean {
         if (!validateAmount(amountString)) return false
@@ -188,18 +191,33 @@ class SendPresenter @Inject constructor(
         return true
     }
 
+    /**
+     * Called when the user has updated the toAddress, typically on focus change.
+     *
+     * @return true when the given address' length and content are valid
+     */
     fun inputAddressUpdated(newAddress: String): Boolean {
         if (!validateAddress(newAddress)) return false
         updateModel(sendUiModel.copy(toAddress = newAddress))
         return true
     }
 
+    /**
+     * Called when the user has updated the memo field, typically after pressing the 'done' key.
+     *
+     * @return true when the given memo's content does not contain invalid characters
+     */
     fun inputMemoUpdated(newMemo: String): Boolean {
         if (!validateMemo(newMemo)) return false
         updateModel(sendUiModel.copy(memo = newMemo))
         return true
     }
 
+    /**
+     * Called after the user has pressed the send button and should be shown a confirmation dialog, next.
+     *
+     * @return true when all input fields contained valid data
+     */
     fun inputSendPressed(): Boolean {
         // double sanity check. Make sure view and model agree and are each valid and if not, highlight the error.
         if (!view.checkAllInput() || !validateAll()) return false
@@ -215,12 +233,12 @@ class SendPresenter @Inject constructor(
         return true
     }
 
-    fun bind(newZatoshiBalance: Long) {
-        val available = newZatoshiBalance// - minersFee
+    fun bind(balanceInfo: Wallet.WalletBalance) {
+        val available = balanceInfo.available
         if (available >= 0) {
             twig("binding balance of $available")
-            view.updateBalance(available)
-//            updateModel(sendUiModel.copy(availableBalance = available))
+            view.updateAvailableBalance(available)
+            updateModel(sendUiModel.copy(availableBalance = available))
         }
     }
 
@@ -317,12 +335,12 @@ class SendPresenter @Inject constructor(
             view.setAmountError("Please specify a larger amount")
             requiresValidation = true
             false
-//        } else if (sendUiModel.availableBalance != null
-//            && zatoshiValue >= sendUiModel.availableBalance!!) {
-//            view.setAmountError("Exceeds available balance of " +
-//                    "${sendUiModel.availableBalance.convertZatoshiToZecString(3)}")
-//            requiresValidation = true
-//            false
+        } else if (sendUiModel.availableBalance != null
+            && zatoshiValue >= sendUiModel.availableBalance!!) {
+            view.setAmountError("Exceeds available balance of " +
+                    "${sendUiModel.availableBalance.convertZatoshiToZecString(3)}")
+            requiresValidation = true
+            false
         } else {
             view.setAmountError(null)
             true

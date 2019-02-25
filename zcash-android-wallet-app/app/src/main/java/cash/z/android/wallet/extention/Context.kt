@@ -13,15 +13,15 @@ internal fun Context.alert(
     @StringRes messageResId: Int,
     @StringRes positiveButtonResId: Int = android.R.string.ok,
     @StringRes negativeButtonResId: Int = android.R.string.cancel,
-    positiveAction: () -> Unit = NO_ACTION,
-    negativeAction: () -> Unit = NO_ACTION
+    negativeAction: () -> Unit = NO_ACTION,
+    positiveAction: () -> Unit = NO_ACTION
 ) {
     alert(
         message = getString(messageResId),
         positiveButtonResId = positiveButtonResId,
         negativeButtonResId = negativeButtonResId,
-        positiveAction = positiveAction,
-        negativeAction = negativeAction
+        negativeAction = negativeAction,
+        positiveAction = positiveAction
     )
 }
 
@@ -33,8 +33,8 @@ internal fun Context.alert(
     message: String,
     @StringRes positiveButtonResId: Int = android.R.string.ok,
     @StringRes negativeButtonResId: Int = android.R.string.cancel,
-    positiveAction: (() -> Unit) = NO_ACTION,
-    negativeAction: (() -> Unit) = NO_ACTION
+    negativeAction: (() -> Unit) = NO_ACTION,
+    positiveAction: (() -> Unit) = NO_ACTION
 ) {
     val builder = AlertDialog.Builder(this)
         .setMessage(message)

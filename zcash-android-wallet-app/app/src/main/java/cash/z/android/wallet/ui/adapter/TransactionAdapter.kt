@@ -44,14 +44,16 @@ class TransactionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
     private val formatter = SimpleDateFormat("M/d h:mma", Locale.getDefault())
 
     fun bind(tx: WalletTransaction) {
+        val isHistory = icon != null
         val sign = if (tx.isSend) "-" else "+"
         val amountColor = if (tx.isSend) R.color.text_dark_dimmed else R.color.colorPrimary
         val transactionColor = if (tx.isSend) R.color.send_associated else R.color.receive_associated
         val transactionIcon = if (tx.isSend) R.drawable.ic_sent_transaction else R.drawable.ic_received_transaction
-        val zecAbsoluteValue = tx.value.absoluteValue.convertZatoshiToZec(3)
+        val zecAbsoluteValue = tx.value.absoluteValue.convertZatoshiToZec(6)
         val toOrFrom = if (tx.isSend) "to" else "from"
         val srcOrDestination = tx.address?.truncate() ?: "shielded mystery person"
-        timestamp.text = if (!tx.isMined || tx.timeInSeconds == 0L) "Pending" else (tx.timeInSeconds * 1000L).toRelativeTimeString() //formatter.format(tx.timeInSeconds * 1000)
+        timestamp.text = if (!tx.isMined || tx.timeInSeconds == 0L) "Pending"
+        else (if (isHistory) formatter.format(tx.timeInSeconds * 1000) else (tx.timeInSeconds * 1000L).toRelativeTimeString())
         amount.text = "$sign$zecAbsoluteValue"
         amount.setTextColor(amountColor.toAppColor())
 

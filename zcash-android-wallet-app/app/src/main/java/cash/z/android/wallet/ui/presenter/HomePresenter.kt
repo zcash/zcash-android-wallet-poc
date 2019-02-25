@@ -6,6 +6,7 @@ import cash.z.android.wallet.ui.fragment.HomeFragment
 import cash.z.android.wallet.ui.presenter.Presenter.PresenterView
 import cash.z.wallet.sdk.dao.WalletTransaction
 import cash.z.wallet.sdk.data.*
+import cash.z.wallet.sdk.secure.Wallet
 import dagger.Binds
 import dagger.Module
 import kotlinx.coroutines.CoroutineScope
@@ -46,12 +47,12 @@ class HomePresenter @Inject constructor(
         job?.cancel()?.also { job = null }
     }
 
-    private fun CoroutineScope.launchBalanceBinder(channel: ReceiveChannel<Long>) = launch {
+    private fun CoroutineScope.launchBalanceBinder(channel: ReceiveChannel<Wallet.WalletBalance>) = launch {
         var old: Long? = null
         twig("balance binder starting!")
         for (new in channel) {
             twig("polled a balance item")
-            bind(old, new).also { old = new }
+            bind(old, new.total).also { old = new.total }
         }
         twig("balance binder exiting!")
     }

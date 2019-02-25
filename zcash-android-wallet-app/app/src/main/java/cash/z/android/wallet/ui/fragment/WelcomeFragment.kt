@@ -107,7 +107,8 @@ class WelcomeFragment : ProgressFragment(R.id.progress_welcome) {
             mainActivity?.navController?.navigate(
                 destination,
                 null,
-                NavOptions.Builder().setPopUpTo(R.id.mobile_navigation, true).build(),
+                null,
+//                    NavOptions.Builder().setPopUpTo(R.id.mobile_navigation, true).build(),
                 extras
             )
         }

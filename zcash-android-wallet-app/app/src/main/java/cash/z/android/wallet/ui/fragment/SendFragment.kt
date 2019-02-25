@@ -122,7 +122,7 @@ class SendFragment : BaseFragment(), SendPresenter.SendView, ScanFragment.Barcod
         binding.groupDialogSend.visibility = View.VISIBLE
     }
 
-    override fun updateBalance(new: Long) {
+    override fun updateAvailableBalance(new: Long) {
         // TODO: use a formatted string resource here
         val availableTextSpan = "${new.convertZatoshiToZecString(8)} $zec Available".toSpannable()
         availableTextSpan.setSpan(ForegroundColorSpan(R.color.colorPrimary.toAppColor()), availableTextSpan.length - "Available".length, availableTextSpan.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
