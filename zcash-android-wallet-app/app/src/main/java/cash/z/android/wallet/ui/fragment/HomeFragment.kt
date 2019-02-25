@@ -180,6 +180,16 @@ class HomeFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, HomeP
         snackbar = snackbar.showOk(view!!, "Oops! It was too late to cancel!")
     }
 
+    override fun onSynchronizerError(error: Throwable?): Boolean {
+        context?.alert(
+            message = "WARNING: A critical error has occurred and " +
+                    "this app will not function properly until that is corrected!",
+            positiveButtonResId = R.string.ignore,
+            negativeButtonResId = R.string.details,
+            negativeAction = { context?.alert("Synchronization error:\n\n$error") }
+        )
+        return false
+    }
 
     //
     // View API

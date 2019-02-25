@@ -1,15 +1,17 @@
 package cash.z.android.wallet.ui.presenter
 
 import cash.z.android.wallet.di.annotation.FragmentScope
+import cash.z.android.wallet.extention.alert
 import cash.z.android.wallet.ui.fragment.HomeFragment
 import cash.z.android.wallet.ui.presenter.Presenter.PresenterView
 import cash.z.wallet.sdk.dao.WalletTransaction
 import cash.z.wallet.sdk.data.*
 import dagger.Binds
 import dagger.Module
-import kotlinx.coroutines.*
-import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.ReceiveChannel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class HomePresenter @Inject constructor(
@@ -24,6 +26,7 @@ class HomePresenter @Inject constructor(
         fun updateBalance(old: Long, new: Long)
         fun setActiveTransactions(activeTransactionMap: Map<ActiveTransaction, TransactionState>)
         fun onCancelledTooLate()
+        fun onSynchronizerError(error: Throwable?): Boolean
     }
 
     override suspend fun start() {
@@ -35,6 +38,7 @@ class HomePresenter @Inject constructor(
             launchTransactionBinder(synchronizer.allTransactions())
             launchActiveTransactionMonitor(synchronizer.activeTransactions())
         }
+        synchronizer.onSynchronizerErrorListener = view::onSynchronizerError
     }
 
     override fun stop() {

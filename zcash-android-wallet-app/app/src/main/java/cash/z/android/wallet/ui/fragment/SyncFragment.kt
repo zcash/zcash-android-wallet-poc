@@ -10,8 +10,13 @@ import androidx.navigation.NavOptions
 import androidx.transition.TransitionInflater
 import cash.z.android.wallet.R
 import cash.z.android.wallet.databinding.FragmentSyncBinding
+import cash.z.android.wallet.extention.alert
+import cash.z.android.wallet.extention.showOk
 import cash.z.android.wallet.ui.presenter.Presenter
 import cash.z.android.wallet.ui.presenter.ProgressPresenter
+import cash.z.wallet.sdk.data.Synchronizer
+import cash.z.wallet.sdk.data.twig
+import com.google.android.material.snackbar.Snackbar
 import dagger.Binds
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
@@ -20,6 +25,7 @@ import javax.inject.Named
 import javax.inject.Singleton
 
 class SyncFragment : ProgressFragment(R.id.progress_sync) {
+
 
     private lateinit var binding: FragmentSyncBinding
 
@@ -59,6 +65,7 @@ class SyncFragment : ProgressFragment(R.id.progress_sync) {
         (view?.parent as? ViewGroup)?.doOnPreDraw {
             startPostponedEnterTransition()
         }
+        synchronizer.onSynchronizerErrorListener = ::onSynchronizerError
     }
 
     override fun onResume() {
@@ -91,6 +98,17 @@ class SyncFragment : ProgressFragment(R.id.progress_sync) {
             animate().alpha(1.0f).duration = 300L
             text = "Start"
         }
+    }
+
+    fun onSynchronizerError(error: Throwable?): Boolean {
+        context?.alert(
+            message = "WARNING: A critical error has occurred and " +
+                    "this app will not function properly until that is corrected!",
+            positiveButtonResId = R.string.ignore,
+            negativeButtonResId = R.string.details,
+            negativeAction = { context?.alert("Synchronization error:\n\n$error") }
+        )
+        return false
     }
 
 }

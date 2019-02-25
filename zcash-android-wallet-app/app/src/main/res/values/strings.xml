@@ -10,6 +10,8 @@
     <string name="action_settings">Settings</string>
 
     <!-- General -->
+    <string name="ignore">ignore</string>
+    <string name="details">details</string>
     <string name="cancel">cancel</string>
     <string name="cancelled">cancelled</string>
     <string name="ok_allcaps">OK</string>

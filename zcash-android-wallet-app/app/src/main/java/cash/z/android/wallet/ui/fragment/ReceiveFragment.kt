@@ -90,7 +90,7 @@ class ReceiveFragment : BaseFragment() {
 
     // TODO: replace with tiered load. First check memory reference (textview contents?) then check DB, then load from JNI and write to DB
     private fun loadAddress(): String {
-        return synchronizer.getAddress()
+        return synchronizer.address
     }
 
 }
