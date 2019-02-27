@@ -439,7 +439,7 @@ internal open class Camera2(callback: CameraViewImpl.Callback, preview: PreviewI
             return
         }
         val previewSize = chooseOptimalSize()
-        mPreview.setBufferSize(previewSize.width, previewSize.height)
+        mPreview.setBufferSize(previewSize.width/4, previewSize.height/4)
         val surface = mPreview.surface
         try {
             mPreviewRequestBuilder = mCamera!!.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW)
