@@ -48,8 +48,6 @@ class SampleSpendingKeySharedPref(private val fileName: String) : ReadWritePrope
 
     override fun getValue(thisRef: Any?, property: KProperty<*>): String {
         val preferences = getPrefs()
-
-            PreferenceManager.getDefaultSharedPreferences(ZcashWalletApplication.instance)
         return preferences.getString("spending", null)
                 ?: throw IllegalStateException(
                     "Spending key was not there when we needed it! Make sure it was saved " +

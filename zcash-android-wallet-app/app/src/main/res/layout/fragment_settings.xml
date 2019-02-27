@@ -9,9 +9,8 @@
         android:background="@color/fragment_history_background">
 
         <include
-            android:id="@+id/main_app_bar"
-            layout="@layout/include_main_app_bar"
-            android:visibility="invisible"
+            android:id="@+id/include_toolbar"
+            layout="@layout/include_apply_or_close_app_bar"
             tools:ignore="MissingConstraints" />
 
         <!--            -->
@@ -42,7 +41,7 @@
             android:textSize="@dimen/text_size_caption"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="@id/guideline_content_start"
-            app:layout_constraintTop_toBottomOf="@id/main_app_bar" />
+            app:layout_constraintTop_toBottomOf="@id/include_toolbar" />
 
         <androidx.appcompat.widget.AppCompatSpinner
             android:id="@+id/spinner_demo_user"

@@ -48,7 +48,7 @@ class SendPresenter @Inject constructor(
      */
     private val minersFee = 10_000L
     private var balanceJob: Job? = null
-    private var requiresValidation = true
+    private var requiresValidation = false
     var sendUiModel = SendUiModel()
 
     // TODO: find the best set of characters here. Possibly add something to the rust layer to help with this.

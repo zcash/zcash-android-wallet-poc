@@ -5,20 +5,23 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
-import androidx.navigation.NavOptions
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.transition.TransitionInflater
 import cash.z.android.wallet.BuildConfig
 import cash.z.android.wallet.R
 import cash.z.android.wallet.databinding.FragmentWelcomeBinding
+import cash.z.android.wallet.sample.WalletConfig
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 
 class WelcomeFragment : ProgressFragment(R.id.progress_welcome) {
 
+    @Inject
+    lateinit var walletConfig: WalletConfig
     private lateinit var binding: FragmentWelcomeBinding
 
     //
@@ -40,8 +43,10 @@ class WelcomeFragment : ProgressFragment(R.id.progress_welcome) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val userName = walletConfig.displayName.substringAfterLast('.').capitalize()
         val network = if (resources.getBoolean(R.bool.is_testnet)) "Testnet 2.0.1" else "Mainnet 2.0.1"
-        var buildInfo = "PoC v${BuildConfig.VERSION_NAME} $network\nZcash Company - For demo purposes only"
+        var buildInfo = "PoC v${BuildConfig.VERSION_NAME} $network\n" +
+                "Zcash Company - For demo purposes only\nUser: $userName"
         binding.textWelcomeBuildInfo.text = buildInfo
     }
 

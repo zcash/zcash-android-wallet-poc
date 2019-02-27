@@ -30,6 +30,7 @@ import cash.z.android.wallet.BuildConfig
 import cash.z.android.wallet.R
 import cash.z.android.wallet.ZcashWalletApplication
 import cash.z.android.wallet.databinding.ActivityMainBinding
+import cash.z.android.wallet.sample.WalletConfig
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 import dagger.android.support.DaggerAppCompatActivity
@@ -49,6 +50,9 @@ class MainActivity : BaseActivity() {
 
     @Inject
     lateinit var synchronizer: Synchronizer
+
+    @Inject
+    lateinit var walletConfig: WalletConfig
 
     lateinit var binding: ActivityMainBinding
     lateinit var loadMessages: List<String>
@@ -126,7 +130,7 @@ class MainActivity : BaseActivity() {
         binding.navView.itemIconTintList = null
 
         binding.navView.doOnLayout {
-            binding.navView.findViewById<TextView>(R.id.text_nav_header_subtitle).text = "Version ${BuildConfig.VERSION_NAME}"
+            binding.navView.findViewById<TextView>(R.id.text_nav_header_subtitle).text = "Version ${BuildConfig.VERSION_NAME} (${walletConfig.displayName})"
         }
     }
 

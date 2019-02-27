@@ -109,8 +109,8 @@
                 android:text="@string/cancel"
                 android:textColor="@color/zcashRed"
                 android:visibility="gone"
-                app:layout_constraintEnd_toEndOf="@id/transition_active_transaction_bg"
-                app:layout_constraintTop_toBottomOf="@id/transition_active_transaction_bg" />
+                app:layout_constraintEnd_toEndOf="@+id/camera_placeholder"
+                app:layout_constraintTop_toBottomOf="@+id/camera_placeholder" />
 
             <TextView
                 android:id="@+id/text_amount_background"
@@ -349,8 +349,8 @@
                 android:id="@+id/camera_placeholder"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                app:layout_constraintBottom_toBottomOf="@id/transition_active_transaction_bg"
-                app:layout_constraintEnd_toEndOf="@id/transition_active_transaction_bg"
+                app:layout_constraintBottom_toBottomOf="@id/input_zcash_address"
+                app:layout_constraintEnd_toEndOf="@id/input_zcash_address"
                 app:layout_constraintStart_toStartOf="@id/transition_active_transaction_bg"
                 app:layout_constraintTop_toTopOf="@id/transition_active_transaction_bg"
                 tools:visibility="gone" />
@@ -498,7 +498,13 @@
                 text_dollar_symbol_header,
                 text_amount_background,
                 text_value_header,
-                image_swap_currency" />
+                image_swap_currency,
+                text_to_label,
+                input_zcash_address,
+                text_address_error,
+                image_address_shortcut,
+                text_value_error,
+                image_scan_qr" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

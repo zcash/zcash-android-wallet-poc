@@ -22,7 +22,7 @@ class LottieLooper(private val lottie: LottieAnimationView, private val loopRang
             progress = 0f
             repeatCount = 0
             addAnimatorListener(this@LottieLooper)
-            playAnimation()
+            lottie.post { playAnimation() }
         }
         isPlaying = true
     }
@@ -39,6 +39,7 @@ class LottieLooper(private val lottie: LottieAnimationView, private val loopRang
     }
 
     override fun onAnimationRepeat(animation: Animator?) {
+        onAnimationEnd(animation)
     }
 
     override fun onAnimationEnd(animation: Animator?) {
@@ -81,7 +82,8 @@ class LottieLooper(private val lottie: LottieAnimationView, private val loopRang
             lottie.progress = 1.0f
             // wait around a bit to see if my listeners detect any movement, then quietly make my getaway
             lottie.postDelayed({
-                lottie.removeAnimatorListener(this)
+                lottie.removeAllAnimatorListeners()
+//                lottie.removeAnimatorListener(this)
                 lottie.setMinAndMaxFrame(1, lastFrame)
             }, 500L)
         }

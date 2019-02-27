@@ -203,15 +203,16 @@ class HomeFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, HomeP
         toggleViews(!isShown)
     }
 
+    private val stopAnimation = Runnable {
+        setRefreshAnimationPlaying(false).also { twig("refresh false from onRefresh") }
+    }
     override fun onRefresh() {
         setRefreshAnimationPlaying(true).also { twig("refresh true from onRefresh") }
 
         with(binding.includeContent.refreshLayout) {
             isRefreshing = false
             val fauxRefresh = Random.nextLong(750L..3000L)
-            postDelayed({
-                setRefreshAnimationPlaying(false).also { twig("refresh false from onRefresh") }
-            }, fauxRefresh)
+            postDelayed(stopAnimation, fauxRefresh)
         }
     }
 
@@ -279,7 +280,7 @@ class HomeFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, HomeP
                     binding.includeContent.lottieActiveTransaction.setAnimation(R.raw.lottie_send_success)
                     binding.includeContent.lottieActiveTransaction.playAnimation()
                     title = "ZEC Sent"
-                    subtitle = "awaiting network confirmation..."
+                    subtitle = "Waiting to be mined..."
                     binding.includeContent.textActiveTransactionValue.text = transaction.value.convertZatoshiToZecString(3)
                     binding.includeContent.textActiveTransactionValue.visibility = View.VISIBLE
                     binding.includeContent.buttonActiveTransactionCancel.visibility = View.GONE
@@ -340,6 +341,9 @@ class HomeFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, HomeP
             } else {
                 Toaster.short("Error: unable to find transaction to cancel!")
             }
+        }
+        binding.lottieZcashBadge.setOnClickListener {
+            binding.lottieZcashBadge.playAnimation()
         }
 
         binding.includeContent.refreshLayout.setProgressViewEndTarget(false, (38f * resources.displayMetrics.density).toInt())
@@ -514,12 +518,19 @@ class HomeFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, HomeP
         @IdRes val destination:Int
     ) {
         /* ordered by when they need to be added to the speed dial (i.e. reverse display order) */
-        REQUEST(
-            R.id.fab_request,
-            R.drawable.ic_receipt_24dp,
+//        REQUEST(
+//            R.id.fab_request,
+//            R.drawable.ic_receipt_24dp,
+//            R.color.icon_request,
+//            R.string.destination_menu_label_request,
+//            R.id.nav_request_fragment
+//        ),
+        HISTORY(
+            R.id.fab_history,
+            R.drawable.ic_history_24dp,
             R.color.icon_request,
-            R.string.destination_menu_label_request,
-            R.id.nav_request_fragment
+            R.string.destination_menu_label_history,
+            R.id.nav_history_fragment
         ),
         RECEIVE(
             R.id.fab_receive,

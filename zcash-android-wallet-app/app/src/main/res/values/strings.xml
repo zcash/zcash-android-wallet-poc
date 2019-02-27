@@ -98,10 +98,16 @@
     <string-array name="demo_user_names">
         <item>Alice</item>
         <item>Bob</item>
+        <item>Carol</item>
+        <item>Dave</item>
+        <item>Custom...</item>
     </string-array>
     <string-array name="server_names">
-        <item>Localhost</item>
         <item>Zcash Testnet</item>
         <item>Bolt Labs Testnet</item>
+        <item>WLAN Office</item>
+        <item>WLAN Conference</item>
+        <item>Localhost</item>
+        <item>Custom...</item>
     </string-array>
 </resources>
