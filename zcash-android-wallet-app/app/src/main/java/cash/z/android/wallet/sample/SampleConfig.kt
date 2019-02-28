@@ -93,7 +93,7 @@ object MyWallet : WalletConfig {
 }
 
 enum class Servers(val host: String, val displayName: String) {
-    EMULATOR("10.0.2.2", "Localhost"),
+    LOCALHOST("10.0.0.191", "Localhost"),
     //    WLAN("10.0.0.26"),
     WLAN1("10.0.2.24", "WLAN Conference"),
     WLAN2("192.168.1.235", "WLAN Office"),

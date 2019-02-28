@@ -54,9 +54,17 @@ class SettingsFragment : BaseFragment() {
             setOnClickListener {
                 val userName = binding.spinnerDemoUser.selectedItem.toString()
                 val server = binding.spinnerServers.selectedItem.toString()
-                view.context.alert("Are you sure you want to apply these changes?\n\nUser: $userName\nServer: $server\n\nTHIS WILL EXIT THE APP.") {
+                view.context.alert("Are you sure you want to apply these changes?\n\nUser: $userName\nServer: $server\n\nTHIS WILL EXIT THE APP!") {
                     onApplySettings(userName, server)
-                    view.postDelayed({ mainActivity?.finish() }, 2000L)
+                    // TODO: handle this whole reset thing better. For now, just aggressively kill the app. A better
+                    // approach is to create a custom scope for the synchronizer and then just manage that like any
+                    // other subcomponent. In that scenario, we would simply navigate up from this fragment at this
+                    // point (after installing a new synchronizer subcomponent)
+                    view.postDelayed({
+                        mainActivity?.finish()
+                        Thread.sleep(1000L) // if you're going to cut a corner, lean into it! sleep FTW!
+                        android.os.Process.killProcess(android.os.Process.myPid())
+                    }, 2000L)
                 }
             }
         }
