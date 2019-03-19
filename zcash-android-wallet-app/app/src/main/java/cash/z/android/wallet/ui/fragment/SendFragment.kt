@@ -61,7 +61,7 @@ class SendFragment : BaseFragment(), SendPresenter.SendView, ScanFragment.Barcod
         }
     }
 
-    override fun onAttachFragment(childFragment: Fragment?) {
+    override fun onAttachFragment(childFragment: Fragment) {
         super.onAttachFragment(childFragment)
         (childFragment as? ScanFragment)?.barcodeCallback = this
     }

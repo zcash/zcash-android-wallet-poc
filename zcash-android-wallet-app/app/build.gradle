@@ -14,8 +14,8 @@ android {
         applicationId "cash.z.android.wallet"
         minSdkVersion buildConfig.minSdkVersion
         targetSdkVersion buildConfig.targetSdkVersion
-        versionCode 19 // todo: change this to 1_00_04 format, once we graduate beyond zero for the major version number because leading zeros indicate on octal number.
-        versionName "0.6.0-alpha"
+        versionCode 20 // todo: change this to 1_00_04 format, once we graduate beyond zero for the major version number because leading zeros indicate on octal number.
+        versionName "0.6.1-alpha"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         vectorDrawables.useSupportLibrary = true
@@ -29,16 +29,16 @@ android {
     flavorDimensions 'network'
     productFlavors {
         // product flavor names cannot start with the word "test" because they would clash with other targets
-        ztestnet {
+        zcashtestnet {
             dimension 'network'
             applicationId 'cash.z.android.wallet.testnet'
-            matchingFallbacks = ['debug']
+            matchingFallbacks = ['debug', 'zcashtestnet']
         }
 
-        zmainnet {
+        zcashmainnet {
             dimension 'network'
             applicationId 'cash.z.android.wallet.mainnet'
-            matchingFallbacks = ['release']
+            matchingFallbacks = ['release', 'zcashmainnet']
         }
     }
 
@@ -49,7 +49,7 @@ android {
         }
         mock {
             initWith debug
-            matchingFallbacks = ['debug', 'release']
+            matchingFallbacks = ['debug', 'release', 'zcashtestnet']
         }
     }
 
@@ -88,13 +88,14 @@ dependencies {
     implementation project(path: ':qrecycler')
 
     // TODO: get the AAR to provide these
-    implementation "io.grpc:grpc-okhttp:1.17.1"
-    implementation "io.grpc:grpc-protobuf-lite:1.17.1"
-    implementation "io.grpc:grpc-stub:1.17.1"
-    implementation 'javax.annotation:javax.annotation-api:1.2'
-    implementation "androidx.room:room-runtime:2.0.0"
-    implementation "androidx.room:room-common:2.0.0"
-    kapt "androidx.room:room-compiler:2.0.0"
+    implementation "io.grpc:grpc-okhttp:1.19.0"
+    implementation "io.grpc:grpc-protobuf-lite:1.19.0"
+    implementation "io.grpc:grpc-stub:1.19.0"
+    implementation 'javax.annotation:javax.annotation-api:1.3.2'
+    implementation "androidx.room:room-runtime:2.1.0-alpha06"
+    implementation "androidx.room:room-common:2.1.0-alpha06"
+    implementation 'com.google.guava:guava:27.0.1-android'
+    kapt "androidx.room:room-compiler:2.1.0-alpha06"
 
     // Dagger
     implementation deps.dagger.android.support
@@ -107,11 +108,11 @@ dependencies {
     debugImplementation deps.stetho
     mockImplementation deps.stetho
 
-    testImplementation 'org.mockito:mockito-junit-jupiter:2.24.0'
-    testImplementation 'com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0'
-    testImplementation "org.junit.jupiter:junit-jupiter-api:5.4.0"
-    testImplementation "org.junit.jupiter:junit-jupiter-engine:5.4.0"
-    testImplementation "org.junit.jupiter:junit-jupiter-migrationsupport:5.4.0"
+    testImplementation deps.mockito.jupiter
+    testImplementation deps.mockito.kotlin
+    testImplementation deps.junit5.api
+    testImplementation deps.junit5.engine
+    testImplementation deps.junit5.migrationsupport
 
     androidTestImplementation deps.androidx.test.runner
     androidTestImplementation deps.androidx.test.espresso
