@@ -1,6 +1,6 @@
 package cash.z.android.wallet.sample
 
-import android.preference.PreferenceManager
+import android.content.Context
 import android.util.Log
 import cash.z.android.wallet.ZcashWalletApplication
 import okio.ByteString
@@ -8,10 +8,6 @@ import java.nio.charset.Charset
 import kotlin.properties.ReadOnlyProperty
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
-import android.R.id.edit
-import android.content.Context
-import android.content.SharedPreferences
-import java.lang.IllegalStateException
 
 @Deprecated(message = InsecureWarning.message)
 class SampleImportedSeedProvider(private val seedHex: String) : ReadOnlyProperty<Any?, ByteArray> {

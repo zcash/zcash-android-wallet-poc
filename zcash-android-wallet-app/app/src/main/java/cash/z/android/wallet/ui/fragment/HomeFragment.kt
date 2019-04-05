@@ -518,13 +518,6 @@ class HomeFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, HomeP
         @IdRes val destination:Int
     ) {
         /* ordered by when they need to be added to the speed dial (i.e. reverse display order) */
-//        REQUEST(
-//            R.id.fab_request,
-//            R.drawable.ic_receipt_24dp,
-//            R.color.icon_request,
-//            R.string.destination_menu_label_request,
-//            R.id.nav_request_fragment
-//        ),
         HISTORY(
             R.id.fab_history,
             R.drawable.ic_history_24dp,
@@ -551,14 +544,12 @@ class HomeFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, HomeP
             fun fromId(id: Int): HomeFab? = values().firstOrNull { it.id == id }
         }
     }
-//
-//
-//
+
+
 //// ---------------------------------------------------------------------------------------------------------------------
 //// TODO: Delete these test functions
 //// ---------------------------------------------------------------------------------------------------------------------
-//
-    var empty = false
+
     val delay = 50L
     lateinit var headerEmptyViews: Array<View>
     lateinit var headerFullViews: Array<View>
@@ -569,9 +560,6 @@ class HomeFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, HomeP
             binding.includeHeader.containerHomeHeader.progress = binding.includeHeader.containerHomeHeader.progress - 0.1f
         }, delay * 2)
     }
-//    internal fun toggle(isEmpty: Boolean) {
-//        toggleValues(isEmpty)
-//    }
 
     internal fun toggleViews(isEmpty: Boolean) {
         twig("toggling views to isEmpty == $isEmpty")
@@ -607,49 +595,6 @@ class HomeFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, HomeP
         // TODO: the motion layout does not begin in the  right state for some reason. Debug this later.
         view?.postDelayed(::forceRedraw, delay * 2)
     }
-
-    // TODO: get rid of all of this and consider two different fragments for the header, instead
-    internal fun toggleViews2(isEmpty: Boolean) {
-        var action: () -> Unit
-        if (isEmpty) {
-            action = {
-//                group_empty_view_items.visibility = View.VISIBLE
-//                group_full_view_items.visibility = View.GONE
-                headerFullViews.forEach { binding.includeHeader.containerHomeHeader.removeView(it) }
-                headerEmptyViews.forEach {
-                    tryIgnore {
-                        binding.includeHeader.containerHomeHeader.addView(it)
-                    }
-                }
-            }
-        } else {
-            action = {
-//                group_empty_view_items.visibility = View.GONE
-//                group_full_view_items.visibility = View.VISIBLE
-                headerEmptyViews.forEach { binding.includeHeader.containerHomeHeader.removeView(it) }
-                headerFullViews.forEach {
-                    tryIgnore {
-                        binding.includeHeader.containerHomeHeader.addView(it)
-                    }
-                }
-            }
-        }
-        view?.postDelayed({
-            action()
-            viewsInitialized = true
-        }, delay)
-        // TODO: the motion layout does not begin in the  right state for some reason. Debug this later.
-        view?.postDelayed(::forceRedraw, delay * 2)
-    }
-
-//    internal fun toggleValues(isEmpty: Boolean) {
-//        empty = isEmpty
-//        if(empty) {
-//            reduceValue()
-//        } else {
-//            increaseValue(Random.nextDouble(20.0, 100.0))
-//        }
-//    }
 
 
     inner class HomeTransitionListener : Transition.TransitionListener {

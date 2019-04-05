@@ -45,8 +45,6 @@ class FirstrunFragment : ProgressFragment(R.id.progress_firstrun), Transition.Tr
                 null
             )
         }
-//        binding.buttonNext.alpha = 0f
-//        binding.textProgressFirstrun.alpha = 0f
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
