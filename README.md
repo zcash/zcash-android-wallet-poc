@@ -39,4 +39,4 @@ Use of this code in its current form or with modifications may lead to loss of f
 
 Proof of concept for shielded-only Zcash wallet. Additional documentation will be added in a future milestone.
 
-[![Alt text](https://img.youtube.com/vi/BgNO5Wn-9r0/0.jpg)](https://www.youtube.com/watch?v=BgNO5Wn-9r0)
+[![Zcash Reference Wallet Demo](https://img.youtube.com/vi/BgNO5Wn-9r0/0.jpg)](https://www.youtube.com/watch?v=BgNO5Wn-9r0)
