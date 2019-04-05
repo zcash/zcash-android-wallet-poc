@@ -1,89 +1,226 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/scrollable"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fillViewport="true"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollable"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="16dp">
+        android:background="@color/fragment_home_background"
+        android:fillViewport="true"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <!-- Label: Past Activity -->
-        <TextView
-            android:id="@+id/text_transaction_header"
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/refresh_layout"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Past Activity"
-            android:textColor="@color/text_dark"
-            android:textSize="@dimen/text_size_body_2"
-            android:textStyle="bold"
-            android:paddingBottom="16dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:layout_height="wrap_content">
 
-        <!-- Transactions -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_transactions"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:clipToPadding="false"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/content_home"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingStart="16dp"
+                android:paddingTop="30dp"
+                android:paddingEnd="16dp"
+                android:paddingBottom="16dp"
+                android:animateLayoutChanges="true"
+                android:transitionName="@string/transition_active_transaction_background">
 
-            android:paddingBottom="72dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/text_transaction_header"
-            tools:itemCount="15"
-            tools:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            tools:listitem="@layout/item_transaction"
-            tools:orientation="vertical" />
+                <!-- Label: Current Activity -->
+                <TextView
+                    android:id="@+id/text_active_transaction_header"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/home_current_transaction_label"
+                    android:textColor="@color/text_dark"
+                    android:textSize="@dimen/text_size_body_2"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:visibility="visible" />
 
-        <!-- Empty: image -->
-        <ImageView
-            android:id="@+id/image_empty_wallet"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.281966"
-            app:srcCompat="@drawable/ic_emptywallet" />
+                <!-- Active Transaction - primary -->
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/header_active_transaction"
+                    android:layout_width="match_parent"
+                    android:layout_height="70dp"
+                    android:layout_marginTop="12dp"
+                    android:background="@drawable/background_rounded_corners_slight"
+                    android:clipToPadding="false"
+                    android:paddingStart="16dp"
+                    android:paddingLeft="16dp"
+                    android:paddingTop="16dp"
+                    android:paddingEnd="8dp"
+                    android:paddingRight="8dp"
+                    android:paddingBottom="16dp"
+                    android:transitionName="@string/transition_active_transaction_card"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/text_active_transaction_header"
+                    tools:visibility="visible">
 
-        <!-- Empty: message -->
-        <TextView
-            android:id="@+id/text_wallet_message"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:padding="16dp"
-            android:text="@string/home_empty_wallet"
-            android:textColor="#AAAAAA"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/image_empty_wallet" />
+                    <com.airbnb.lottie.LottieAnimationView
+                        android:id="@+id/lottie_active_transaction"
+                        android:layout_width="36dp"
+                        android:layout_height="0dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:lottie_autoPlay="true"
+                        app:lottie_loop="false"
+                        app:lottie_rawRes="@raw/lottie_send_common" />
+
+                    <TextView
+                        android:id="@+id/text_active_transaction_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginLeft="8dp"
+                        android:textSize="@dimen/text_size_body_1"
+                        android:textStyle="bold"
+                        android:transitionName="@string/transition_active_transaction_title"
+                        app:layout_constraintBottom_toTopOf="@id/text_active_transaction_subtitle"
+                        app:layout_constraintStart_toEndOf="@id/lottie_active_transaction"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_chainStyle="packed"
+                        tools:text="Preparing  1.01 ZEC" />
+
+                    <TextView
+                        android:id="@+id/text_active_transaction_subtitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="to zsapling...123456789"
+                        android:textSize="@dimen/text_size_caption"
+                        android:transitionName="@string/transition_active_transaction_address"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="@id/text_active_transaction_title"
+                        app:layout_constraintTop_toBottomOf="@id/text_active_transaction_title" />
+
+                    <TextView
+                        android:id="@+id/text_active_transaction_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginRight="8dp"
+                        android:textColor="@color/text_dark_dimmed"
+                        android:textSize="@dimen/text_size_h5"
+                        android:visibility="gone"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <Button
+                        android:id="@+id/button_active_transaction_cancel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@null"
+                        android:text="cancel"
+                        android:textColor="@color/selector_red_button"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <!-- Label: Past Activity -->
+                <TextView
+                    android:id="@+id/text_transaction_header"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:paddingBottom="12dp"
+                    android:text="@string/home_past_transaction_label"
+                    android:textColor="@color/text_dark"
+                    android:textSize="@dimen/text_size_body_2"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/header_active_transaction"
+                    app:layout_goneMarginTop="0dp" />
+
+                <!-- Label: See all -->
+                <TextView
+                    android:id="@+id/text_transaction_header_see_all"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:fontFamily="sans-serif-light"
+                    android:paddingBottom="12dp"
+                    android:text="@string/home_see_all_transaction_label"
+                    android:textAllCaps="true"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="@dimen/text_size_body_2"
+                    android:textStyle="bold"
+                    android:visibility="gone"
+                    app:layout_constraintBaseline_toBaselineOf="@id/text_transaction_header"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_goneMarginTop="0dp" />
+
+                <!-- Transactions -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycler_transactions"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:clipToPadding="false"
+
+                    android:paddingBottom="72dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/text_transaction_header"
+                    tools:itemCount="15"
+                    tools:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:listitem="@layout/item_transaction"
+                    tools:orientation="vertical" />
+
+                <!-- Empty: image -->
+                <ImageView
+                    android:id="@+id/image_empty_wallet"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.281966"
+                    app:srcCompat="@drawable/ic_emptywallet" />
+
+                <!-- Empty: message -->
+                <TextView
+                    android:id="@+id/text_empty_wallet_message"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:gravity="center"
+                    android:padding="16dp"
+                    android:text="@string/home_empty_wallet"
+                    android:textColor="#AAAAAA"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/image_empty_wallet" />
 
 
-        <!--        -->
-        <!-- Groups -->
-        <!--        -->
+                <!--        -->
+                <!-- Groups -->
+                <!--        -->
 
-        <androidx.constraintlayout.widget.Group
-            android:id="@+id/group_full_view_items"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:constraint_referenced_ids="text_transaction_header,recycler_transactions" />
+                <androidx.constraintlayout.widget.Group
+                    android:id="@+id/group_active_transaction_items"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    app:constraint_referenced_ids="text_active_transaction_header,header_active_transaction" />
 
-        <androidx.constraintlayout.widget.Group
-            android:id="@+id/group_empty_view_items"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:constraint_referenced_ids="image_empty_wallet,text_wallet_message" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+                <androidx.constraintlayout.widget.Group
+                    android:id="@+id/group_content_view_items"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:constraint_referenced_ids="text_transaction_header,recycler_transactions" />
 
-</androidx.core.widget.NestedScrollView>
+                <androidx.constraintlayout.widget.Group
+                    android:id="@+id/group_empty_view_items"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:constraint_referenced_ids="image_empty_wallet,text_empty_wallet_message" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+    </androidx.core.widget.NestedScrollView>
+</layout>

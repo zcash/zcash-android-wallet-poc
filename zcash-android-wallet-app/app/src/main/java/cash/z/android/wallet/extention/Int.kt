@@ -2,6 +2,7 @@ package cash.z.android.wallet.extention
 
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
+import androidx.annotation.IntegerRes
 import androidx.annotation.StringRes
 import androidx.core.content.res.ResourcesCompat
 import cash.z.android.wallet.ZcashWalletApplication
@@ -19,4 +20,11 @@ internal inline fun @receiver:ColorRes Int.toAppColor(): Int {
  */
 internal inline fun @receiver:StringRes Int.toAppString(): String {
     return ZcashWalletApplication.instance.getString(this)}
+
+
+/**
+ * Grab an integer from the application resources
+ */
+internal inline fun @receiver:IntegerRes Int.toAppInt(): Int {
+    return ZcashWalletApplication.instance.resources.getInteger(this)}
 

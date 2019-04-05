@@ -9,6 +9,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import cash.z.android.wallet.R
 import cash.z.android.wallet.ui.activity.MainActivity
+import dagger.Module
+import dagger.android.ContributesAndroidInjector
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -25,7 +27,7 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  *
  */
-class RequestFragment : Fragment() {
+class RequestFragment : BaseFragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -47,12 +49,6 @@ class RequestFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_request, container, false)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        (activity as MainActivity).setSupportActionBar(view.findViewById(R.id.toolbar))
-        (activity as MainActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
-    }
-
     // TODO: Rename method, update argument and hook method into UI event
     fun onButtonPressed(uri: Uri) {
         listener?.onFragmentInteraction(uri)
@@ -65,6 +61,11 @@ class RequestFragment : Fragment() {
         } else {
 //            throw RuntimeException(context.toString() + " must implement OnFragmentInteractionListener")
         }
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        mainActivity?.setToolbarShown(true)
     }
 
     override fun onDetach() {
@@ -107,4 +108,10 @@ class RequestFragment : Fragment() {
                 }
             }
     }
+}
+
+@Module
+abstract class RequestFragmentModule {
+    @ContributesAndroidInjector
+    abstract fun contributeRequestFragment(): RequestFragment
 }

@@ -3,6 +3,7 @@ package cash.z.android.wallet.ui.fragment
 import android.os.Bundle
 import android.text.SpannableString
 import android.text.Spanned
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,7 +12,9 @@ import cash.z.android.qrecycler.QRecycler
 import cash.z.android.wallet.R
 import cash.z.android.wallet.ui.activity.MainActivity
 import cash.z.android.wallet.ui.util.AddressPartNumberSpan
+import cash.z.wallet.sdk.data.Synchronizer
 import cash.z.wallet.sdk.jni.JniConverter
+import cash.z.wallet.sdk.secure.Wallet
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 import kotlinx.android.synthetic.main.fragment_receive.*
@@ -26,7 +29,7 @@ class ReceiveFragment : BaseFragment() {
     lateinit var qrecycler: QRecycler
 
     @Inject
-    lateinit var converter: JniConverter
+    lateinit var synchronizer: Synchronizer
 
     lateinit var addressParts: Array<TextView>
 
@@ -40,11 +43,6 @@ class ReceiveFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        (activity as MainActivity).let { mainActivity ->
-            mainActivity.setSupportActionBar(view.findViewById(R.id.toolbar))
-            mainActivity.supportActionBar?.setDisplayHomeAsUpEnabled(true)
-            mainActivity.supportActionBar?.setTitle(R.string.destination_title_receive)
-        }
         addressParts = arrayOf(
             text_address_part_1,
             text_address_part_2,
@@ -55,15 +53,22 @@ class ReceiveFragment : BaseFragment() {
             text_address_part_8
         )
     }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        mainActivity?.setToolbarShown(true)
+    }
     
     override fun onResume() {
         super.onResume()
 
         // TODO: replace these with channels. For now just wire the logic together
         onAddressLoaded(loadAddress())
+//        converter.scanBlocks()
     }
 
     private fun onAddressLoaded(address: String) {
+        Log.e("TWIG", "onAddressLoaded:  $address")
         qrecycler.load(address)
             .withQuietZoneSize(3)
             .withCorrectionLevel(QRecycler.CorrectionLevel.MEDIUM)
@@ -85,7 +90,7 @@ class ReceiveFragment : BaseFragment() {
 
     // TODO: replace with tiered load. First check memory reference (textview contents?) then check DB, then load from JNI and write to DB
     private fun loadAddress(): String {
-        return converter.getAddress("dummyseed".toByteArray())
+        return synchronizer.getAddress()
     }
 
 }

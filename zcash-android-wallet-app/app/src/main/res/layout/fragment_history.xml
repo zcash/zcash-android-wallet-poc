@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/fragment_history_background">
+        <include
+            android:id="@+id/main_app_bar"
+            layout="@layout/include_main_app_bar"
+            tools:ignore="MissingConstraints"
+            android:visibility="invisible"/>
+        <!-- Transactions -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_transactions_history"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:clipToPadding="false"
+            android:paddingBottom="72dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/main_app_bar"
+            tools:itemCount="15"
+            tools:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:listitem="@layout/item_transaction_history"
+            tools:orientation="vertical" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

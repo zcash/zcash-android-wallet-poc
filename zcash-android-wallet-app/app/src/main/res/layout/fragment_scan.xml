@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <cash.z.android.cameraview.CameraView
+        android:id="@+id/camera_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:autoFocus="true"
+        app:facing="back"
+        app:flash="auto">
+        <View
+            android:id="@+id/overlay_barcode_scan"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/zcashBlack_54"
+            android:layout_gravity="center"/>
+    </cash.z.android.cameraview.CameraView>
+</layout>

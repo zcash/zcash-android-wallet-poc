@@ -1,15 +1,22 @@
 package cash.z.android.wallet
 
-import android.content.res.Resources
+import android.content.Context
+import androidx.multidex.MultiDex
 import cash.z.android.wallet.di.component.DaggerApplicationComponent
+import cash.z.wallet.sdk.data.TroubleshootingTwig
+import cash.z.wallet.sdk.data.Twig
+import com.facebook.stetho.Stetho
 import dagger.android.AndroidInjector
 import dagger.android.DaggerApplication
+
 
 class ZcashWalletApplication : DaggerApplication() {
 
     override fun onCreate() {
         instance = this
         super.onCreate()
+        Stetho.initializeWithDefaults(this)
+        Twig.plant(TroubleshootingTwig())
     }
 
     /**
@@ -17,6 +24,11 @@ class ZcashWalletApplication : DaggerApplication() {
      */
     override fun applicationInjector(): AndroidInjector<out DaggerApplication> {
         return DaggerApplicationComponent.builder().create(this)
+    }
+
+    override fun attachBaseContext(base: Context) {
+        super.attachBaseContext(base)
+        MultiDex.install(this)
     }
 
     companion object {

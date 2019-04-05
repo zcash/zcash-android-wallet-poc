@@ -30,7 +30,7 @@
         android:layout_marginLeft="8dp"
         android:paddingBottom="8dp"
         android:paddingTop="8dp"
-        android:text="8/23 3:24pm"
+        tools:text="8/23 3:24pm"
         android:textSize="@dimen/text_size_body_2"
         android:textColor="@color/text_dark_dimmed"
         app:layout_constraintBottom_toBottomOf="parent"

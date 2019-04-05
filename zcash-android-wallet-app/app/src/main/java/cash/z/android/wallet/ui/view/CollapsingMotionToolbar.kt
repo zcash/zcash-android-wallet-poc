@@ -2,6 +2,7 @@ package cash.z.android.wallet.ui.view
 
 import android.content.Context
 import android.util.AttributeSet
+import android.util.Log
 import androidx.constraintlayout.motion.widget.MotionLayout
 import com.google.android.material.appbar.AppBarLayout
 
@@ -11,6 +12,7 @@ class CollapsingMotionToolbar @JvmOverloads constructor(
 
     override fun onOffsetChanged(appBarLayout: AppBarLayout, verticalOffset: Int) {
         progress = -verticalOffset / appBarLayout.totalScrollRange.toFloat()
+        Log.e("MotionL", "progress: $progress  verticalOffset: $verticalOffset  scrollRange: ${appBarLayout.totalScrollRange.toFloat()}")
     }
 
     override fun onAttachedToWindow() {

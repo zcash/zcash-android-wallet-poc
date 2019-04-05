@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/fragment_history_background">
+
+        <include
+            android:id="@+id/include_toolbar"
+            layout="@layout/include_apply_or_close_app_bar"
+            tools:ignore="MissingConstraints" />
+
+        <!--            -->
+        <!-- Guidelines -->
+        <!--            -->
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_content_start"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.1" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_content_end"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.9" />
+
+        <TextView
+            android:id="@+id/text_demo_user"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="Demo User"
+            android:textColor="@color/zcashGray_dark"
+            android:textSize="@dimen/text_size_caption"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@id/guideline_content_start"
+            app:layout_constraintTop_toBottomOf="@id/include_toolbar" />
+
+        <androidx.appcompat.widget.AppCompatSpinner
+            android:id="@+id/spinner_demo_user"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:layout_marginTop="8dp"
+            android:entries="@array/demo_user_names"
+            app:layout_constraintStart_toStartOf="@id/guideline_content_start"
+            app:layout_constraintTop_toBottomOf="@id/text_demo_user" />
+
+        <TextView
+            android:id="@+id/text_server_selection"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="Server Selection"
+            android:textColor="@color/zcashGray_dark"
+            android:textSize="@dimen/text_size_caption"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@id/guideline_content_start"
+            app:layout_constraintTop_toBottomOf="@id/spinner_demo_user" />
+
+        <TextView
+            android:id="@+id/text_server_selection_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:fontFamily="sans-serif-thin"
+            android:text="(host name or IP)"
+            android:textColor="@color/zcashGray_dark"
+            android:textSize="@dimen/text_size_caption"
+            app:layout_constraintBaseline_toBaselineOf="@id/text_server_selection"
+            app:layout_constraintStart_toEndOf="@id/text_server_selection" />
+
+        <androidx.appcompat.widget.AppCompatSpinner
+            android:id="@+id/spinner_servers"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:layout_marginTop="8dp"
+            android:entries="@array/server_names"
+            app:layout_constraintStart_toStartOf="@id/guideline_content_start"
+            app:layout_constraintTop_toBottomOf="@id/text_server_selection" />
+
+        <TextView
+            android:id="@+id/text_reset_application"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:text="Reset Application"
+            android:textColor="@color/zcashGray_dark"
+            android:textSize="@dimen/text_size_caption"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@id/button_reset_app"
+            app:layout_constraintStart_toStartOf="@id/guideline_content_start" />
+
+        <Button
+            android:id="@+id/button_reset_app"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/selector_red_button"
+            android:text="Reset Application"
+            android:layout_marginBottom="32dp"
+            android:textColor="@color/text_light"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/guideline_content_end"
+            app:layout_constraintStart_toStartOf="@id/guideline_content_start" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

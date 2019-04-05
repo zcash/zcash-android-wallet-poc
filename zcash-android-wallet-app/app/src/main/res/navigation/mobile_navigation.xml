@@ -3,8 +3,51 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@id/nav_home_fragment">
+    app:startDestination="@id/nav_welcome_fragment">
 
+    <fragment
+        android:id="@+id/nav_welcome_fragment"
+        android:name="cash.z.android.wallet.ui.fragment.WelcomeFragment"
+        android:label="@string/destination_title_welcome"
+        tools:layout="@layout/fragment_welcome">
+        <action
+            android:id="@+id/action_welcome_fragment_to_firstrun_fragment"
+            app:popUpTo="@navigation/mobile_navigation"
+            app:popUpToInclusive="true"
+            app:destination="@id/nav_firstrun_fragment" />
+        <action
+            android:id="@+id/action_welcome_fragment_to_sync_fragment"
+            app:popUpTo="@navigation/mobile_navigation"
+            app:popUpToInclusive="true"
+            app:destination="@id/nav_sync_fragment" />
+        <action
+            android:id="@+id/action_welcome_fragment_to_home_fragment"
+            app:popUpTo="@navigation/mobile_navigation"
+            app:popUpToInclusive="true"
+            app:destination="@id/nav_home_fragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/nav_firstrun_fragment"
+        android:name="cash.z.android.wallet.ui.fragment.FirstrunFragment"
+        android:label="@string/destination_title_firstrun"
+        tools:layout="@layout/fragment_firstrun">
+        <action
+            android:id="@+id/action_firstrun_fragment_to_sync_fragment"
+            app:popUpTo="@navigation/mobile_navigation"
+            app:popUpToInclusive="true"
+            app:destination="@id/nav_sync_fragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/nav_sync_fragment"
+        android:name="cash.z.android.wallet.ui.fragment.SyncFragment"
+        android:label="@string/destination_title_sync"
+        tools:layout="@layout/fragment_sync">
+        <action
+            android:id="@+id/action_sync_fragment_to_home_fragment"
+            app:popUpTo="@navigation/mobile_navigation"
+            app:popUpToInclusive="true"
+            app:destination="@id/nav_home_fragment" />
+    </fragment>
     <fragment
         android:id="@+id/nav_home_fragment"
         android:name="cash.z.android.wallet.ui.fragment.HomeFragment"
@@ -19,12 +62,16 @@
         <action
             android:id="@+id/action_home_fragment_to_request_fragment"
             app:destination="@id/nav_request_fragment" />
+        <action
+            android:id="@+id/action_home_fragment_to_history_fragment"
+            app:destination="@id/nav_history_fragment" />
     </fragment>
     <fragment
         android:id="@+id/nav_send_fragment"
         android:name="cash.z.android.wallet.ui.fragment.SendFragment"
         android:label="@string/destination_title_send"
-        tools:layout="@layout/fragment_send" />
+        tools:layout="@layout/fragment_send" >
+    </fragment>
     <fragment
         android:id="@+id/nav_receive_fragment"
         android:name="cash.z.android.wallet.ui.fragment.ReceiveFragment"
@@ -35,22 +82,17 @@
         android:name="cash.z.android.wallet.ui.fragment.RequestFragment"
         android:label="@string/destination_title_request"
         tools:layout="@layout/fragment_request" />
-    
-    <!-- unimplemented -->
     <fragment
         android:id="@+id/nav_history_fragment"
         android:name="cash.z.android.wallet.ui.fragment.HistoryFragment"
         android:label="@string/destination_title_history"
         tools:layout="@layout/fragment_placeholder" />
+
+    <!-- unimplemented -->
     <fragment
         android:id="@+id/nav_about_fragment"
         android:name="cash.z.android.wallet.ui.fragment.AboutFragment"
         android:label="@string/destination_title_about"
-        tools:layout="@layout/fragment_placeholder" />
-    <fragment
-        android:id="@+id/nav_import_fragment"
-        android:name="cash.z.android.wallet.ui.fragment.ImportFragment"
-        android:label="@string/destination_title_import"
         tools:layout="@layout/fragment_placeholder" />
     <fragment
         android:id="@+id/nav_settings_fragment"

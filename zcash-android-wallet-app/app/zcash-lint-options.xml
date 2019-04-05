@@ -1,0 +1,6 @@
+<lint>
+    <issue id="InvalidPackage">
+        <!-- more info on this here: https://github.com/grpc/grpc-java/blob/master/core/src/main/java/io/grpc/internal/JndiResourceResolverFactory.java#L59 -->
+        <ignore path="**/grpc*.jar"/>
+    </issue>
+</lint>

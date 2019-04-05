@@ -1,128 +1,117 @@
-<?xml version="1.0" encoding="utf-8"?><!--
-  Copyright (C) 2018 The Android Open Source Project
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
-
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
-  -->
-<cash.z.android.wallet.ui.view.CollapsingMotionToolbar xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/container_home_header"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fitsSystemWindows="false"
-    android:minHeight="?attr/actionBarSize"
-    app:layoutDescription="@xml/scene_fragment_home_header"
-    app:layout_scrollFlags="scroll|enterAlways|snap|exitUntilCollapsed"
-    tools:showIn="@layout/fragment_home">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <Space
-        android:id="@+id/space_left_icon"
-        android:layout_width="50dp"
-        android:layout_height="?attr/actionBarSize"/>
-
-    <!-- Toolbar -->
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/home_toolbar"
+    <cash.z.android.wallet.ui.view.CollapsingMotionToolbar
+        android:id="@+id/container_home_header"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:popupTheme="@style/ZcashTheme.PopupOverlay" />
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="false"
+        android:minHeight="?attr/actionBarSize"
+        app:layoutDescription="@xml/scene_fragment_home_header"
+        app:layout_scrollFlags="scroll|enterAlways|snap|exitUntilCollapsed"
+        tools:showIn="@layout/fragment_home">
 
-    <!-- balance -->
-    <TextView
-        android:id="@+id/text_balance_zec"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:elevation="4dp"
-        android:shadowColor="@color/text_shadow"
-        android:shadowDx="0"
-        android:shadowDy="8"
-        android:shadowRadius="24"
-        android:text="35.021"
-        android:textColor="@color/zcashWhite"
-        android:textSize="60dp" />
+        <Space
+            android:id="@+id/space_left_icon"
+            android:layout_width="50dp"
+            android:layout_height="?attr/actionBarSize" />
 
-    <!-- balance: empty -->
-    <TextView
-        android:id="@+id/text_balance_zec_empty"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:elevation="4dp"
-        android:shadowColor="@color/text_shadow"
-        android:shadowDx="0"
-        android:shadowDy="8"
-        android:shadowRadius="24"
-        android:text="0"
-        android:textColor="@color/zcashWhite"
-        android:textSize="60dp" />
+        <!-- Toolbar -->
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/home_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:popupTheme="@style/ZcashTheme.PopupOverlay" />
 
-    <!-- Zec symbol: shadow -->
-    <ImageView
-        android:id="@+id/image_zec_symbol_balance_shadow"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:tint="#B3000000"
-        app:srcCompat="@drawable/ic_zec_symbol" />
+        <!-- balance -->
+        <TextView
+            android:id="@+id/text_balance_zec"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:elevation="4dp"
+            android:shadowColor="@color/text_shadow"
+            android:shadowDx="0"
+            android:shadowDy="8"
+            android:shadowRadius="24"
+            tools:text="35.021"
+            android:textColor="@color/zcashWhite"
+            android:textSize="60dp" />
 
-    <!-- Zec symbol -->
-    <ImageView
-        android:id="@+id/image_zec_symbol_balance"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:srcCompat="@drawable/ic_zec_symbol" />
+        <!-- balance: empty -->
+        <TextView
+            android:id="@+id/text_balance_zec_empty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:elevation="4dp"
+            android:shadowColor="@color/text_shadow"
+            android:shadowDx="0"
+            android:shadowDy="8"
+            android:shadowRadius="24"
+            android:text="0"
+            android:textColor="@color/zcashWhite"
+            android:textSize="60dp" />
 
-    <!-- Zec symbol empty: shadow -->
-    <ImageView
-        android:id="@+id/image_zec_symbol_balance_shadow_empty"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:tint="#B3000000"
-        app:srcCompat="@drawable/ic_zec_symbol" />
+        <!-- Zec symbol: shadow -->
+        <ImageView
+            android:id="@+id/image_zec_symbol_balance_shadow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:tint="#B3000000"
+            app:srcCompat="@drawable/ic_zec_symbol" />
 
-    <!-- Zec symbol empty -->
-    <ImageView
-        android:id="@+id/image_zec_symbol_balance_empty"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:srcCompat="@drawable/ic_zec_symbol" />
+        <!-- Zec symbol -->
+        <ImageView
+            android:id="@+id/image_zec_symbol_balance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/ic_zec_symbol" />
 
-    <!-- Balance includes active transactions -->
-    <TextView
-        android:id="@+id/text_balance_includes_info"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Balance includes active transactions"
-        android:textColor="@color/text_light_dimmed"
-        android:textSize="@dimen/text_size_caption" />
+        <!-- Zec symbol empty: shadow -->
+        <ImageView
+            android:id="@+id/image_zec_symbol_balance_shadow_empty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:tint="#B3000000"
+            app:srcCompat="@drawable/ic_zec_symbol" />
 
-    <TextView
-        android:id="@+id/text_balance_usd"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="sans-serif-light"
-        android:text="$5,459.32"
-        android:textColor="@color/text_light_dimmed"
-        android:textSize="24dp" />
+        <!-- Zec symbol empty -->
+        <ImageView
+            android:id="@+id/image_zec_symbol_balance_empty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/ic_zec_symbol" />
+
+        <!-- Balance includes active transactions -->
+        <TextView
+            android:id="@+id/text_balance_includes_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textColor="@color/text_light_dimmed"
+            android:textSize="@dimen/text_size_caption" />
+
+        <TextView
+            android:id="@+id/text_balance_usd"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-light"
+            tools:text="$5,459.32"
+            android:textColor="@color/text_light_dimmed"
+            android:textSize="24dp" />
 
 
-    <TextView
-        android:id="@+id/text_balance_zec_info"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:drawableStart="@drawable/ic_zec_symbol"
-        android:drawableLeft="@drawable/ic_zec_symbol"
-        android:drawablePadding="6dp"
-        android:text="is a currency symbol for ZEC"
-        android:textColor="@color/zcashWhite"
-        android:textSize="16dp"
-        />
+        <TextView
+            android:id="@+id/text_balance_zec_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableStart="@drawable/ic_zec_symbol"
+            android:drawableLeft="@drawable/ic_zec_symbol"
+            android:drawablePadding="6dp"
+            android:text="is a currency symbol for ZEC"
+            android:textColor="@color/zcashWhite"
+            android:textSize="16dp" />
 
-</cash.z.android.wallet.ui.view.CollapsingMotionToolbar>
+    </cash.z.android.wallet.ui.view.CollapsingMotionToolbar>
+</layout>

@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:dist="http://schemas.android.com/apk/distribution"
+    xmlns:tools="http://schemas.android.com/tools"
     package="cash.z.android.wallet">
+
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <!--<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />-->
+    <!--<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />-->
 
     <dist:module dist:instant="true" />
 
@@ -12,11 +18,13 @@
         android:roundIcon="@mipmap/ic_launcher_shield_round"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/ZcashTheme">
+        android:theme="@style/ZcashTheme"
+        tools:replace="android:name">
         <activity
             android:name=".ui.activity.MainActivity"
             android:label="@string/app_name"
             android:theme="@style/ZcashTheme.NoActionBar"
+            android:windowSoftInputMode="adjustPan"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -24,6 +32,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".ui.util.CameraQrScanner" />
 
     </application>
 

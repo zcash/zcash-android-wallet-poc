@@ -1,40 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/content"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fitsSystemWindows="false">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/home_app_bar"
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/content"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/home_app_bar_expanded_height"
-        android:theme="@style/ZcashTheme.AppBarOverlay">
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="false">
 
-        <include layout="@layout/include_home_header" />
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/home_app_bar"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/home_app_bar_expanded_height"
+            android:theme="@style/ZcashTheme.AppBarOverlay">
 
-    </com.google.android.material.appbar.AppBarLayout>
+            <include
+                android:id="@+id/include_header"
+                layout="@layout/include_home_header" />
 
-    <include layout="@layout/include_home_content" />
+        </com.google.android.material.appbar.AppBarLayout>
 
-    <!-- FAB -->
-    <com.leinardi.android.speeddial.SpeedDialView
-        android:id="@+id/sd_fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        app:sdMainFabClosedBackgroundColor="@color/fab_closed_color"
-        app:sdMainFabClosedSrc="@drawable/ic_add_white_24dp"
-        app:sdMainFabOpenedBackgroundColor="@color/fab_open_color" />
+        <ImageView
+            android:id="@+id/custom_hamburger"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:onClick="openDrawer"
+            android:elevation="6dp"
+            app:srcCompat="@drawable/ic_hamburger"
+            android:layout_gravity="top|left"/>
 
-    <!-- Zcash badge -->
-    <ImageView
-        android:id="@+id/image_logo"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:elevation="6dp"
-        app:layout_anchor="@id/home_app_bar"
-        app:layout_anchorGravity="bottom|center"
-        app:srcCompat="@drawable/ic_zcashlogo_badge" />
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+        <include
+            android:id="@+id/include_content"
+            layout="@layout/include_home_content" />
+
+        <!-- FAB -->
+        <com.leinardi.android.speeddial.SpeedDialView
+            android:id="@+id/sd_fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            app:sdMainFabClosedBackgroundColor="@color/fab_closed_color"
+            app:sdMainFabClosedSrc="@drawable/ic_add_white_24dp"
+            app:sdMainFabOpenedBackgroundColor="@color/fab_open_color" />
+
+        <!-- Zcash badge - refresh animation -->
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/lottie_zcash_badge"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:elevation="6dp"
+            app:layout_anchor="@id/home_app_bar"
+            app:layout_anchorGravity="bottom|center"
+            app:lottie_autoPlay="false"
+            app:lottie_loop="false"
+            app:lottie_rawRes="@raw/lottie_zcash_badge_refresh_whitebg" />
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+</layout>
