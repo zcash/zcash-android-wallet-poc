@@ -35,7 +35,7 @@ class HomePresenter @Inject constructor(
         job = Job()
         twig("homePresenter starting! from ${this.hashCode()}")
         with(view) {
-            launchBalanceBinder(synchronizer.balance())
+            launchBalanceBinder(synchronizer.balances())
             launchTransactionBinder(synchronizer.allTransactions())
             launchActiveTransactionMonitor(synchronizer.activeTransactions())
         }

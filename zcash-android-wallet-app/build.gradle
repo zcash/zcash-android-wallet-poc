@@ -58,7 +58,7 @@ buildscript {
         'speeddial': 'com.leinardi.android:speed-dial:2.0.0',
         'stetho': 'com.facebook.stetho:stetho:1.5.1',
         'zcash': [
-            'walletSdk': "cash.z.android.wallet:zcash-android-testnet:1.7.5-alpha@aar"
+            'walletSdk': "cash.z.android.wallet:zcash-android-testnet:1.7.8-alpha@aar"
         ]
     ]
     repositories {

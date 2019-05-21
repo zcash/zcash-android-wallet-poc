@@ -22,41 +22,36 @@ internal object SynchronizerModule {
     @JvmStatic
     @Provides
     @Singleton
-    fun provideTwig(): Twig = if (BuildConfig.DEBUG) TroubleshootingTwig() else SilentTwig()
-
-    @JvmStatic
-    @Provides
-    @Singleton
-    fun provideDownloader(twigger: Twig): CompactBlockStream {
-        return CompactBlockStream(COMPACT_BLOCK_SERVER, COMPACT_BLOCK_PORT, twigger)
+    fun provideDownloader(): CompactBlockStream {
+        return CompactBlockStream(COMPACT_BLOCK_SERVER, COMPACT_BLOCK_PORT)
     }
 
     @JvmStatic
     @Provides
     @Singleton
-    fun provideProcessor(application: ZcashWalletApplication, converter: JniConverter, twigger: Twig): CompactBlockProcessor {
-        return CompactBlockProcessor(application, converter, SampleProperties.wallet.cacheDbName, SampleProperties.wallet.dataDbName, logger = twigger)
+    fun provideProcessor(application: ZcashWalletApplication, converter: JniConverter): CompactBlockProcessor {
+        return CompactBlockProcessor(application, converter, SampleProperties.wallet.cacheDbName, SampleProperties.wallet.dataDbName)
     }
 
     @JvmStatic
     @Provides
     @Singleton
-    fun provideRepository(application: ZcashWalletApplication, converter: JniConverter, twigger: Twig): TransactionRepository {
-        return PollingTransactionRepository(application, SampleProperties.wallet.dataDbName, 10_000L, converter, twigger)
+    fun provideRepository(application: ZcashWalletApplication, converter: JniConverter): TransactionRepository {
+        return PollingTransactionRepository(application, SampleProperties.wallet.dataDbName, 10_000L, converter)
     }
 
     @JvmStatic
     @Provides
     @Singleton
-    fun provideWallet(application: ZcashWalletApplication, converter: JniConverter, twigger: Twig): Wallet {
-        return Wallet(converter, application.getDatabasePath(SampleProperties.wallet.dataDbName).absolutePath, "${application.cacheDir.absolutePath}/params", seedProvider = SampleProperties.wallet.seedProvider, spendingKeyProvider = SampleProperties.wallet.spendingKeyProvider, logger = twigger)
+    fun provideWallet(application: ZcashWalletApplication, converter: JniConverter): Wallet {
+        return Wallet(converter, application.getDatabasePath(SampleProperties.wallet.dataDbName).absolutePath, "${application.cacheDir.absolutePath}/params", seedProvider = SampleProperties.wallet.seedProvider, spendingKeyProvider = SampleProperties.wallet.spendingKeyProvider)
     }
 
     @JvmStatic
     @Provides
     @Singleton
-    fun provideManager(wallet: Wallet, repository: TransactionRepository, downloader: CompactBlockStream, twigger: Twig): ActiveTransactionManager {
-        return ActiveTransactionManager(repository, downloader.connection, wallet, twigger)
+    fun provideManager(wallet: Wallet, repository: TransactionRepository, downloader: CompactBlockStream): ActiveTransactionManager {
+        return ActiveTransactionManager(repository, downloader.connection, wallet)
     }
 
     @JvmStatic
@@ -76,10 +71,9 @@ internal object SynchronizerModule {
         processor: CompactBlockProcessor,
         repository: TransactionRepository,
         manager: ActiveTransactionManager,
-        wallet: Wallet,
-        twigger: Twig
+        wallet: Wallet
     ): Synchronizer {
-        return SdkSynchronizer(downloader, processor, repository, manager, wallet, blockPollFrequency = 500_000L, logger = twigger)
+        return SdkSynchronizer(downloader, processor, repository, manager, wallet, blockPollFrequency = 500_000L)
     }
 
 }
