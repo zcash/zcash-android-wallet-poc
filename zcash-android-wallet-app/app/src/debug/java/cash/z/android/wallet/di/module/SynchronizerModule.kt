@@ -34,6 +34,15 @@ internal object SynchronizerModule {
     @JvmStatic
     @Provides
     @Singleton
+    fun provideJniConverter(): JniConverter {
+        return JniConverter().also {
+            if (BuildConfig.DEBUG) it.initLogs()
+        }
+    }
+
+    @JvmStatic
+    @Provides
+    @Singleton
     fun provideWalletConfig(prefs: SharedPreferences): WalletConfig {
         val walletName = prefs.getString(PREFS_WALLET_DISPLAY_NAME, null)
         twig("FOUND WALLET DISPLAY NAME : $walletName")
@@ -61,11 +70,6 @@ internal object SynchronizerModule {
     @JvmStatic
     @Provides
     @Singleton
-    fun provideTwig(): Twig = TroubleshootingTwig() // troubleshoot on debug, silent on release
-
-    @JvmStatic
-    @Provides
-    @Singleton
     fun provideDownloader(@Named(PREFS_SERVER_NAME) server: String, twigger: Twig): CompactBlockStream {
         return CompactBlockStream(server, COMPACT_BLOCK_PORT, twigger)
     }
@@ -73,8 +77,8 @@ internal object SynchronizerModule {
     @JvmStatic
     @Provides
     @Singleton
-    fun provideProcessor(application: ZcashWalletApplication, converter: JniConverter, walletConfig: WalletConfig, twigger: Twig): CompactBlockProcessor {
-        return CompactBlockProcessor(application, converter, walletConfig.cacheDbName, walletConfig.dataDbName, logger = twigger)
+    fun provideProcessor(application: ZcashWalletApplication, converter: JniConverter, walletConfig: WalletConfig): CompactBlockProcessor {
+        return CompactBlockProcessor(application, converter, walletConfig.cacheDbName, walletConfig.dataDbName)
     }
 
     @JvmStatic
@@ -101,17 +105,8 @@ internal object SynchronizerModule {
     @JvmStatic
     @Provides
     @Singleton
-    fun provideManager(wallet: Wallet, repository: TransactionRepository, downloader: CompactBlockStream, twigger: Twig): ActiveTransactionManager {
-        return ActiveTransactionManager(repository, downloader.connection, wallet, twigger)
-    }
-
-    @JvmStatic
-    @Provides
-    @Singleton
-    fun provideJniConverter(): JniConverter {
-        return JniConverter().also {
-            if (BuildConfig.DEBUG) it.initLogs()
-        }
+    fun provideManager(wallet: Wallet, repository: TransactionRepository, downloader: CompactBlockStream): ActiveTransactionManager {
+        return ActiveTransactionManager(repository, downloader.connection, wallet)
     }
 
     @JvmStatic
@@ -124,15 +119,7 @@ internal object SynchronizerModule {
         manager: ActiveTransactionManager,
         wallet: Wallet
     ): Synchronizer {
-        return SdkSynchronizer(
-            downloader,
-            processor,
-            repository,
-            manager,
-            wallet,
-            batchSize = 100,
-            blockPollFrequency = 50_000L
-        )
+        return SdkSynchronizer(downloader, processor, repository, manager, wallet, batchSize = 100, blockPollFrequency = 50_000L)
     }
 
 }

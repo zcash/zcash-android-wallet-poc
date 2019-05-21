@@ -67,7 +67,7 @@ class SendPresenter @Inject constructor(
         inputToggleCurrency()
         balanceJob?.cancel()
         balanceJob = Job()
-        balanceJob = view.launchBalanceBinder(synchronizer.balance())
+        balanceJob = view.launchBalanceBinder(synchronizer.balances())
     }
 
     override fun stop() {
